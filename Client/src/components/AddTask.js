@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { FaRegListAlt, FaRegCalendarAlt } from 'react-icons/fa';
+import { BsFlag, BsAlarm } from 'react-icons/bs';
+import { AiOutlineTag } from 'react-icons/ai';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 // import { firebase } from '../firebase';
 import { useSelectedProjectValue } from '../context';
 import { ProjectOverlay } from './ProjectOverlay';
 import { TaskDate } from './TaskDate';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import Dropdown from 'react-bootstrap/Dropdown';
 
 export const AddTask = ({
   showAddTaskMain = true,
@@ -23,6 +27,7 @@ export const AddTask = ({
   const { selectedProject } = useSelectedProjectValue();
 
   const addTask = () => {
+    //call API to .net core backend
     const projectId = project || selectedProject;
     let collatedDate = '';
 
@@ -81,7 +86,7 @@ export const AddTask = ({
           {showQuickAddTask && (
             <>
               <div data-testid="quick-add-task">
-                <h2 className="header">Quick Add Task</h2>
+                <h6 className="header">Quick Add Task</h6>
                 <span
                   className="add-task__cancel-x"
                   data-testid="add-task-quick-cancel"
@@ -118,6 +123,7 @@ export const AddTask = ({
           />
           <input
             className="add-task__content"
+            placeholder="ex: Fix bug..."
             aria-label="Enter your task"
             data-testid="add-task-content"
             type="text"
@@ -134,7 +140,7 @@ export const AddTask = ({
                 : addTask()
             }
           >
-            Add Task
+            Submit
           </button>
           {!showQuickAddTask && (
             <span
@@ -167,9 +173,46 @@ export const AddTask = ({
             tabIndex={0}
             role="button"
           >
-            <FaRegListAlt />
+            <FaRegListAlt size={22} />
           </span>
           <span
+            className="add-task__alarm"
+          >
+            <BsAlarm size={20} />
+          </span>
+          <span
+            className="add-task__priority"
+          >
+            <BsFlag size={22} />
+          </span>
+          <span
+            className="add-task__tag"
+          >
+            <AiOutlineTag size={22} />
+          </span>
+          <DropdownButton
+            alignRight
+            title="Monday"
+            id="dropdown-menu-align-right"
+            className="add-task__date"
+            data-testid="show-task-date-overlay"
+          >
+            <Dropdown.Item>
+              {/* <CgProfile /> */}
+              <span> Profile</span>
+            </Dropdown.Item>
+            <Dropdown.Divider />
+            <Dropdown.Item>
+              {/* <FiSettings /> */}
+              <span> Settings</span>
+            </Dropdown.Item>
+            <Dropdown.Divider />
+            <Dropdown.Item>
+              {/* <FiLogOut /> */}
+              <span> Log out</span>
+            </Dropdown.Item>
+          </DropdownButton>
+          {/* <span
             className="add-task__date"
             data-testid="show-task-date-overlay"
             onClick={() => setShowTaskDate(!showTaskDate)}
@@ -180,7 +223,7 @@ export const AddTask = ({
             role="button"
           >
             <FaRegCalendarAlt />
-          </span>
+          </span> */}
         </div>
       )}
     </div>
