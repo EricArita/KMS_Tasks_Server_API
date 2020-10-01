@@ -2,6 +2,7 @@
    LETS BUILD TODOIST
    ========================================================================== */
 @import url('https://fonts.googleapis.com/css?family=Roboto:400,700,900');
+@import "~bootstrap/scss/bootstrap";
 
 // General Settings
 html {
@@ -180,7 +181,7 @@ header {
     }
 
     div {
-      &.search {
+      &.left-navbar {
         padding-left: 8px;
         grid-area: 1 / 1;
         display: flex;
@@ -189,7 +190,7 @@ header {
         img {
           width: 100px;
           height: 35px;
-          margin-top: 1.5%;
+          margin-top: 1%;
         }
 
         .search-container {
@@ -210,24 +211,24 @@ header {
         }
       }
 
-      &.settings {
+      &.right-navbar {
         grid-area: 1 / 2;
         text-align: right;
+        margin-right: -5%;
 
         ul {
           float: right;
         }
 
-        ul li {
+       ul  li {
           @include va;
-
           list-style-type: none;
           cursor: pointer;
           width: 30px;
           height: 30px;
           text-align: center;
           vertical-align: middle;
-          margin-right: 10px;
+          margin-right: 10px;          
           float: left;
 
           &:hover {
@@ -235,9 +236,8 @@ header {
             background-color: rgba(255,255,255,0.2);
           }
 
-          &.settings__add {
+          &.right-navbar-add {
             margin-right: 15px;
-            font-size: 30px;
 
             button {
               @include transparent-button();
@@ -246,7 +246,7 @@ header {
             }
           }
 
-          &.settings__darkmode {
+          &.right-navbar-darkmode {
             button {
               @include transparent-button();
               color: white;
@@ -254,7 +254,7 @@ header {
               display: -webkit-box;
               display: -ms-flexbox;
               display: flex;
-
+              
               svg {
                 width: 20px;
                 height: 20px;
@@ -262,14 +262,21 @@ header {
             }
           }
 
-          &.settings__notification {
-            font-size: 20px;
-
+          &.right-navbar-notification {
             button {
-              padding-top: 6px;
               @include transparent-button();
               color: white;
               cursor: pointer;
+            }
+          }
+
+          &.right-navbar-dropdown {
+            .dropdown-toggle {
+              background-color: transparent;
+              border: none;
+              height: 100%;
+              font-size: 23px;    
+              padding-top: 32%;         
             }
           }
         }
@@ -282,7 +289,7 @@ header {
   ============================================ */
 .sidebar {
   @include no-select();
-  width: 295px;
+  width: 22%;
   height: calc(100vh);
   padding-top: 74px;
   position: fixed;
@@ -489,6 +496,7 @@ header {
           align-items: center;
   grid-template-columns: 1fr auto;
   max-width: 100%;
+  background-color: #fff;
 }
 
 /* Tasks
@@ -496,7 +504,7 @@ header {
 .tasks {
   width: 100%;
   background-color: white;
-  margin-left: 266px;
+  margin-left: 28%;
   border-right: $generic-border;
   min-height: calc(100vh);
   vertical-align: top;
