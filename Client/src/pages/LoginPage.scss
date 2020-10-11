@@ -1,0 +1,44 @@
+.login-screen {
+    .content-wrapper {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .ant-tabs {
+        // color: @primary-text-color;
+        width: 100%;
+        min-height: 366px;
+    }
+
+    .button-accept-props {
+        width: 100%;
+        .ant-btn {
+            font-family: Roboto, sans-serif;
+            width: 100%;
+            border-radius: 30px;
+            border: 1px solid;
+        }
+    }
+
+    .button-back-props {
+        width: 100%;
+        .ant-btn {
+            font-family: Roboto, sans-serif;
+            width: 100%;
+            box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 30px;
+        }
+    }
+
+    .ant-input,
+    .ant-input-password {
+        border-radius: 30px;
+        box-sizing: border-box;
+    }
+}
+
+#loginForm {
+    display: none;
+}

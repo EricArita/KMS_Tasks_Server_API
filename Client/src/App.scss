@@ -7,11 +7,14 @@
 // General Settings
 html {
   -webkit-box-sizing: border-box;
-          box-sizing: border-box;
+  box-sizing: border-box;
 }
-*, *:before, *:after {
+
+*,
+*:before,
+*:after {
   -webkit-box-sizing: inherit;
-          box-sizing: inherit;
+  box-sizing: inherit;
 }
 
 body {
@@ -20,7 +23,7 @@ body {
   line-height: 1;
   font-family: 'Roboto', sans-serif;
   color: #202020;
-  background-color: #fafafa;
+  background-color: #fff;
   font-smooth: always;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -32,7 +35,8 @@ ul {
 }
 
 // Variables
-$generic-box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 4px 11px;
+$generic-box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 0px 1px,
+rgba(0, 0, 0, 0.1) 0px 4px 11px;
 $generic-border: 1px solid #f1f1f1;
 $generic-bg: #14b1e7;
 
@@ -40,7 +44,7 @@ $generic-bg: #14b1e7;
   ============================================ */
 @mixin box-overlay() {
   -webkit-box-shadow: $generic-box-shadow;
-          box-shadow: $generic-box-shadow;
+  box-shadow: $generic-box-shadow;
   position: absolute;
   width: 100%;
   z-index: 1;
@@ -53,17 +57,19 @@ $generic-bg: #14b1e7;
   display: -ms-flexbox;
   display: flex;
   -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
 
-  @if $va-align != center {
+  @if $va-align !=center {
     -webkit-box-pack: left;
-        -ms-flex-pack: left;
-            justify-content: left;
-  } @else {
+    -ms-flex-pack: left;
+    justify-content: left;
+  }
+
+  @else {
     -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center;
+    -ms-flex-pack: center;
+    justify-content: center;
   }
 }
 
@@ -137,8 +143,8 @@ $generic-bg: #14b1e7;
   ============================================ */
 .darkmode {
   header {
-    -webkit-box-shadow: 0 1px 3px 0 rgba(0,0,0,0.15);
-    box-shadow: 0 1px 3px 0 rgba(0,0,0,0.15);
+    -webkit-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.15);
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.15);
     background-color: #282828;
     border-color: transparent;
   }
@@ -147,12 +153,12 @@ $generic-bg: #14b1e7;
 /* Header
   ============================================ */
 header {
-  border-bottom: solid 1px #14b1e7 ;
+  border-bottom: solid 1px #14b1e7;
   background-color: $generic-bg;
   -webkit-transition: height 200ms ease-in;
   transition: height 200ms ease-in;
   -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
-          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
   height: 50px;
   z-index: 400;
   position: fixed;
@@ -166,8 +172,8 @@ header {
   nav {
     display: grid;
     -webkit-box-align: center;
-        -ms-flex-align: center;
-            align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr;
     grid-column-gap: 0px;
@@ -176,7 +182,8 @@ header {
     margin-left: 30px;
     height: 44px;
 
-    p, li {
+    p,
+    li {
       color: white;
     }
 
@@ -220,7 +227,7 @@ header {
           float: right;
         }
 
-       ul  li {
+        ul li {
           @include va;
           list-style-type: none;
           cursor: pointer;
@@ -228,12 +235,12 @@ header {
           height: 30px;
           text-align: center;
           vertical-align: middle;
-          margin-right: 10px;          
+          margin-right: 10px;
           float: left;
 
           &:hover {
             border-radius: 3px;
-            background-color: rgba(255,255,255,0.2);
+            background-color: rgba(255, 255, 255, 0.2);
           }
 
           &.right-navbar-add {
@@ -254,7 +261,7 @@ header {
               display: -webkit-box;
               display: -ms-flexbox;
               display: flex;
-              
+
               svg {
                 width: 20px;
                 height: 20px;
@@ -275,8 +282,8 @@ header {
               background-color: transparent;
               border: none;
               height: 100%;
-              font-size: 23px;    
-              padding-top: 32%;         
+              font-size: 23px;
+              padding-top: 32%;
             }
           }
         }
@@ -323,8 +330,8 @@ header {
       display: -ms-flexbox;
       display: flex;
       -webkit-box-align: center;
-          -ms-flex-align: center;
-              align-items: center;
+      -ms-flex-align: center;
+      align-items: center;
     }
 
     &-delete {
@@ -336,7 +343,8 @@ header {
       }
     }
 
-    &.active, &:hover {
+    &.active,
+    &:hover {
       font-weight: bold;
       background-color: white;
     }
@@ -346,21 +354,25 @@ header {
         color: #6accbc;
       }
     }
+
     &:nth-child(2) {
       .sidebar__dot {
         color: #fad003;
       }
     }
+
     &:nth-child(3) {
       .sidebar__dot {
         color: #ff8d85;
       }
     }
+
     &:nth-child(4) {
       .sidebar__dot {
         color: #ff9932;
       }
     }
+
     &:nth-child(5) {
       .sidebar__dot {
         color: #af38eb;
@@ -397,7 +409,7 @@ header {
 
       svg.hidden-projects {
         -webkit-transform: rotate(-90deg);
-                transform: rotate(-90deg);
+        transform: rotate(-90deg);
       }
     }
 
@@ -436,8 +448,8 @@ header {
           display: -ms-flexbox;
           display: flex;
           -webkit-box-align: center;
-              -ms-flex-align: center;
-                  align-items: center;
+          -ms-flex-align: center;
+          align-items: center;
 
           svg {
             width: 18px;
@@ -447,7 +459,8 @@ header {
         }
       }
 
-      &.active, &:hover {
+      &.active,
+      &:hover {
         font-weight: bold;
         background-color: white;
       }
@@ -480,6 +493,7 @@ header {
     button {
       @include btn('50px');
     }
+
     span {
       @include cancel();
       font-weight: normal;
@@ -492,8 +506,8 @@ header {
 .content {
   display: grid;
   -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
   grid-template-columns: 1fr auto;
   max-width: 100%;
   background-color: #fff;
@@ -546,11 +560,11 @@ header {
       display: -ms-flexbox;
       display: flex;
       -webkit-box-align: center;
-          -ms-flex-align: center;
-              align-items: center;
+      -ms-flex-align: center;
+      align-items: center;
       -webkit-box-pack: center;
-          -ms-flex-pack: center;
-              justify-content: center;
+      -ms-flex-pack: center;
+      justify-content: center;
       line-height: 16px;
 
       .checkbox {
@@ -571,7 +585,7 @@ header {
   ============================================ */
 .add-task {
   &__overlay {
-    background: rgba(102,102,102,0.5);
+    background: rgba(102, 102, 102, 0.5);
     position: absolute;
     margin: auto;
     top: 0;
@@ -590,7 +604,7 @@ header {
 
       width: 40%;
       overflow: visible;
-      margin-top: -150px;    
+      margin-top: -150px;
       border-radius: 5px;
       background-color: white;
       position: absolute;
@@ -598,7 +612,7 @@ header {
       top: 50%;
       padding: 20px 30px;
       -webkit-transform: translate(-50%, -50%);
-              transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
 
       .header {
         margin-top: 0px;
@@ -625,14 +639,18 @@ header {
     color: black;
     font-size: 14px;
     width: 85px;
-    height: 25px; 
+    height: 25px;
     text-align: left;
     padding: 0px;
     border: 1px solid rgb(134, 133, 133);
     color: green;
   }
 
-  &__project, &__date, &__priority, &__tag, &__alarm {
+  &__project,
+  &__date,
+  &__priority,
+  &__tag,
+  &__alarm {
     cursor: pointer;
     float: right;
     color: gray;
@@ -659,7 +677,8 @@ header {
     border: 1px solid #a1d4e0;
   }
 
-  &__cancel, &__submit {
+  &__cancel,
+  &__submit {
     @include no-select;
   }
 
@@ -674,18 +693,21 @@ header {
   }
 }
 
-.add-task__shallow, .add-project {
+.add-task__shallow,
+.add-project {
   @include no-select;
   cursor: pointer;
   margin-bottom: 20px;
 }
 
-.add-task__plus, .add-project__plus {
+.add-task__plus,
+.add-project__plus {
   color: #dd4b39;
   font-size: 18px;
 }
 
-.add-task__text, .add-project__text {
+.add-task__text,
+.add-project__text {
   display: inline-block;
   color: #545454;
   font-size: 14px;
@@ -711,8 +733,8 @@ header {
       display: -ms-flexbox;
       display: flex;
       -webkit-box-align: center;
-          -ms-flex-align: center;
-              align-items: center;
+      -ms-flex-align: center;
+      align-items: center;
 
       span:first-of-type {
         margin-right: 10px;
