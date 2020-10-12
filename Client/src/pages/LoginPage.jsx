@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { Form, message, Input, Button, Divider } from 'antd';
+import { FcGoogle } from "react-icons/fc";
+import { SiFacebook, SiGithub } from "react-icons/si";
 import { AuthLayout } from '../components/layout/AuthLayout';
 import './LoginPage.scss';
-import { FormInstance } from 'antd/lib/form';
 
 export default class LoginPage extends React.Component {
   state = {
@@ -39,30 +40,55 @@ export default class LoginPage extends React.Component {
               key={'login-form'}
             >
               <Form.Item name='email'>
-                <Input placeholder='Email' type='email' />
+                <Input placeholder='Email or Username' type='email' />
               </Form.Item>
               <Form.Item name='password'>
-                <Input.Password placeholder={'Mật khẩu'} type='password'
-                />
+                <Input.Password placeholder={'Password'} type='password'/>
+              </Form.Item>
+              <Form.Item name='remember-password'>
+                <div class='remember-password-wrapper'> 
+                  <span>
+                    <input type="checkbox" id='remember-password'/>
+                    <label for='remember-password' style={{marginLeft: '6px', verticalAlign: 'middle'}}>Remember password</label>
+                  </span>
+                  <span>
+                    <a href='#' style={{color: '#0073b1'}} >Forgot password?</a>
+                  </span>
+                </div>             
               </Form.Item>
               <Form.Item>
-                <span className={'space-between-item button-accept-props'}>
+                <span className={'button-accept-props'}>
                   <Button type='primary' loading={this.state.loading.login} htmlType='submit' style={{backgroundColor: '#14b1e7'}}>
-                    Đăng nhập
-                          </Button>
+                    Sign in
+                  </Button>
                 </span>
               </Form.Item>
             </Form>
             <span className={'space-between-item'}>
               <Divider>
-                <span>Hoặc</span>
+                <span>or</span>
               </Divider>
             </span>
-            <span className={'space-between-item button-back-props'}>
+            <span className={'button-back-props'}>
               <Button>
-                Quên mật khẩu
+                <FcGoogle size={20} /> 
+                <span className={"google-text"}>Sign in with Google</span>
+              </Button>
+              <Button style={{marginTop: '12px'}}>
+                <SiFacebook size={20} color={'#3b5998'}/> 
+                <span className={"facebook-text"}>Sign in with Google</span>
+              </Button>
+              <Button style={{marginTop: '12px'}}>
+                <SiGithub size={20} /> 
+                <span className={"github-text"}>Sign in with Github</span>
               </Button>
             </span>
+            <div class="sign-up-link">
+                <span>
+                  First time using Tasks? 
+                  <a style={{color: '#0073b1', marginLeft: '5px'}} href='#'><b>Join now</b></a>
+                </span>
+            </div>
           </div>
         </div>
       </AuthLayout>
