@@ -9,7 +9,7 @@ namespace Application.Interfaces
 {
     public interface IApplicationDbContext
     {
-        DbSet<Car> Cars { get; set; }
+        DbSet<Example> Examples { get; set; }
         Task<int> SaveChanges();
     }
 }

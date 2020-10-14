@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Application
 {
-    public static class DependencyInjection
+    public static class ServiceRegister
     {
         /// <summary>
         /// Register all dependencies and services of Application layer. This method makes solution get the maintainability and

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Domain.Entities
 {
-    public class Car : BaseEntity
+    public class Example : BaseEntity
     {
         public string Name { get; set; }
         public string Color { get; set; }

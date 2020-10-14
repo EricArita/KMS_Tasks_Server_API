@@ -1,12 +1,9 @@
 ﻿using Application.Interfaces;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace Persistence.Context
+namespace Persistence.Contexts
 {
     public class ApplicationDbContext : DbContext, IApplicationDbContext
     {
@@ -14,7 +11,7 @@ namespace Persistence.Context
             : base(options)
         {
         }
-        public DbSet<Car> Cars { get; set; }
+        public DbSet<Example> Examples { get; set; }
         #pragma warning disable CS0114 // Member hides inherited member; missing override keyword
         public async Task<int> SaveChanges()
         {
