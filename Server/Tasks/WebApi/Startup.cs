@@ -7,6 +7,12 @@ using Microsoft.OpenApi.Models;
 using Application;
 using Persistence;
 using Microsoft.AspNetCore.Mvc;
+using Infrastructure.Persistence.SettingModels;
+using Microsoft.Extensions.Options;
+using Core.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
+using Infrastructure.Persistence.Contexts;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace WebApi
 {
@@ -27,6 +33,8 @@ namespace WebApi
             services.AddApplicationServices();
 
             services.AddPersistenceServices(Configuration);
+
+            services.AddOptions();
 
             #region Swagger
             services.AddSwaggerGen(c =>
@@ -61,6 +69,8 @@ namespace WebApi
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
