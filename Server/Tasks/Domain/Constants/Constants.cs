@@ -7,9 +7,9 @@ namespace Core.Domain.Constants
 {
    public static class Constants
     {
-        public const string DefaultUsername = "i544";
-        public const string DefaultEmail = "thobui@kms-technology.com";
-        public const string DefaultPassword = "Kms@2020";
+        public const string DefaultUsername = "";
+        public const string DefaultEmail = "";
+        public const string DefaultPassword = "";
         public const UserRoles DefaultRole = UserRoles.Administrator;
     }
 }
