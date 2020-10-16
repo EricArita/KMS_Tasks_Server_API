@@ -30,9 +30,5 @@
     <ProjectReference Include="..\Persistence\Infrastructure.Persistence.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\v1\" />
-  </ItemGroup>
-
 
 </Project>

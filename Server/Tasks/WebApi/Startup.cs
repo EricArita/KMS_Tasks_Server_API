@@ -34,6 +34,8 @@ namespace WebApi
 
             services.AddPersistenceServices(Configuration);
 
+            services.AddOptions();
+
             #region Swagger
             services.AddSwaggerGen(c =>
             {

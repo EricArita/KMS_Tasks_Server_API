@@ -1,6 +1,8 @@
 ﻿using Application.Interfaces;
+using Core.Application.Interfaces;
 using Core.Domain.Entities;
 using Infrastructure.Persistence.Contexts;
+using Infrastructure.Persistence.Services;
 using Infrastructure.Persistence.SettingModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -24,9 +26,7 @@ namespace Persistence
         /// <param name="services"></param>
         public static void AddPersistenceServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<JWT>(options => {
-                options = configuration.GetSection("JWT").Get<JWT>();
-            }).AddSingleton(sp => sp.GetRequiredService<IOptions<JWT>>().Value);
+            services.Configure<JWT>(configuration.GetSection("JWT"));
 
             services.AddDbContext<ApplicationDbContext>(options =>
                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
@@ -34,7 +34,9 @@ namespace Persistence
             services.AddDbContext<UserManagementDbContext>(options =>
                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(typeof(UserManagementDbContext).Assembly.FullName)));
 
-            services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<UserManagementDbContext>();
+            services.AddIdentity<ApplicationUser, IdentityRole>(options => {
+                options.Password.RequireUppercase = false;
+            }).AddEntityFrameworkStores<UserManagementDbContext>();
 
             services.AddAuthentication(options =>
             {
@@ -57,6 +59,7 @@ namespace Persistence
             });
 
             services.AddScoped<IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>());
+            services.AddScoped<IAuthentication, AuthenticationService>();
         }
     }
 }

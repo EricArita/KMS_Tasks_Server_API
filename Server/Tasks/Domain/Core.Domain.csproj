@@ -9,4 +9,12 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.9" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DbEntities\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
 </Project>
