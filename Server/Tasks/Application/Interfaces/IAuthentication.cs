@@ -8,7 +8,8 @@ namespace Core.Application.Interfaces
 {
     public abstract class IAuthentication
     {
-        public abstract Task<Response<AuthenticationResponseModel>> VerifyAccount(string userName, string password);
+        public abstract Task<Response<ApplicationUser>> RegisterAsync(RegisterModel model);
+        public abstract Task<Response<AuthResponseModel>> VerifyAccount(string userName, string password);
         protected abstract Task<JwtSecurityToken> GenerateJwtToken(ApplicationUser user);
     }
 }

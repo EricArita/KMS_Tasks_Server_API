@@ -1,4 +1,6 @@
-﻿namespace Core.Application.Helper
+﻿using System.Collections.Generic;
+
+namespace Core.Application.Helper
 {
     public class Response<T>
     {
@@ -17,7 +19,7 @@
 
         public T Data { get; set; }
         public bool OK { get; set; }
-        public string[] Errors { get; set; }
+        public List<string> Errors { get; set; }
         public string Message { get; set; }
     }
 }

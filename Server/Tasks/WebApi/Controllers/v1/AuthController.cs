@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Core.Application.Interfaces;
-using Microsoft.AspNetCore.Http;
+using Core.Application.Models;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Models;
 
 namespace WebApi.Controllers.v1
 {
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
@@ -17,6 +15,13 @@ namespace WebApi.Controllers.v1
         public AuthController(IAuthentication authService)
         {
             _authService = authService;
+        }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(RegisterModel model)
+        {
+            var result = await _authService.RegisterAsync(model);
+            return Ok(result);
         }
 
         [HttpPost("login")]

@@ -2,7 +2,7 @@
 
 namespace Core.Application.Models
 {
-    public class AuthenticationResponseModel
+    public class AuthResponseModel
     {
         public bool IsAuthenticated { get; set; }
         public string UserName { get; set; }
