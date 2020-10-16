@@ -7,3 +7,4 @@ It supports to both personal and teamworks purposes. In near future, Code Manage
 
 NOTE: Welcome everyone to join and develop with me in this project. If you guys who wanna be a part of my team, don't hesitate to contact to me via Email: buiphantho@gmail.com or chat with me 
        on Linkedin: https://www.linkedin.com/in/buiphantho/
+

@@ -1,0 +1,56 @@
+.auth-container {
+    width: 100%;
+    margin-top: -60px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    background-size: cover;
+    font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji;
+
+    .footer{
+        width: 100%;
+        .copyright {
+            text-align: center;
+            font-size: 12px;
+        }
+    }
+
+    .ant-tabs-bar,
+    .ant-tabs-nav-scroll {
+        display: none;
+    }
+
+    a:hover {
+        color: #eaa6a4;
+    }
+
+    .logo {
+        display: block;
+        margin: auto;
+        margin-bottom: 20px;
+    }
+
+    .heading-text-props {
+        font-style: normal;
+        font-weight: 500;
+        font-size: 30px;
+        line-height: 35px;
+    }
+
+    .content-text-props {
+        font-style: normal;
+        font-weight: normal;
+        font-size: 16px;
+        line-height: 19px;
+        text-align: justify;
+        text-align-last: center;
+    }
+
+    .form-wrapper {
+        width: 100%;
+        max-width: 350px;
+        margin: 100px 0;
+    }
+}
