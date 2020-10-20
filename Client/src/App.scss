@@ -618,6 +618,13 @@ header {
         margin-top: 0px;
         float: left;
       }
+
+      .dropdown-menu.dropdown-menu-right {
+        margin: -80px 0px 0px -90px !important;
+        .Cal__Header__date {
+          font-size: 18px;
+        }
+      }
     }
 
     .add-task__cancel-x {

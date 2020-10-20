@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
-import { FaRegListAlt, FaRegCalendarAlt } from 'react-icons/fa';
+import { FaRegListAlt } from 'react-icons/fa';
 import { BsFlag, BsAlarm } from 'react-icons/bs';
 import { AiOutlineTag } from 'react-icons/ai';
 import moment from 'moment';
 import PropTypes from 'prop-types';
-// import { firebase } from '../firebase';
 import { useSelectedProjectValue } from '../context';
 import { ProjectOverlay } from './ProjectOverlay';
 import { TaskDate } from './TaskDate';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
+import InfiniteCalendar from 'react-infinite-calendar';
+import 'react-infinite-calendar/styles.css';
 
 export const AddTask = ({
   showAddTaskMain = true,
@@ -204,12 +205,34 @@ export const AddTask = ({
             <Dropdown.Divider />
             <Dropdown.Item>
               {/* <FiSettings /> */}
-              <span> Settings</span>
+              <span> Today</span>
+            </Dropdown.Item>
+            <Dropdown.Item>
+              {/* <FiSettings /> */}
+              <span> Tomorrow</span>
+            </Dropdown.Item>
+            <Dropdown.Item>
+              {/* <FiSettings /> */}
+              <span> Weekend </span>
+            </Dropdown.Item>
+            <Dropdown.Item>
+              {/* <FiSettings /> */}
+              <span> This week</span>
+            </Dropdown.Item>
+            <Dropdown.Item>
+              {/* <FiSettings /> */}
+              <span> Next week</span>
             </Dropdown.Item>
             <Dropdown.Divider />
             <Dropdown.Item>
-              {/* <FiLogOut /> */}
-              <span> Log out</span>
+              <InfiniteCalendar
+                rowHeight={45}
+                width={280}
+                height={170}
+                selected={new Date()}
+                disabledDays={[0, 6]}
+                minDate={new Date()}
+              />
             </Dropdown.Item>
           </DropdownButton>
           {/* <span
