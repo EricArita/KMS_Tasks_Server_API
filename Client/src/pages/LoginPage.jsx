@@ -3,6 +3,7 @@ import { Form, message, Input, Button, Divider } from 'antd';
 import { FcGoogle } from "react-icons/fc";
 import { SiFacebook, SiGithub } from "react-icons/si";
 import { AuthLayout } from '../components/layout/AuthLayout';
+import { fetchAPI } from '../helpers/ApiHelper';
 import './LoginPage.scss';
 
 export default class LoginPage extends React.Component {
@@ -20,11 +21,10 @@ export default class LoginPage extends React.Component {
     super(props);
   }
 
-  async login() {   
-    const info = await this.formRef.current.getFieldsValue();
-    // firebase.auth().signInWithEmailAndPassword(info.email, info.password).catch(function (error) {
-    //   message.error(error.message);
-    // });
+  async Login() {   
+    const authInfo = await this.formRef.current.getFieldsValue();
+    let response = await fetchAPI('POST', 'Auth/login', authInfo);
+    console.log(JSON.parse(response));
   }
 
   render() {
@@ -35,20 +35,20 @@ export default class LoginPage extends React.Component {
             <Form
               ref={this.formRef}
               onFinish={() => {
-                this.login();
+                this.Login();
               }}
               key={'login-form'}
             >
-              <Form.Item name='email'>
-                <Input placeholder='Email or Username' type='email' />
+              <Form.Item name='username'>
+                <Input placeholder='Email or Username' type='text' />
               </Form.Item>
               <Form.Item name='password'>
-                <Input.Password placeholder={'Password'} type='password'/>
+                <Input placeholder={'Password'} type='password'/>
               </Form.Item>
               <Form.Item name='remember-password'>
                 <div class='remember-password-wrapper'> 
                   <span>
-                    <input type="checkbox" id='remember-password'/>
+                    <input type="checkbox" />
                     <label for='remember-password' style={{marginLeft: '6px', verticalAlign: 'middle'}}>Remember password</label>
                   </span>
                   <span>
