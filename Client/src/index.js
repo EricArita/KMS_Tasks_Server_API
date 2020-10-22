@@ -5,4 +5,5 @@ import { App } from './App';
 import './App.scss';
 import LoginPage from './pages/LoginPage';
 
-render(<LoginPage />, document.getElementById('root'));
+render(<App />, document.getElementById('root'));
+// render(<LoginPage />, document.getElementById('root'));
