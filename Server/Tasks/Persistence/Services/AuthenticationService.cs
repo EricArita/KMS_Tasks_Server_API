@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Persistence.Services
 {
-    public abstract class AuthenticationService : GenerateJWTAuthentication, IAuthentication
+    public class AuthenticationService : GenerateJWTAuthentication, IAuthentication
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
@@ -45,7 +45,7 @@ namespace Infrastructure.Persistence.Services
                     FirstName = model.FirstName,
                     MidName = model.MidName,
                     LastName = model.LastName,
-                    Active = true
+                    Status = 1
                 };
 
                 var result = await _userManager.CreateAsync(newUser, model.Password);

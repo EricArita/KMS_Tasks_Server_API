@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NLog.Web;
 
 namespace WebApi
 {
@@ -15,6 +16,7 @@ namespace WebApi
         public static async Task Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
+            var logger = NLogBuilder.ConfigureNLog("NLog.config").GetCurrentClassLogger();
 
             using (var scope = host.Services.CreateScope())
             {
@@ -29,12 +31,24 @@ namespace WebApi
                 }
                 catch (Exception ex)
                 {
-                    var logger = loggerFactory.CreateLogger<Program>();
-                    logger.LogError(ex, "An error occurred seeding the DB.");
+                    logger.Error(ex, "An error occurred when seeding the DB.");
                 }
             }
 
-            host.Run();
+            try
+            {
+                logger.Info("Server is running...");
+                host.Run();
+            }
+            catch (Exception exception)
+            {
+                logger.Error(exception, "Stopped program because of exception");
+                throw;
+            }
+            finally
+            {
+                NLog.LogManager.Shutdown();
+            }
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -42,6 +56,12 @@ namespace WebApi
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                });
+                })
+                .ConfigureLogging(logging =>
+                {
+                    logging.ClearProviders();
+                    logging.SetMinimumLevel(LogLevel.Trace);
+                })
+                .UseNLog();
     }
 }

@@ -8,7 +8,9 @@ namespace Core.Domain.Entities
         public string FirstName { get; set; }
         public string MidName { get; set; }
         public string LastName { get; set; }
-        public bool Active { get; set; }
+        public string Avatar { get; set; }
+        public DateTime? DateOfBirth { get; set; }
+        public byte Status { get; set; }
         public DateTime CreateAt { get; set; } = DateTime.UtcNow;
     }
 }

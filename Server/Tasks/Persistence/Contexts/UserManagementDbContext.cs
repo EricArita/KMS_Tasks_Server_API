@@ -37,7 +37,7 @@ namespace Infrastructure.Persistence.Contexts
                     EmailConfirmed = true,
                     PhoneNumber = "0349004909",
                     PhoneNumberConfirmed = true,
-                    Active = true
+                    Status = 1
                 };
 
                 await userManager.CreateAsync(defaultUser, Constants.DefaultPassword);
@@ -45,7 +45,7 @@ namespace Infrastructure.Persistence.Contexts
             } 
         }
 
-        public async Task<int> SaveChanges()
+        public async Task<int> SaveChangesAsync()
         {
             return await base.SaveChangesAsync();
         }
