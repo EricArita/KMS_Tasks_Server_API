@@ -1,5 +1,5 @@
-﻿using Application.Interfaces;
-using Core.Application.Interfaces;
+﻿using Core.Application.Interfaces;
+using Core.Domain.DbEntities;
 using Core.Domain.Entities;
 using Infrastructure.Persistence.Contexts;
 using Infrastructure.Persistence.Services;
@@ -9,9 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Persistence.Contexts;
 using System;
 using System.Text;
 
@@ -58,7 +56,6 @@ namespace Persistence
                 };
             });
 
-            services.AddScoped<IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>());
             services.AddScoped<IAuthentication, AuthenticationService>();
         }
     }
