@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FaRegListAlt } from 'react-icons/fa';
-import { BsFlag, BsAlarm } from 'react-icons/bs';
+import { BsFlag, BsAlarm, BsCalendar } from 'react-icons/bs';
 import { AiOutlineTag } from 'react-icons/ai';
 import moment from 'moment';
 import PropTypes from 'prop-types';
@@ -97,13 +97,6 @@ export const AddTask = ({
                     setShowProjectOverlay(false);
                     setShowQuickAddTask(false);
                   }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      setShowMain(false);
-                      setShowProjectOverlay(false);
-                      setShowQuickAddTask(false);
-                    }
-                  }}
                   tabIndex={0}
                   role="button"
                 >
@@ -191,47 +184,54 @@ export const AddTask = ({
           >
             <AiOutlineTag size={22} />
           </span>
-          <DropdownButton
+        <DropdownButton
             alignRight
-            title="Monday"
+            title={taskDate === '' ? 'Today' : taskDate}
             id="dropdown-menu-align-right"
             className="add-task__date"
             data-testid="show-task-date-overlay"
+            onSelect={(val) => {
+              if (val !== 'calendar') setTaskDate(val.trim());
+            }}
           >
             <Dropdown.Item>
-              {/* <CgProfile /> */}
-              <span> Profile</span>
+              <span> Selected date</span>
             </Dropdown.Item>
             <Dropdown.Divider />
-            <Dropdown.Item>
-              {/* <FiSettings /> */}
-              <span> Today</span>
+            <Dropdown.Item eventKey="Today">
+              <BsCalendar />
+              <span className="calendar-option-text"> Today</span>
             </Dropdown.Item>
-            <Dropdown.Item>
+            <Dropdown.Item eventKey="Tomorrow">
               {/* <FiSettings /> */}
-              <span> Tomorrow</span>
+              <span className="calendar-option-text"> Tomorrow</span>
             </Dropdown.Item>
-            <Dropdown.Item>
+            <Dropdown.Item eventKey="Weekend">
               {/* <FiSettings /> */}
-              <span> Weekend </span>
+              <span className="calendar-option-text"> Weekend </span>
             </Dropdown.Item>
-            <Dropdown.Item>
+            <Dropdown.Item eventKey="This week">
               {/* <FiSettings /> */}
-              <span> This week</span>
+              <span className="calendar-option-text"> This week</span>
             </Dropdown.Item>
-            <Dropdown.Item>
+            <Dropdown.Item eventKey="Next week">
               {/* <FiSettings /> */}
-              <span> Next week</span>
+              <span className="calendar-option-text"> Next week</span>
             </Dropdown.Item>
             <Dropdown.Divider />
-            <Dropdown.Item>
+            <Dropdown.Item eventKey="calendar">
               <InfiniteCalendar
                 rowHeight={45}
                 width={280}
                 height={170}
                 selected={new Date()}
-                disabledDays={[0, 6]}
-                minDate={new Date()}
+                // disabledDays={[0, 6]}
+                // min={new Date(get)}
+                // minDate={new Date().getDay()}
+                onSelect={(date) => {
+                  var convertedDate =  `${date.toLocaleString('default', { month: 'short' })}  ${date.getDate()} ${date.getFullYear()}`;
+                  setTaskDate(convertedDate);
+                }}
               />
             </Dropdown.Item>
           </DropdownButton>

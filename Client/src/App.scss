@@ -635,6 +635,12 @@ header {
       font-size: 14px;
       margin-top: 0px;
     }
+
+    .add-task__date {
+      .calendar-option-text {
+        margin-left: 10px;
+      }
+    }
   }
 
   &__main {
