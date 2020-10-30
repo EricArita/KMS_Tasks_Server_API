@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Persistence.Services
 {
-    public class AuthenticationService : IAuthentication
+    public abstract class AuthenticationService : GenerateJWTAuthentication, IAuthentication
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
@@ -30,7 +30,7 @@ namespace Infrastructure.Persistence.Services
             _jwt = jwt.Value;
         }
 
-        public override async Task<Response<ApplicationUser>> RegisterAsync(RegisterModel model)
+        public async Task<Response<ApplicationUser>> RegisterAsync(RegisterModel model)
         {
             var userWithSameEmail = await _userManager.FindByEmailAsync(model.Email);
             var res = new Response<ApplicationUser>();
@@ -77,7 +77,7 @@ namespace Infrastructure.Persistence.Services
             return res;
         }
 
-        public override async Task<Response<AuthResponseModel>> VerifyAccount(string userName, string password)
+        public async Task<Response<AuthResponseModel>> VerifyAccount(string userName, string password)
         {
             var authResponseModel = new AuthResponseModel();
             var res = new Response<AuthResponseModel>();

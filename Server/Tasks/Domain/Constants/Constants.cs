@@ -4,9 +4,9 @@ namespace Core.Domain.Constants
 {
     public static class Constants
     {
-        public const string DefaultUsername = "abc";
-        public const string DefaultEmail = "abc@abc";
-        public const string DefaultPassword = "1";
+        public const string DefaultUsername = "admin";
+        public const string DefaultEmail = "admin@test.com";
+        public const string DefaultPassword = "admin@123";
         public const UserRoles DefaultRole = UserRoles.Administrator;
     }
 }

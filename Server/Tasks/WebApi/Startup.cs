@@ -7,12 +7,6 @@ using Microsoft.OpenApi.Models;
 using Application;
 using Persistence;
 using Microsoft.AspNetCore.Mvc;
-using Infrastructure.Persistence.SettingModels;
-using Microsoft.Extensions.Options;
-using Core.Domain.Entities;
-using Microsoft.AspNetCore.Identity;
-using Infrastructure.Persistence.Contexts;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace WebApi
 {
@@ -28,6 +22,8 @@ namespace WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
+
             services.AddControllers();
 
             services.AddApplicationServices();
@@ -65,6 +61,8 @@ namespace WebApi
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
             app.UseHttpsRedirection();
 
