@@ -637,6 +637,10 @@ header {
     }
 
     .add-task__date {
+      #dropdown-menu-align-right {
+        width: fit-content;
+      }
+      
       .calendar-option-text {
         margin-left: 10px;
       }
@@ -659,6 +663,17 @@ header {
     color: green;
   }
 
+  #dropdown-priority-level {
+    width: fit-content;
+    border: none;
+    color: grey;
+    box-shadow: none;
+  }
+
+  #dropdown-priority-level::after { 
+    content: none;
+  }
+
   &__project,
   &__date,
   &__priority,
@@ -669,6 +684,16 @@ header {
     color: gray;
     margin-top: 12px;
     margin-right: 13px;
+  }
+
+  &__project:hover,
+  &__date:hover,
+  &__priority #dropdown-priority-level:hover,
+  &__tag:hover,
+  &__alarm:hover {
+    color: black;
+    background-color: rgb(243, 236, 236);
+    border-radius: 5px;
   }
 
   &__project {

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FaRegListAlt } from 'react-icons/fa';
-import { BsFlag, BsAlarm, BsCalendar } from 'react-icons/bs';
+import { FcPlanner, FcLandscape, FcGallery, FcRadarPlot, FcRating } from 'react-icons/fc';
+import { BsFlag, BsAlarm } from 'react-icons/bs';
 import { AiOutlineTag } from 'react-icons/ai';
 import moment from 'moment';
 import PropTypes from 'prop-types';
@@ -169,19 +170,22 @@ export const AddTask = ({
           >
             <FaRegListAlt size={22} />
           </span>
-          <span
-            className="add-task__alarm"
-          >
+          <span className="add-task__alarm">
             <BsAlarm size={20} />
           </span>
-          <span
-            className="add-task__priority"
-          >
-            <BsFlag size={22} />
+          <span className="add-task__priority">
+            <Dropdown>
+              <Dropdown.Toggle id="dropdown-priority-level">
+                <BsFlag size={22} />
+              </Dropdown.Toggle>    
+              <Dropdown.Menu>
+                <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
+                <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
+                <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
+              </Dropdown.Menu>   
+            </Dropdown> 
           </span>
-          <span
-            className="add-task__tag"
-          >
+          <span className="add-task__tag">
             <AiOutlineTag size={22} />
           </span>
         <DropdownButton
@@ -199,23 +203,23 @@ export const AddTask = ({
             </Dropdown.Item>
             <Dropdown.Divider />
             <Dropdown.Item eventKey="Today">
-              <BsCalendar />
+              <FcPlanner size={21}/>
               <span className="calendar-option-text"> Today</span>
             </Dropdown.Item>
             <Dropdown.Item eventKey="Tomorrow">
-              {/* <FiSettings /> */}
+              <FcLandscape size={21} />
               <span className="calendar-option-text"> Tomorrow</span>
             </Dropdown.Item>
             <Dropdown.Item eventKey="Weekend">
-              {/* <FiSettings /> */}
+              <FcGallery size={21} />
               <span className="calendar-option-text"> Weekend </span>
             </Dropdown.Item>
             <Dropdown.Item eventKey="This week">
-              {/* <FiSettings /> */}
+              <FcRadarPlot size={21} />
               <span className="calendar-option-text"> This week</span>
             </Dropdown.Item>
             <Dropdown.Item eventKey="Next week">
-              {/* <FiSettings /> */}
+              <FcRating size={21} />
               <span className="calendar-option-text"> Next week</span>
             </Dropdown.Item>
             <Dropdown.Divider />
@@ -225,9 +229,7 @@ export const AddTask = ({
                 width={280}
                 height={170}
                 selected={new Date()}
-                // disabledDays={[0, 6]}
-                // min={new Date(get)}
-                // minDate={new Date().getDay()}
+                min={new Date()}
                 onSelect={(date) => {
                   var convertedDate =  `${date.toLocaleString('default', { month: 'short' })}  ${date.getDate()} ${date.getFullYear()}`;
                   setTaskDate(convertedDate);
@@ -235,18 +237,6 @@ export const AddTask = ({
               />
             </Dropdown.Item>
           </DropdownButton>
-          {/* <span
-            className="add-task__date"
-            data-testid="show-task-date-overlay"
-            onClick={() => setShowTaskDate(!showTaskDate)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') setShowTaskDate(!showTaskDate);
-            }}
-            tabIndex={0}
-            role="button"
-          >
-            <FaRegCalendarAlt />
-          </span> */}
         </div>
       )}
     </div>
