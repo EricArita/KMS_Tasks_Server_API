@@ -28,7 +28,7 @@ export const AddTask = ({
 
   const { selectedProject } = useSelectedProjectValue();
 
-  const addTask = () => {
+  const addNewTask = () => {
     //call API to .net core backend
     const projectId = project || selectedProject;
     let collatedDate = '';
@@ -131,8 +131,8 @@ export const AddTask = ({
             data-testid="add-task"
             onClick={() =>
               showQuickAddTask
-                ? addTask() && setShowQuickAddTask(false)
-                : addTask()
+                ? addNewTask() && setShowQuickAddTask(false)
+                : addNewTask()
             }
           >
             Submit
@@ -161,34 +161,69 @@ export const AddTask = ({
           <span
             className="add-task__project"
             data-testid="show-project-overlay"
-            onClick={() => setShowProjectOverlay(!showProjectOverlay)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') setShowProjectOverlay(!showProjectOverlay);
-            }}
+            // onClick={() => setShowProjectOverlay(!showProjectOverlay)}
+            // onKeyDown={(e) => {
+            //   if (e.key === 'Enter') setShowProjectOverlay(!showProjectOverlay);
+            // }}
             tabIndex={0}
             role="button"
           >
-            <FaRegListAlt size={22} />
+            <Dropdown>
+              <Dropdown.Toggle id="dropdown-project-toggle">
+                <FaRegListAlt size={22} />
+              </Dropdown.Toggle>
+              <Dropdown.Menu id="dropdown-project-menu">
+                <Dropdown.Item eventKey="Emergency" active>
+                  <span class="priority-item-text">Project A</span>
+                </Dropdown.Item>
+                <Dropdown.Item eventKey="High">
+                  <span class="priority-item-text">Project B</span>
+                </Dropdown.Item>
+                <Dropdown.Item eventKey="Medium">
+                  <span class="priority-item-text">Project C</span>
+                </Dropdown.Item>
+                <Dropdown.Item eventKey="Low">
+                  <span class="priority-item-text">Project D</span>
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
           </span>
           <span className="add-task__alarm">
             <BsAlarm size={20} />
           </span>
           <span className="add-task__priority">
             <Dropdown>
-              <Dropdown.Toggle id="dropdown-priority-level">
+              <Dropdown.Toggle id="dropdown-priority-level-toggle">
                 <BsFlag size={22} />
-              </Dropdown.Toggle>    
+              </Dropdown.Toggle>
               <Dropdown.Menu>
-                <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-                <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-                <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-              </Dropdown.Menu>   
-            </Dropdown> 
+                <Dropdown.Item eventKey="Emergency">
+                  <BsFlag color="red" size={22} />
+                  <span class="priority-item-text">Emergency</span>
+                </Dropdown.Item>
+                <Dropdown.Item eventKey="High">
+                  <BsFlag color="#EFEC56" size={22} />
+                  <span class="priority-item-text">High</span>
+                </Dropdown.Item>
+                <Dropdown.Item eventKey="Medium">
+                  <BsFlag color="green" size={22} />
+                  <span class="priority-item-text">Medium</span>
+                </Dropdown.Item>
+                <Dropdown.Item eventKey="Low">
+                  <BsFlag color="grey" size={22} />
+                  <span class="priority-item-text">Low</span>
+                </Dropdown.Item>
+                <Dropdown.Item eventKey="Anytime">
+                  <BsFlag color="blue" size={22} />
+                  <span class="priority-item-text">Anytime</span>
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
           </span>
           <span className="add-task__tag">
             <AiOutlineTag size={22} />
           </span>
-        <DropdownButton
+          <DropdownButton
             alignRight
             title={taskDate === '' ? 'Today' : taskDate}
             id="dropdown-menu-align-right"
@@ -203,7 +238,7 @@ export const AddTask = ({
             </Dropdown.Item>
             <Dropdown.Divider />
             <Dropdown.Item eventKey="Today">
-              <FcPlanner size={21}/>
+              <FcPlanner size={21} />
               <span className="calendar-option-text"> Today</span>
             </Dropdown.Item>
             <Dropdown.Item eventKey="Tomorrow">
@@ -231,7 +266,7 @@ export const AddTask = ({
                 selected={new Date()}
                 min={new Date()}
                 onSelect={(date) => {
-                  var convertedDate =  `${date.toLocaleString('default', { month: 'short' })}  ${date.getDate()} ${date.getFullYear()}`;
+                  var convertedDate = `${date.toLocaleString('default', { month: 'short' })}  ${date.getDate()} ${date.getFullYear()}`;
                   setTaskDate(convertedDate);
                 }}
               />

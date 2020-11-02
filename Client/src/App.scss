@@ -8,6 +8,8 @@
 html {
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: scroll;
 }
 
 *,
@@ -32,6 +34,24 @@ body {
 ul {
   margin: 0;
   padding: 0;
+}
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+  border-radius: 10px;
+}
+ 
+::-webkit-scrollbar-thumb {
+  background: #888; 
+  border: 4px solid transparent;
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
 }
 
 // Variables
@@ -645,6 +665,13 @@ header {
         margin-left: 10px;
       }
     }
+
+    .add-task__priority {
+      .priority-item-text {
+        margin-left: 5px;
+        font-size: 14px;
+      }
+    }
   }
 
   &__main {
@@ -663,14 +690,20 @@ header {
     color: green;
   }
 
-  #dropdown-priority-level {
+  #dropdown-project-menu {
+    height: 250px;
+    width: 200px;
+    overflow-y: scroll;
+  }
+
+  #dropdown-priority-level-toggle, #dropdown-project-toggle {
     width: fit-content;
     border: none;
     color: grey;
     box-shadow: none;
   }
 
-  #dropdown-priority-level::after { 
+  #dropdown-priority-level-toggle::after, #dropdown-project-toggle::after { 
     content: none;
   }
 
@@ -686,9 +719,9 @@ header {
     margin-right: 13px;
   }
 
-  &__project:hover,
+  &__project #dropdown-project-toggle:hover,
   &__date:hover,
-  &__priority #dropdown-priority-level:hover,
+  &__priority #dropdown-priority-level-toggle:hover,
   &__tag:hover,
   &__alarm:hover {
     color: black;
