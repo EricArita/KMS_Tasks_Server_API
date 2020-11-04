@@ -12,8 +12,8 @@ namespace Core.Application.Interfaces
         IEnumerable<TEntity> Get(Expression<Func<TEntity, bool>> filter = null,
                                  Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderByFunc = null,
                                  string includeProperties = "");
-        void Insert(TEntity entity);
-        void Update(TEntity entityToUpdate);
+        bool Insert(TEntity entity);
+        bool Update(TEntity entityToUpdate);
         void DeleteById(object id);
         void DeleteByObject(TEntity entityToDelete);
     }

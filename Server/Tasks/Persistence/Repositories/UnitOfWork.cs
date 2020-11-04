@@ -11,10 +11,23 @@ namespace Infrastructure.Persistence.Repositories
     {
         private bool disposed = false;
         private ApplicationDbContext _dbContext;
+        private TaskRepository taskRepository;
 
-        public UnitOfWork(ApplicationDbContext dbContext)
+        public UnitOfWork()
         {
-            _dbContext = dbContext;
+            _dbContext = new ApplicationDbContext();
+        }
+
+        public TaskRepository TaskRepository
+        {
+            get
+            {
+                if (taskRepository == null)
+                {
+                    taskRepository = new TaskRepository(_dbContext);
+                }
+                return taskRepository;
+            }
         }
 
         public async Task SaveChangesAsync()

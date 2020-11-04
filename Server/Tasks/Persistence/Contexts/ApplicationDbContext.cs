@@ -77,7 +77,7 @@ namespace Core.Domain.DbEntities
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -87,7 +87,7 @@ namespace Core.Domain.DbEntities
 
                 entity.Property(e => e.Schedule).HasColumnType("datetime");
 
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Parent)
                     .WithMany(p => p.InverseParent)

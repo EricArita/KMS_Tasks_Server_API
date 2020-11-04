@@ -31,5 +31,9 @@
     <ProjectReference Include="..\Persistence\Infrastructure.Persistence.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
+
 
 </Project>

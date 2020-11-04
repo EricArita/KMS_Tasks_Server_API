@@ -6,16 +6,20 @@ using System.Linq.Expressions;
 using Core.Domain.DbEntities;
 using Microsoft.EntityFrameworkCore;
 using Core.Application.Interfaces;
+using NLog;
+using Infrastructure.Persistence.Services;
 
 namespace Infrastructure.Persistence.Repositories
 {
-    public class GenericRepositoryBase<TEntity> : IGenericRepositoryBase<TEntity> where TEntity: class
+    public class GenericRepositoryBase<TEntity> : IGenericRepositoryBase<TEntity> where TEntity : class
     {
         internal ApplicationDbContext _dbContext;
+        private Logger _logger;
 
         public GenericRepositoryBase(ApplicationDbContext context)
         {
-            this._dbContext = context;
+            _dbContext = context;
+            _logger = NLoggerService.GetLogger();
         }
 
         public DbSet<TEntity> GetDbset()
@@ -55,15 +59,41 @@ namespace Infrastructure.Persistence.Repositories
             return GetDbset().Find(id);
         }
 
-        public virtual void Update(TEntity entityToUpdate)
+        public virtual bool Update(TEntity entityToUpdate)
         {
-            GetDbset().Attach(entityToUpdate);
-            _dbContext.Entry(entityToUpdate).State = EntityState.Modified;
+            try
+            {
+                GetDbset().Attach(entityToUpdate);
+                _dbContext.Entry(entityToUpdate).State = EntityState.Modified;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "An error occurred when updating an entity");
+                return false;
+            }
+            finally
+            {
+                LogManager.Shutdown();
+            }
         }
 
-        public virtual void Insert(TEntity entity)
+        public virtual bool Insert(TEntity entity)
         {
-            GetDbset().Add(entity);
+            try
+            {
+                GetDbset().Add(entity);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+                return false;
+            }
+            finally
+            {
+                LogManager.Shutdown();
+            }
         }
 
         public virtual void DeleteById(object id)

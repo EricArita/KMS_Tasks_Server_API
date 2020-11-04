@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Core.Domain.Entities;
 using Infrastructure.Persistence.Contexts;
+using Infrastructure.Persistence.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,7 +17,7 @@ namespace WebApi
         public static async Task Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
-            var logger = NLogBuilder.ConfigureNLog("NLog.config").GetCurrentClassLogger();
+            var logger = NLoggerService.GetLogger();
 
             using (var scope = host.Services.CreateScope())
             {

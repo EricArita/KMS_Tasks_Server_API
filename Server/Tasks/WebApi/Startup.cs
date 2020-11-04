@@ -7,6 +7,8 @@ using Microsoft.OpenApi.Models;
 using Application;
 using Persistence;
 using Microsoft.AspNetCore.Mvc;
+using Core.Application.Interfaces;
+using Infrastructure.Persistence.Repositories;
 
 namespace WebApi
 {
