@@ -75,8 +75,6 @@ namespace Core.Domain.DbEntities
 
             modelBuilder.Entity<Tasks>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.Name)

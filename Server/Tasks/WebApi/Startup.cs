@@ -32,6 +32,8 @@ namespace WebApi
 
             services.AddPersistenceServices(Configuration);
 
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+
             services.AddOptions();
 
             #region Swagger

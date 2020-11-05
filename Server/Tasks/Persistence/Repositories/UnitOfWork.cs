@@ -1,6 +1,8 @@
 ﻿using Core.Application.Interfaces;
 using Core.Domain.DbEntities;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Data.Entity.Validation;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,24 +13,33 @@ namespace Infrastructure.Persistence.Repositories
     {
         private bool disposed = false;
         private ApplicationDbContext _dbContext;
-        private TaskRepository taskRepository;
+        private Dictionary<string, dynamic> repositoriesPrototypes;
 
-        public UnitOfWork()
+        public UnitOfWork(ApplicationDbContext dbContext)
         {
-            _dbContext = new ApplicationDbContext();
+            _dbContext = dbContext;
+            repositoriesPrototypes = new Dictionary<string, dynamic>();
         }
 
-        public TaskRepository TaskRepository
+        public T Repository<T>() where T : class
         {
-            get
+            var repoType = typeof(T).Name;
+
+            if (!repositoriesPrototypes.ContainsKey(repoType))
             {
-                if (taskRepository == null)
+                switch (repoType)
                 {
-                    taskRepository = new TaskRepository(_dbContext);
+                    case "TaskRepository":
+                        repositoriesPrototypes.Add(repoType, new TaskRepository(_dbContext));
+                        break;
+                    default:
+                        return null;
                 }
-                return taskRepository;
             }
+
+            return (T)repositoriesPrototypes[repoType];
         }
+
 
         public async Task SaveChangesAsync()
         {
