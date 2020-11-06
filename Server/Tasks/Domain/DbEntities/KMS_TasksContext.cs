@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Core.Domain.DbEntities
 {
-    public partial class ApplicationDbContext : DbContext
+    public partial class KMS_TasksContext : DbContext
     {
-        public ApplicationDbContext()
+        public KMS_TasksContext()
         {
         }
 
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public KMS_TasksContext(DbContextOptions<KMS_TasksContext> options)
             : base(options)
         {
         }
@@ -18,19 +18,18 @@ namespace Core.Domain.DbEntities
         public virtual DbSet<PriorityLevel> PriorityLevel { get; set; }
         public virtual DbSet<Project> Project { get; set; }
         public virtual DbSet<Sections> Sections { get; set; }
+        public virtual DbSet<SysLogs> SysLogs { get; set; }
         public virtual DbSet<Tasks> Tasks { get; set; }
         public virtual DbSet<UserProjects> UserProjects { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
+        { 
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<PriorityLevel>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.Description).HasMaxLength(200);
 
                 entity.Property(e => e.DisplayName)
@@ -40,8 +39,6 @@ namespace Core.Domain.DbEntities
 
             modelBuilder.Entity<Project>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Description).HasMaxLength(250);
@@ -55,8 +52,6 @@ namespace Core.Domain.DbEntities
 
             modelBuilder.Entity<Sections>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Description).HasMaxLength(100);
@@ -73,6 +68,23 @@ namespace Core.Domain.DbEntities
                     .HasConstraintName("FK_Sections_Project");
             });
 
+            modelBuilder.Entity<SysLogs>(entity =>
+            {
+                entity.Property(e => e.Exception).IsRequired();
+
+                entity.Property(e => e.Level)
+                    .IsRequired()
+                    .HasMaxLength(10);
+
+                entity.Property(e => e.Logger).IsRequired();
+
+                entity.Property(e => e.Message).IsRequired();
+
+                entity.Property(e => e.Trace).IsRequired();
+
+                entity.Property(e => e.When).HasColumnType("datetime");
+            });
+
             modelBuilder.Entity<Tasks>(entity =>
             {
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
@@ -85,7 +97,11 @@ namespace Core.Domain.DbEntities
 
                 entity.Property(e => e.Schedule).HasColumnType("datetime");
 
-                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+                entity.Property(e => e.ScheduleString)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Parent)
                     .WithMany(p => p.InverseParent)
