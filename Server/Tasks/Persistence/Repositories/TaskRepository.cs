@@ -1,7 +1,6 @@
 ﻿using Core.Domain.DbEntities;
+using Infrastructure.Persistence.Contexts;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using WebApi.Models;
 
 namespace Infrastructure.Persistence.Repositories

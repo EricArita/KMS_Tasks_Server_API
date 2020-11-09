@@ -1,10 +1,15 @@
-﻿using System;
+﻿using Core.Application.Models;
+using Core.Domain.Constants;
+using Core.Domain.DbEntities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace Core.Domain.DbEntities
+namespace Infrastructure.Persistence.Contexts
 {
-    public partial class ApplicationDbContext : DbContext
+    public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext()
         {
@@ -13,6 +18,37 @@ namespace Core.Domain.DbEntities
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
+        }
+
+        public static async Task SeedDefaultUserAsync(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        {
+            if (roleManager.Roles.Count() == 0)
+            {
+                //Seed Roles
+                await roleManager.CreateAsync(new IdentityRole(Enums.UserRoles.Administrator.ToString()));
+                await roleManager.CreateAsync(new IdentityRole(Enums.UserRoles.Moderator.ToString()));
+                await roleManager.CreateAsync(new IdentityRole(Enums.UserRoles.User.ToString()));
+            }
+
+            if (!userManager.Users.Any(u => u.UserName == DefaultUserConstants.DefaultUsername))
+            {
+                //Seed Default User
+                var defaultUser = new ApplicationUser
+                {
+                    UserName = DefaultUserConstants.DefaultUsername,
+                    FirstName = "Bùi",
+                    MidName = "Phan",
+                    LastName = "Thọ",
+                    Email = DefaultUserConstants.DefaultEmail,
+                    EmailConfirmed = true,
+                    PhoneNumber = "0349004909",
+                    PhoneNumberConfirmed = true,
+                    Status = 1
+                };
+
+                await userManager.CreateAsync(defaultUser, DefaultUserConstants.DefaultPassword);
+                await userManager.AddToRoleAsync(defaultUser, DefaultUserConstants.DefaultRole.ToString());
+            }
         }
 
         public virtual DbSet<PriorityLevel> PriorityLevel { get; set; }
@@ -27,6 +63,8 @@ namespace Core.Domain.DbEntities
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<PriorityLevel>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();

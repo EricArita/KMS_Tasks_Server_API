@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using Core.Domain.Entities;
+using Core.Application.Models;
 using Infrastructure.Persistence.Contexts;
 using Infrastructure.Persistence.Services;
 using Microsoft.AspNetCore.Hosting;
@@ -28,7 +28,7 @@ namespace WebApi
                     //Seed Default Users
                     var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
                     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-                    await UserManagementDbContext.SeedDefaultUserAsync(userManager, roleManager);
+                    await ApplicationDbContext.SeedDefaultUserAsync(userManager, roleManager);
                 }
                 catch (Exception ex)
                 {

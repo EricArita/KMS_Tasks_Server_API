@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Data;
 using System.Linq.Expressions;
-using Core.Domain.DbEntities;
 using Microsoft.EntityFrameworkCore;
 using Core.Application.Interfaces;
 using NLog;
 using Infrastructure.Persistence.Services;
+using Infrastructure.Persistence.Contexts;
 
 namespace Infrastructure.Persistence.Repositories
 {

@@ -1,6 +1,5 @@
 ﻿using Core.Application.Interfaces;
-using Core.Domain.DbEntities;
-using Core.Domain.Entities;
+using Core.Application.Models;
 using Infrastructure.Persistence.Contexts;
 using Infrastructure.Persistence.Services;
 using Infrastructure.Persistence.SettingModels;
@@ -29,12 +28,9 @@ namespace Persistence
             services.AddDbContext<ApplicationDbContext>(options =>
                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
-            services.AddDbContext<UserManagementDbContext>(options =>
-               options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(typeof(UserManagementDbContext).Assembly.FullName)));
-
             services.AddIdentity<ApplicationUser, IdentityRole>(options => {
                 options.Password.RequireUppercase = false;
-            }).AddEntityFrameworkStores<UserManagementDbContext>();
+            }).AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddAuthentication(options =>
             {

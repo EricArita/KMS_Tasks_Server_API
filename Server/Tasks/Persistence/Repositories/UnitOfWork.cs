@@ -1,5 +1,5 @@
 ﻿using Core.Application.Interfaces;
-using Core.Domain.DbEntities;
+using Infrastructure.Persistence.Contexts;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -41,12 +41,12 @@ namespace Infrastructure.Persistence.Repositories
         }
 
 
-        public async Task SaveChangesAsync()
+        public async Task<int> SaveChangesAsync()
         {
             try
             {
                 if (_dbContext != null)
-                    await _dbContext.SaveChangesAsync().ConfigureAwait(false);
+                    return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
             }
             catch (DbEntityValidationException e)
             {
@@ -61,6 +61,7 @@ namespace Infrastructure.Persistence.Repositories
                 }
                 throw new Exception(myString.ToString());
             }
+            return 0;
         }
         
         public int SaveChanges()

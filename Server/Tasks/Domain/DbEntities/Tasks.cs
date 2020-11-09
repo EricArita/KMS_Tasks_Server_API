@@ -20,7 +20,6 @@ namespace Core.Domain.DbEntities
         public DateTime? UpdatedDate { get; set; }
         public int? ProjectId { get; set; }
         public int? SectionId { get; set; }
-        public int? UserId { get; set; }
         public int? ParentId { get; set; }
         public DateTime? ReminderSchedule { get; set; }
         public bool Reminder { get; set; }

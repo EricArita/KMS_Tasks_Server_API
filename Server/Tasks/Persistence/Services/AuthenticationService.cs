@@ -2,7 +2,6 @@
 using Core.Application.Interfaces;
 using Core.Application.Models;
 using Core.Domain.Constants;
-using Core.Domain.Entities;
 using Infrastructure.Persistence.SettingModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;

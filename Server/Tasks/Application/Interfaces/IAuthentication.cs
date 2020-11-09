@@ -1,6 +1,5 @@
 ﻿using Core.Application.Helper;
 using Core.Application.Models;
-using Core.Domain.Entities;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
 

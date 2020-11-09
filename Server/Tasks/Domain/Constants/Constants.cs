@@ -2,7 +2,7 @@ using static Core.Domain.Constants.Enums;
 
 namespace Core.Domain.Constants
 {
-    public static class Constants
+    public static class DefaultUserConstants
     {
         public const string DefaultUsername = "admin";
         public const string DefaultEmail = "admin@test.com";
