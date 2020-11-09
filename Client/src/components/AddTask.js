@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FaRegListAlt } from 'react-icons/fa';
+import { FcPlanner, FcLandscape, FcGallery, FcRadarPlot, FcRating } from 'react-icons/fc';
 import { BsFlag, BsAlarm } from 'react-icons/bs';
 import { AiOutlineTag } from 'react-icons/ai';
 import moment from 'moment';
@@ -27,7 +28,7 @@ export const AddTask = ({
 
   const { selectedProject } = useSelectedProjectValue();
 
-  const addTask = () => {
+  const addNewTask = () => {
     //call API to .net core backend
     const projectId = project || selectedProject;
     let collatedDate = '';
@@ -97,13 +98,6 @@ export const AddTask = ({
                     setShowProjectOverlay(false);
                     setShowQuickAddTask(false);
                   }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      setShowMain(false);
-                      setShowProjectOverlay(false);
-                      setShowQuickAddTask(false);
-                    }
-                  }}
                   tabIndex={0}
                   role="button"
                 >
@@ -137,8 +131,8 @@ export const AddTask = ({
             data-testid="add-task"
             onClick={() =>
               showQuickAddTask
-                ? addTask() && setShowQuickAddTask(false)
-                : addTask()
+                ? addNewTask() && setShowQuickAddTask(false)
+                : addNewTask()
             }
           >
             Submit
@@ -167,86 +161,117 @@ export const AddTask = ({
           <span
             className="add-task__project"
             data-testid="show-project-overlay"
-            onClick={() => setShowProjectOverlay(!showProjectOverlay)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') setShowProjectOverlay(!showProjectOverlay);
-            }}
+            // onClick={() => setShowProjectOverlay(!showProjectOverlay)}
+            // onKeyDown={(e) => {
+            //   if (e.key === 'Enter') setShowProjectOverlay(!showProjectOverlay);
+            // }}
             tabIndex={0}
             role="button"
           >
-            <FaRegListAlt size={22} />
+            <Dropdown>
+              <Dropdown.Toggle id="dropdown-project-toggle">
+                <FaRegListAlt size={22} />
+              </Dropdown.Toggle>
+              <Dropdown.Menu id="dropdown-project-menu">
+                <Dropdown.Item eventKey="Emergency" active>
+                  <span class="priority-item-text">Project A</span>
+                </Dropdown.Item>
+                <Dropdown.Item eventKey="High">
+                  <span class="priority-item-text">Project B</span>
+                </Dropdown.Item>
+                <Dropdown.Item eventKey="Medium">
+                  <span class="priority-item-text">Project C</span>
+                </Dropdown.Item>
+                <Dropdown.Item eventKey="Low">
+                  <span class="priority-item-text">Project D</span>
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
           </span>
-          <span
-            className="add-task__alarm"
-          >
+          <span className="add-task__alarm">
             <BsAlarm size={20} />
           </span>
-          <span
-            className="add-task__priority"
-          >
-            <BsFlag size={22} />
+          <span className="add-task__priority">
+            <Dropdown>
+              <Dropdown.Toggle id="dropdown-priority-level-toggle">
+                <BsFlag size={22} />
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Dropdown.Item eventKey="Emergency">
+                  <BsFlag color="red" size={22} />
+                  <span class="priority-item-text">Emergency</span>
+                </Dropdown.Item>
+                <Dropdown.Item eventKey="High">
+                  <BsFlag color="#EFEC56" size={22} />
+                  <span class="priority-item-text">High</span>
+                </Dropdown.Item>
+                <Dropdown.Item eventKey="Medium">
+                  <BsFlag color="green" size={22} />
+                  <span class="priority-item-text">Medium</span>
+                </Dropdown.Item>
+                <Dropdown.Item eventKey="Low">
+                  <BsFlag color="grey" size={22} />
+                  <span class="priority-item-text">Low</span>
+                </Dropdown.Item>
+                <Dropdown.Item eventKey="Anytime">
+                  <BsFlag color="blue" size={22} />
+                  <span class="priority-item-text">Anytime</span>
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
           </span>
-          <span
-            className="add-task__tag"
-          >
+          <span className="add-task__tag">
             <AiOutlineTag size={22} />
           </span>
           <DropdownButton
             alignRight
-            title="Monday"
+            title={taskDate === '' ? 'Today' : taskDate}
             id="dropdown-menu-align-right"
             className="add-task__date"
             data-testid="show-task-date-overlay"
+            onSelect={(val) => {
+              if (val !== 'calendar') setTaskDate(val.trim());
+            }}
           >
             <Dropdown.Item>
-              {/* <CgProfile /> */}
-              <span> Profile</span>
+              <span> Selected date</span>
             </Dropdown.Item>
             <Dropdown.Divider />
-            <Dropdown.Item>
-              {/* <FiSettings /> */}
-              <span> Today</span>
+            <Dropdown.Item eventKey="Today">
+              <FcPlanner size={21} />
+              <span className="calendar-option-text"> Today</span>
             </Dropdown.Item>
-            <Dropdown.Item>
-              {/* <FiSettings /> */}
-              <span> Tomorrow</span>
+            <Dropdown.Item eventKey="Tomorrow">
+              <FcLandscape size={21} />
+              <span className="calendar-option-text"> Tomorrow</span>
             </Dropdown.Item>
-            <Dropdown.Item>
-              {/* <FiSettings /> */}
-              <span> Weekend </span>
+            <Dropdown.Item eventKey="Weekend">
+              <FcGallery size={21} />
+              <span className="calendar-option-text"> Weekend </span>
             </Dropdown.Item>
-            <Dropdown.Item>
-              {/* <FiSettings /> */}
-              <span> This week</span>
+            <Dropdown.Item eventKey="This week">
+              <FcRadarPlot size={21} />
+              <span className="calendar-option-text"> This week</span>
             </Dropdown.Item>
-            <Dropdown.Item>
-              {/* <FiSettings /> */}
-              <span> Next week</span>
+            <Dropdown.Item eventKey="Next week">
+              <FcRating size={21} />
+              <span className="calendar-option-text"> Next week</span>
             </Dropdown.Item>
             <Dropdown.Divider />
-            <Dropdown.Item>
+            <Dropdown.Item eventKey="calendar">
               <InfiniteCalendar
                 rowHeight={45}
                 width={280}
                 height={170}
                 selected={new Date()}
-                disabledDays={[0, 6]}
-                minDate={new Date()}
+                min={new Date()}
+                onSelect={(date) => {
+                  var convertedDate = `${date.toLocaleString('default', { month: 'short' })}  ${date.getDate()} ${date.getFullYear()}`;
+                  setTaskDate(convertedDate);
+                }}
               />
             </Dropdown.Item>
           </DropdownButton>
-          {/* <span
-            className="add-task__date"
-            data-testid="show-task-date-overlay"
-            onClick={() => setShowTaskDate(!showTaskDate)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') setShowTaskDate(!showTaskDate);
-            }}
-            tabIndex={0}
-            role="button"
-          >
-            <FaRegCalendarAlt />
-          </span> */}
         </div>
       )}
     </div>
