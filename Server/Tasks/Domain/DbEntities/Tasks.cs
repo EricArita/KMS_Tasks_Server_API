@@ -30,7 +30,6 @@ namespace Core.Domain.DbEntities
         public virtual Tasks Parent { get; set; }
         public virtual PriorityLevel Priority { get; set; }
         public virtual Project Project { get; set; }
-        public virtual Sections Section { get; set; }
         public virtual ICollection<Tasks> InverseParent { get; set; }
     }
 }

@@ -4,14 +4,16 @@ using Infrastructure.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201111082946_UpdateDb")]
+    partial class UpdateDb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -163,25 +165,6 @@ namespace Infrastructure.Persistence.Migrations
                     b.ToTable("Project");
                 });
 
-            modelBuilder.Entity("Core.Domain.DbEntities.ProjectRole", b =>
-                {
-                    b.Property<byte>("Id")
-                        .HasColumnType("tinyint");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(200)")
-                        .HasMaxLength(200);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(50)")
-                        .HasMaxLength(50);
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ProjectRoles");
-                });
-
             modelBuilder.Entity("Core.Domain.DbEntities.Tasks", b =>
                 {
                     b.Property<int>("Id")
@@ -252,17 +235,15 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<int>("ProjectId")
                         .HasColumnType("int");
 
-                    b.Property<byte>("RoleId")
-                        .HasColumnType("tinyint");
-
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)")
                         .HasMaxLength(450);
 
-                    b.HasIndex("ProjectId");
+                    b.Property<byte>("role")
+                        .HasColumnType("tinyint");
 
-                    b.HasIndex("RoleId");
+                    b.HasIndex("ProjectId");
 
                     b.ToTable("UserProjects");
                 });
@@ -429,12 +410,6 @@ namespace Infrastructure.Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("ProjectId")
                         .HasConstraintName("FK_UserProjects_Project")
-                        .IsRequired();
-
-                    b.HasOne("Core.Domain.DbEntities.ProjectRole", "ProjectRole")
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .HasConstraintName("FK_UserProjects_ProjectRole")
                         .IsRequired();
                 });
 
