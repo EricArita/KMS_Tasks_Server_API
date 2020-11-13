@@ -1,9 +1,7 @@
 ﻿using Core.Application.Interfaces;
 using Infrastructure.Persistence.Contexts;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data.Entity.Validation;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -48,17 +46,17 @@ namespace Infrastructure.Persistence.Repositories
                 if (_dbContext != null)
                     return await _dbContext.SaveChangesAsync().ConfigureAwait(false);
             }
-            catch (DbEntityValidationException e)
+            catch (Exception e)
             {
                 StringBuilder myString = new StringBuilder("EF Core received an error:");
-                foreach (var eve in e.EntityValidationErrors)
-                {
-                    myString.AppendLine($"Entity of type \"{eve.Entry.Entity.GetType().Name}\" in state \"{eve.Entry.State}\" has the following validation errors:");
-                    foreach (var ve in eve.ValidationErrors)
-                    {
-                        myString.AppendLine($"--> Property: \"{ve.PropertyName}\", Error: \"{ve.ErrorMessage}\"");
-                    }
-                }
+                //foreach (var eve in e.EntityValidationErrors)
+                //{
+                //    myString.AppendLine($"Entity of type \"{eve.Entry.Entity.GetType().Name}\" in state \"{eve.Entry.State}\" has the following validation errors:");
+                //    foreach (var ve in eve.ValidationErrors)
+                //    {
+                //        myString.AppendLine($"--> Property: \"{ve.PropertyName}\", Error: \"{ve.ErrorMessage}\"");
+                //    }
+                //}
                 throw new Exception(myString.ToString());
             }
             return 0;
@@ -71,17 +69,17 @@ namespace Infrastructure.Persistence.Repositories
                 if (_dbContext != null)
                     return _dbContext.SaveChanges();
             }
-            catch (DbEntityValidationException e)
+            catch (Exception e)
             {
                 StringBuilder myString = new StringBuilder("EF Core received an error:");
-                foreach (var eve in e.EntityValidationErrors)
-                {
-                    myString.AppendLine($"Entity of type \"{eve.Entry.Entity.GetType().Name}\" in state \"{eve.Entry.State}\" has the following validation errors:");
-                    foreach (var ve in eve.ValidationErrors)
-                    {
-                        myString.AppendLine($"- Property: \"{ve.PropertyName}\", Error: \"{ve.ErrorMessage}\"");
-                    }
-                }
+                //foreach (var eve in e.EntityValidationErrors)
+                //{
+                //    myString.AppendLine($"Entity of type \"{eve.Entry.Entity.GetType().Name}\" in state \"{eve.Entry.State}\" has the following validation errors:");
+                //    foreach (var ve in eve.ValidationErrors)
+                //    {
+                //        myString.AppendLine($"- Property: \"{ve.PropertyName}\", Error: \"{ve.ErrorMessage}\"");
+                //    }
+                //}
                 throw new Exception(myString.ToString());
             }
             return 0;

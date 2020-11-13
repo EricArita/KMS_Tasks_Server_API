@@ -7,18 +7,21 @@ namespace Core.Domain.DbEntities
     {
         public Project()
         {
-            Sections = new HashSet<Sections>();
             Tasks = new HashSet<Tasks>();
         }
 
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public DateTime? CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
+        public int? ParentId { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public int? CreatedBy { get; set; }
+        public DateTime? UpdatedDate { get; set; }
+        public int? UpdatedBy { get; set; }
         public bool Deleted { get; set; }
 
-        public virtual ICollection<Sections> Sections { get; set; }
+        public virtual Project Parent { get; set; }
         public virtual ICollection<Tasks> Tasks { get; set; }
+        public virtual ICollection<Project> InverseParent { get; set; }
     }
 }

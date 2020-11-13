@@ -1,0 +1,1 @@
+﻿ALTER TABLE [dbo].[Tasks] ADD  CONSTRAINT [DF_Tasks_Reminder]  DEFAULT ((0)) FOR [Reminder]

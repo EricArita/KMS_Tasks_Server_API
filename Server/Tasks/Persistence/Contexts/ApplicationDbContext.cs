@@ -53,9 +53,9 @@ namespace Infrastructure.Persistence.Contexts
 
         public virtual DbSet<PriorityLevel> PriorityLevel { get; set; }
         public virtual DbSet<Project> Project { get; set; }
-        public virtual DbSet<Sections> Sections { get; set; }
         public virtual DbSet<Tasks> Tasks { get; set; }
         public virtual DbSet<UserProjects> UserProjects { get; set; }
+        public virtual DbSet<ProjectRole> ProjectRoles { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -64,6 +64,17 @@ namespace Infrastructure.Persistence.Contexts
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<ProjectRole>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Description).HasMaxLength(200);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+            });
 
             modelBuilder.Entity<PriorityLevel>(entity =>
             {
@@ -80,7 +91,7 @@ namespace Infrastructure.Persistence.Contexts
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.Description).HasMaxLength(250);
 
@@ -88,27 +99,7 @@ namespace Infrastructure.Persistence.Contexts
                     .IsRequired()
                     .HasMaxLength(100);
 
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-            });
-
-            modelBuilder.Entity<Sections>(entity =>
-            {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.Description).HasMaxLength(100);
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-                entity.HasOne(d => d.Project)
-                    .WithMany(p => p.Sections)
-                    .HasForeignKey(d => d.ProjectId)
-                    .HasConstraintName("FK_Sections_Project");
+                entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<Tasks>(entity =>
@@ -139,11 +130,6 @@ namespace Infrastructure.Persistence.Contexts
                     .WithMany(p => p.Tasks)
                     .HasForeignKey(d => d.ProjectId)
                     .HasConstraintName("FK_Tasks_Project");
-
-                entity.HasOne(d => d.Section)
-                    .WithMany(p => p.Tasks)
-                    .HasForeignKey(d => d.SectionId)
-                    .HasConstraintName("FK_Tasks_Sections");
             });
 
             modelBuilder.Entity<UserProjects>(entity =>
@@ -159,6 +145,12 @@ namespace Infrastructure.Persistence.Contexts
                     .HasForeignKey(d => d.ProjectId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_UserProjects_Project");
+
+                entity.HasOne(d => d.ProjectRole)
+                   .WithMany()
+                   .HasForeignKey(d => d.RoleId)
+                   .OnDelete(DeleteBehavior.ClientSetNull)
+                   .HasConstraintName("FK_UserProjects_ProjectRole");
             });
 
             OnModelCreatingPartial(modelBuilder);
