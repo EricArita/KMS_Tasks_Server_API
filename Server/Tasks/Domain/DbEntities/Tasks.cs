@@ -7,7 +7,7 @@ namespace Core.Domain.DbEntities
     {
         public Tasks()
         {
-            InverseParent = new HashSet<Tasks>();
+            Children = new HashSet<Tasks>();
         }
 
         public int Id { get; set; }
@@ -30,6 +30,6 @@ namespace Core.Domain.DbEntities
         public virtual Tasks Parent { get; set; }
         public virtual PriorityLevel Priority { get; set; }
         public virtual Project Project { get; set; }
-        public virtual ICollection<Tasks> InverseParent { get; set; }
+        public virtual ICollection<Tasks> Children { get; set; }
     }
 }

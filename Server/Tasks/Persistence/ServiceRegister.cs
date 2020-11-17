@@ -32,6 +32,13 @@ namespace Persistence
                 options.Password.RequireUppercase = false;
             }).AddEntityFrameworkStores<ApplicationDbContext>();
 
+            //services.AddAuthorization(auth =>
+            //{
+            //    auth.AddPolicy("Bearer", policy => policy
+            //    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme‌​)
+            //    .RequireAuthenticatedUser().Build());
+            //});
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
