@@ -24,7 +24,7 @@ namespace IO.Swagger.Models
     /// 
     /// </summary>
     [DataContract]
-    public partial class NewProjectModel : IEquatable<NewProjectModel>
+    public partial class NewSectionModel : IEquatable<NewSectionModel>
     { 
         /// <summary>
         /// Gets or Sets Name
@@ -34,10 +34,11 @@ namespace IO.Swagger.Models
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets or Sets Description
+        /// Gets or Sets Project
         /// </summary>
-        [DataMember(Name="description")]
-        public string Description { get; set; }
+        [Required]
+        [DataMember(Name="project")]
+        public decimal? Project { get; set; }
 
         /// <summary>
         /// Gets or Sets CreatedBy
@@ -53,9 +54,9 @@ namespace IO.Swagger.Models
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append("class NewProjectModel {\n");
+            sb.Append("class NewSectionModel {\n");
             sb.Append("  Name: ").Append(Name).Append("\n");
-            sb.Append("  Description: ").Append(Description).Append("\n");
+            sb.Append("  Project: ").Append(Project).Append("\n");
             sb.Append("  CreatedBy: ").Append(CreatedBy).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -79,15 +80,15 @@ namespace IO.Swagger.Models
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            return obj.GetType() == GetType() && Equals((NewProjectModel)obj);
+            return obj.GetType() == GetType() && Equals((NewSectionModel)obj);
         }
 
         /// <summary>
-        /// Returns true if NewProjectModel instances are equal
+        /// Returns true if NewSectionModel instances are equal
         /// </summary>
-        /// <param name="other">Instance of NewProjectModel to be compared</param>
+        /// <param name="other">Instance of NewSectionModel to be compared</param>
         /// <returns>Boolean</returns>
-        public bool Equals(NewProjectModel other)
+        public bool Equals(NewSectionModel other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -99,9 +100,9 @@ namespace IO.Swagger.Models
                     Name.Equals(other.Name)
                 ) && 
                 (
-                    Description == other.Description ||
-                    Description != null &&
-                    Description.Equals(other.Description)
+                    Project == other.Project ||
+                    Project != null &&
+                    Project.Equals(other.Project)
                 ) && 
                 (
                     CreatedBy == other.CreatedBy ||
@@ -122,8 +123,8 @@ namespace IO.Swagger.Models
                 // Suitable nullity checks etc, of course :)
                     if (Name != null)
                     hashCode = hashCode * 59 + Name.GetHashCode();
-                    if (Description != null)
-                    hashCode = hashCode * 59 + Description.GetHashCode();
+                    if (Project != null)
+                    hashCode = hashCode * 59 + Project.GetHashCode();
                     if (CreatedBy != null)
                     hashCode = hashCode * 59 + CreatedBy.GetHashCode();
                 return hashCode;
@@ -133,12 +134,12 @@ namespace IO.Swagger.Models
         #region Operators
         #pragma warning disable 1591
 
-        public static bool operator ==(NewProjectModel left, NewProjectModel right)
+        public static bool operator ==(NewSectionModel left, NewSectionModel right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(NewProjectModel left, NewProjectModel right)
+        public static bool operator !=(NewSectionModel left, NewSectionModel right)
         {
             return !Equals(left, right);
         }

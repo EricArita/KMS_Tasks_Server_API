@@ -33,10 +33,10 @@ namespace IO.Swagger.Models
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets or Sets Desctiption
+        /// Gets or Sets Description
         /// </summary>
-        [DataMember(Name="desctiption")]
-        public string Desctiption { get; set; }
+        [DataMember(Name="description")]
+        public string Description { get; set; }
 
         /// <summary>
         /// Gets or Sets Deleted
@@ -53,7 +53,7 @@ namespace IO.Swagger.Models
             var sb = new StringBuilder();
             sb.Append("class UpdatedInfoProjectModel {\n");
             sb.Append("  Name: ").Append(Name).Append("\n");
-            sb.Append("  Desctiption: ").Append(Desctiption).Append("\n");
+            sb.Append("  Description: ").Append(Description).Append("\n");
             sb.Append("  Deleted: ").Append(Deleted).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
@@ -97,9 +97,9 @@ namespace IO.Swagger.Models
                     Name.Equals(other.Name)
                 ) && 
                 (
-                    Desctiption == other.Desctiption ||
-                    Desctiption != null &&
-                    Desctiption.Equals(other.Desctiption)
+                    Description == other.Description ||
+                    Description != null &&
+                    Description.Equals(other.Description)
                 ) && 
                 (
                     Deleted == other.Deleted ||
@@ -120,8 +120,8 @@ namespace IO.Swagger.Models
                 // Suitable nullity checks etc, of course :)
                     if (Name != null)
                     hashCode = hashCode * 59 + Name.GetHashCode();
-                    if (Desctiption != null)
-                    hashCode = hashCode * 59 + Desctiption.GetHashCode();
+                    if (Description != null)
+                    hashCode = hashCode * 59 + Description.GetHashCode();
                     if (Deleted != null)
                     hashCode = hashCode * 59 + Deleted.GetHashCode();
                 return hashCode;

@@ -25,21 +25,21 @@ namespace IO.Swagger.Controllers
     /// 
     /// </summary>
     [ApiController]
-    public class ProjectsApiController : ControllerBase
+    public class SectionsApiController : ControllerBase
     { 
         /// <summary>
         /// 
         /// </summary>
-        /// <remarks>Add a new project</remarks>
+        /// <remarks>Add a new section</remarks>
         /// <param name="body"></param>
         /// <response code="200">Success</response>
         [HttpPost]
-        [Route("/KMS_Tasks/Api_Doc/1.0.0/api/v1/Project/project")]
+        [Route("/KMS_Tasks/Api_Doc/1.0.0/api/v1/Section/section")]
         [Authorize(AuthenticationSchemes = BearerAuthenticationHandler.SchemeName)]
         [ValidateModelState]
-        [SwaggerOperation("AddProject")]
+        [SwaggerOperation("AddSection")]
         [SwaggerResponse(statusCode: 200, type: typeof(Response), description: "Success")]
-        public virtual IActionResult AddProject([FromBody]NewProjectModel body)
+        public virtual IActionResult AddSection([FromBody]NewSectionModel body)
         { 
             //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(200, default(Response));
@@ -55,16 +55,16 @@ namespace IO.Swagger.Controllers
         /// <summary>
         /// 
         /// </summary>
-        /// <remarks>Delete the project, going by projectId (soft delete)</remarks>
+        /// <remarks>Get all sections of a project, by projectId</remarks>
         /// <param name="projectId"></param>
         /// <response code="200">Success</response>
-        [HttpDelete]
-        [Route("/KMS_Tasks/Api_Doc/1.0.0/api/v1/Project/project/{projectId}")]
+        [HttpGet]
+        [Route("/KMS_Tasks/Api_Doc/1.0.0/api/v1/Section/{projectId}/sections")]
         [Authorize(AuthenticationSchemes = BearerAuthenticationHandler.SchemeName)]
         [ValidateModelState]
-        [SwaggerOperation("ApiV1ProjectProjectProjectIdDelete")]
+        [SwaggerOperation("ApiV1SectionProjectIdSectionsGet")]
         [SwaggerResponse(statusCode: 200, type: typeof(Response), description: "Success")]
-        public virtual IActionResult ApiV1ProjectProjectProjectIdDelete([FromRoute][Required]decimal? projectId)
+        public virtual IActionResult ApiV1SectionProjectIdSectionsGet([FromRoute][Required]decimal? projectId)
         { 
             //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(200, default(Response));
@@ -80,42 +80,40 @@ namespace IO.Swagger.Controllers
         /// <summary>
         /// 
         /// </summary>
-        /// <remarks>Modify the project information including name, description</remarks>
-        /// <param name="projectId"></param>
+        /// <param name="sectionId"></param>
+        /// <response code="200">Success</response>
+        [HttpDelete]
+        [Route("/KMS_Tasks/Api_Doc/1.0.0/api/v1/Section/section/{sectionId}")]
+        [Authorize(AuthenticationSchemes = BearerAuthenticationHandler.SchemeName)]
+        [ValidateModelState]
+        [SwaggerOperation("DeleteSection")]
+        [SwaggerResponse(statusCode: 200, type: typeof(Response), description: "Success")]
+        public virtual IActionResult DeleteSection([FromRoute][Required]decimal? sectionId)
+        { 
+            //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
+            // return StatusCode(200, default(Response));
+            string exampleJson = null;
+            exampleJson = "{\n  \"code\" : 0.8008281904610115,\n  \"data\" : \"\",\n  \"ok\" : true,\n  \"message\" : \"message\",\n  \"errors\" : [ \"errors\", \"errors\" ]\n}";
+            
+                        var example = exampleJson != null
+                        ? JsonConvert.DeserializeObject<Response>(exampleJson)
+                        : default(Response);            //TODO: Change the data returned
+            return new ObjectResult(example);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sectionId"></param>
         /// <param name="body"></param>
         /// <response code="200">Success</response>
         [HttpPatch]
-        [Route("/KMS_Tasks/Api_Doc/1.0.0/api/v1/Project/project/{projectId}")]
+        [Route("/KMS_Tasks/Api_Doc/1.0.0/api/v1/Section/section/{sectionId}")]
         [Authorize(AuthenticationSchemes = BearerAuthenticationHandler.SchemeName)]
         [ValidateModelState]
-        [SwaggerOperation("ApiV1ProjectProjectProjectIdPatch")]
+        [SwaggerOperation("ModifySectionName")]
         [SwaggerResponse(statusCode: 200, type: typeof(Response), description: "Success")]
-        public virtual IActionResult ApiV1ProjectProjectProjectIdPatch([FromRoute][Required]decimal? projectId, [FromBody]UpdatedInfoProjectModel body)
-        { 
-            //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(200, default(Response));
-            string exampleJson = null;
-            exampleJson = "{\n  \"code\" : 0.8008281904610115,\n  \"data\" : \"\",\n  \"ok\" : true,\n  \"message\" : \"message\",\n  \"errors\" : [ \"errors\", \"errors\" ]\n}";
-            
-                        var example = exampleJson != null
-                        ? JsonConvert.DeserializeObject<Response>(exampleJson)
-                        : default(Response);            //TODO: Change the data returned
-            return new ObjectResult(example);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <remarks>Get all projects of an user</remarks>
-        /// <param name="userId"></param>
-        /// <response code="200">Success</response>
-        [HttpGet]
-        [Route("/KMS_Tasks/Api_Doc/1.0.0/api/v1/Project/{userId}/projects")]
-        [Authorize(AuthenticationSchemes = BearerAuthenticationHandler.SchemeName)]
-        [ValidateModelState]
-        [SwaggerOperation("GetAllProjects")]
-        [SwaggerResponse(statusCode: 200, type: typeof(Response), description: "Success")]
-        public virtual IActionResult GetAllProjects([FromRoute][Required]decimal? userId)
+        public virtual IActionResult ModifySectionName([FromRoute][Required]decimal? sectionId, [FromBody]UpdatedInfoSectionModel body)
         { 
             //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(200, default(Response));

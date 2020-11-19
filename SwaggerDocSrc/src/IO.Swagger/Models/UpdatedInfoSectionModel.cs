@@ -24,27 +24,19 @@ namespace IO.Swagger.Models
     /// 
     /// </summary>
     [DataContract]
-    public partial class NewProjectModel : IEquatable<NewProjectModel>
+    public partial class UpdatedInfoSectionModel : IEquatable<UpdatedInfoSectionModel>
     { 
         /// <summary>
         /// Gets or Sets Name
         /// </summary>
-        [Required]
         [DataMember(Name="name")]
         public string Name { get; set; }
 
         /// <summary>
-        /// Gets or Sets Description
+        /// Gets or Sets Deleted
         /// </summary>
-        [DataMember(Name="description")]
-        public string Description { get; set; }
-
-        /// <summary>
-        /// Gets or Sets CreatedBy
-        /// </summary>
-        [Required]
-        [DataMember(Name="createdBy")]
-        public decimal? CreatedBy { get; set; }
+        [DataMember(Name="deleted")]
+        public bool? Deleted { get; set; }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -53,10 +45,9 @@ namespace IO.Swagger.Models
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append("class NewProjectModel {\n");
+            sb.Append("class UpdatedInfoSectionModel {\n");
             sb.Append("  Name: ").Append(Name).Append("\n");
-            sb.Append("  Description: ").Append(Description).Append("\n");
-            sb.Append("  CreatedBy: ").Append(CreatedBy).Append("\n");
+            sb.Append("  Deleted: ").Append(Deleted).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -79,15 +70,15 @@ namespace IO.Swagger.Models
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            return obj.GetType() == GetType() && Equals((NewProjectModel)obj);
+            return obj.GetType() == GetType() && Equals((UpdatedInfoSectionModel)obj);
         }
 
         /// <summary>
-        /// Returns true if NewProjectModel instances are equal
+        /// Returns true if UpdatedInfoSectionModel instances are equal
         /// </summary>
-        /// <param name="other">Instance of NewProjectModel to be compared</param>
+        /// <param name="other">Instance of UpdatedInfoSectionModel to be compared</param>
         /// <returns>Boolean</returns>
-        public bool Equals(NewProjectModel other)
+        public bool Equals(UpdatedInfoSectionModel other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -99,14 +90,9 @@ namespace IO.Swagger.Models
                     Name.Equals(other.Name)
                 ) && 
                 (
-                    Description == other.Description ||
-                    Description != null &&
-                    Description.Equals(other.Description)
-                ) && 
-                (
-                    CreatedBy == other.CreatedBy ||
-                    CreatedBy != null &&
-                    CreatedBy.Equals(other.CreatedBy)
+                    Deleted == other.Deleted ||
+                    Deleted != null &&
+                    Deleted.Equals(other.Deleted)
                 );
         }
 
@@ -122,10 +108,8 @@ namespace IO.Swagger.Models
                 // Suitable nullity checks etc, of course :)
                     if (Name != null)
                     hashCode = hashCode * 59 + Name.GetHashCode();
-                    if (Description != null)
-                    hashCode = hashCode * 59 + Description.GetHashCode();
-                    if (CreatedBy != null)
-                    hashCode = hashCode * 59 + CreatedBy.GetHashCode();
+                    if (Deleted != null)
+                    hashCode = hashCode * 59 + Deleted.GetHashCode();
                 return hashCode;
             }
         }
@@ -133,12 +117,12 @@ namespace IO.Swagger.Models
         #region Operators
         #pragma warning disable 1591
 
-        public static bool operator ==(NewProjectModel left, NewProjectModel right)
+        public static bool operator ==(UpdatedInfoSectionModel left, UpdatedInfoSectionModel right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(NewProjectModel left, NewProjectModel right)
+        public static bool operator !=(UpdatedInfoSectionModel left, UpdatedInfoSectionModel right)
         {
             return !Equals(left, right);
         }
