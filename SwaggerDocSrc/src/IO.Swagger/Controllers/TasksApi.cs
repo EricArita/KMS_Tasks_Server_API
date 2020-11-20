@@ -53,6 +53,56 @@ namespace IO.Swagger.Controllers
         /// <summary>
         /// 
         /// </summary>
+        /// <remarks>Delete a task</remarks>
+        /// <param name="taskId"></param>
+        /// <response code="200">Success</response>
+        [HttpDelete]
+        [Route("/KMS_Tasks/Api_Doc/1.0.0/api/v1/Task/task/{taskId}")]
+        [Authorize(AuthenticationSchemes = BearerAuthenticationHandler.SchemeName)]
+        [ValidateModelState]
+        [SwaggerOperation("ApiV1TaskTaskTaskIdDelete")]
+        [SwaggerResponse(statusCode: 200, type: typeof(Response), description: "Success")]
+        public virtual IActionResult ApiV1TaskTaskTaskIdDelete([FromRoute][Required]decimal? taskId)
+        { 
+            //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
+            // return StatusCode(200, default(Response));
+            string exampleJson = null;
+            exampleJson = "{\n  \"code\" : 0.8008281904610115,\n  \"data\" : \"\",\n  \"ok\" : true,\n  \"message\" : \"message\",\n  \"errors\" : [ \"errors\", \"errors\" ]\n}";
+            
+                        var example = exampleJson != null
+                        ? JsonConvert.DeserializeObject<Response>(exampleJson)
+                        : default(Response);            //TODO: Change the data returned
+            return new ObjectResult(example);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <remarks>Get a particular task</remarks>
+        /// <param name="taskId"></param>
+        /// <response code="200">Success</response>
+        [HttpGet]
+        [Route("/KMS_Tasks/Api_Doc/1.0.0/api/v1/Task/task/{taskId}")]
+        [Authorize(AuthenticationSchemes = BearerAuthenticationHandler.SchemeName)]
+        [ValidateModelState]
+        [SwaggerOperation("GetATask")]
+        [SwaggerResponse(statusCode: 200, type: typeof(Response), description: "Success")]
+        public virtual IActionResult GetATask([FromRoute][Required]decimal? taskId)
+        { 
+            //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
+            // return StatusCode(200, default(Response));
+            string exampleJson = null;
+            exampleJson = "{\n  \"code\" : 0.8008281904610115,\n  \"data\" : \"\",\n  \"ok\" : true,\n  \"message\" : \"message\",\n  \"errors\" : [ \"errors\", \"errors\" ]\n}";
+            
+                        var example = exampleJson != null
+                        ? JsonConvert.DeserializeObject<Response>(exampleJson)
+                        : default(Response);            //TODO: Change the data returned
+            return new ObjectResult(example);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <remarks>Get all of related tasks of an user</remarks>
         /// <param name="userId"></param>
         /// <param name="category">Category Id by which you wanna get tasks</param>

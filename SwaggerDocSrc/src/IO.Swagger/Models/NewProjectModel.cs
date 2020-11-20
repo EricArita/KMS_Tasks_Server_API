@@ -34,6 +34,12 @@ namespace IO.Swagger.Models
         public string Name { get; set; }
 
         /// <summary>
+        /// Gets or Sets ParentId
+        /// </summary>
+        [DataMember(Name="parentId")]
+        public decimal? ParentId { get; set; }
+
+        /// <summary>
         /// Gets or Sets Description
         /// </summary>
         [DataMember(Name="description")]
@@ -55,6 +61,7 @@ namespace IO.Swagger.Models
             var sb = new StringBuilder();
             sb.Append("class NewProjectModel {\n");
             sb.Append("  Name: ").Append(Name).Append("\n");
+            sb.Append("  ParentId: ").Append(ParentId).Append("\n");
             sb.Append("  Description: ").Append(Description).Append("\n");
             sb.Append("  CreatedBy: ").Append(CreatedBy).Append("\n");
             sb.Append("}\n");
@@ -99,6 +106,11 @@ namespace IO.Swagger.Models
                     Name.Equals(other.Name)
                 ) && 
                 (
+                    ParentId == other.ParentId ||
+                    ParentId != null &&
+                    ParentId.Equals(other.ParentId)
+                ) && 
+                (
                     Description == other.Description ||
                     Description != null &&
                     Description.Equals(other.Description)
@@ -122,6 +134,8 @@ namespace IO.Swagger.Models
                 // Suitable nullity checks etc, of course :)
                     if (Name != null)
                     hashCode = hashCode * 59 + Name.GetHashCode();
+                    if (ParentId != null)
+                    hashCode = hashCode * 59 + ParentId.GetHashCode();
                     if (Description != null)
                     hashCode = hashCode * 59 + Description.GetHashCode();
                     if (CreatedBy != null)

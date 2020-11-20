@@ -97,6 +97,61 @@
       }
     },
     "/api/v1/Task/task/{taskId}" : {
+      "get" : {
+        "tags" : [ "Tasks" ],
+        "description" : "Get a particular task",
+        "operationId" : "getATask",
+        "parameters" : [ {
+          "name" : "taskId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "number",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Response"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "Tasks" ],
+        "description" : "Delete a task",
+        "parameters" : [ {
+          "name" : "taskId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "number",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Response"
+                }
+              }
+            }
+          }
+        }
+      },
       "patch" : {
         "tags" : [ "Tasks" ],
         "description" : "update or soft delete a task",
@@ -194,9 +249,36 @@
       }
     },
     "/api/v1/Project/project/{projectId}" : {
+      "get" : {
+        "tags" : [ "Projects" ],
+        "description" : "Get a particular project",
+        "parameters" : [ {
+          "name" : "projectId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "number",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Response"
+                }
+              }
+            }
+          }
+        }
+      },
       "delete" : {
         "tags" : [ "Projects" ],
-        "description" : "Delete the project, going by projectId (soft delete)",
+        "description" : "Delete a project",
         "parameters" : [ {
           "name" : "projectId",
           "in" : "path",
@@ -257,128 +339,6 @@
           }
         }
       }
-    },
-    "/api/v1/Section/{projectId}/sections" : {
-      "get" : {
-        "tags" : [ "Sections" ],
-        "description" : "Get all sections of a project, by projectId",
-        "parameters" : [ {
-          "name" : "projectId",
-          "in" : "path",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "type" : "number",
-            "format" : "int32"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Success",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Response"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/Section/section" : {
-      "post" : {
-        "tags" : [ "Sections" ],
-        "description" : "Add a new section",
-        "operationId" : "addSection",
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/NewSectionModel"
-              }
-            }
-          }
-        },
-        "responses" : {
-          "200" : {
-            "description" : "Success",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Response"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/Section/section/{sectionId}" : {
-      "delete" : {
-        "tags" : [ "Sections" ],
-        "operationId" : "Delete section",
-        "parameters" : [ {
-          "name" : "sectionId",
-          "in" : "path",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "type" : "number",
-            "format" : "int32"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "Success",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Response"
-                }
-              }
-            }
-          }
-        }
-      },
-      "patch" : {
-        "tags" : [ "Sections" ],
-        "operationId" : "Modify section (name)",
-        "parameters" : [ {
-          "name" : "sectionId",
-          "in" : "path",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "type" : "number",
-            "format" : "int32"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "application/json" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/UpdatedInfoSectionModel"
-              }
-            }
-          }
-        },
-        "responses" : {
-          "200" : {
-            "description" : "Success",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/Response"
-                }
-              }
-            }
-          }
-        }
-      }
     }
   },
   "components" : {
@@ -389,6 +349,10 @@
         "properties" : {
           "name" : {
             "type" : "string"
+          },
+          "parentId" : {
+            "type" : "number",
+            "format" : "int32"
           },
           "description" : {
             "type" : "string"
@@ -410,37 +374,6 @@
           },
           "deleted" : {
             "type" : "boolean"
-          }
-        }
-      },
-      "NewSectionModel" : {
-        "required" : [ "createdBy", "name", "project" ],
-        "type" : "object",
-        "properties" : {
-          "name" : {
-            "type" : "string",
-            "example" : "Section name"
-          },
-          "project" : {
-            "type" : "number",
-            "format" : "int 32"
-          },
-          "createdBy" : {
-            "type" : "number",
-            "format" : "int 32"
-          }
-        }
-      },
-      "UpdatedInfoSectionModel" : {
-        "type" : "object",
-        "properties" : {
-          "name" : {
-            "type" : "string",
-            "example" : "This is a new section name"
-          },
-          "deleted" : {
-            "type" : "boolean",
-            "example" : false
           }
         }
       },
