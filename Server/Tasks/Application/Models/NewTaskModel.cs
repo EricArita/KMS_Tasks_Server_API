@@ -2,7 +2,7 @@
 
 namespace WebApi.Models
 {
-    public class TaskRequestModel
+    public class NewTaskModel
     {
         public string Name { get; set; }
         public DateTime? Schedule { get; set; }

@@ -1,7 +1,10 @@
 ﻿using Core.Domain.DbEntities;
 using Infrastructure.Persistence.Contexts;
 using System;
+using System.Linq;
+using System.Collections.Generic;
 using WebApi.Models;
+using static Core.Domain.Constants.Enums;
 
 namespace Infrastructure.Persistence.Repositories
 {
@@ -11,7 +14,7 @@ namespace Infrastructure.Persistence.Repositories
         {
         }
 
-        public bool AddNewTask(TaskRequestModel task)
+        public bool AddNewTask(NewTaskModel task)
         {
             var newTask = new Tasks()
             {
@@ -30,6 +33,21 @@ namespace Infrastructure.Persistence.Repositories
                 CreatedDate = DateTime.UtcNow,
             };
             return base.Insert(newTask);
+        }
+
+        public IEnumerable<Tasks> GetAllTasks(int userId, byte category)
+        {
+            var query =  base.Get(filter: e => (e.CreatedBy.HasValue && e.CreatedBy.Value == userId) || (e.AssignedFor.HasValue && e.AssignedFor.Value == userId)
+                                  || (e.AssignedBy.HasValue && e.AssignedBy.Value == userId));
+            switch (category)
+            {
+                case (byte)MenuSidebarOptions.Today:
+                    return query.Where(e => e.Schedule.HasValue && e.Schedule.Value == DateTime.Today).ToList();
+                case (byte)MenuSidebarOptions.Upcoming:
+                    return query.Where(e => e.Schedule.HasValue && e.Schedule.Value > DateTime.Today).ToList();
+                default:
+                    return query.Where(e => e != null).ToList(); ;
+            }
         }
     }
 }

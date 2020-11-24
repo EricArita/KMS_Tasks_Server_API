@@ -22,6 +22,6 @@ namespace Core.Domain.DbEntities
 
         public virtual Project Parent { get; set; }
         public virtual ICollection<Tasks> Tasks { get; set; }
-        public virtual ICollection<Project> InverseParent { get; set; }
+        public virtual ICollection<Project> Children { get; set; }
     }
 }

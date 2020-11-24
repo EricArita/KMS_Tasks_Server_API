@@ -11,7 +11,7 @@ using Infrastructure.Persistence.Contexts;
 
 namespace Infrastructure.Persistence.Repositories
 {
-    public class GenericRepositoryBase<TEntity> : IGenericRepositoryBase<TEntity> where TEntity : class
+    public class GenericRepositoryBase<TEntity> : IRepositoryBase<TEntity> where TEntity : class
     {
         internal ApplicationDbContext _dbContext;
         private Logger _logger;
@@ -27,15 +27,13 @@ namespace Infrastructure.Persistence.Repositories
             return _dbContext.Set<TEntity>();
         }
 
-        public virtual IEnumerable<TEntity> Get(
-            Expression<Func<TEntity, bool>> filter = null,
-            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderByFunc = null, string includeProperties = "")
+        public virtual IQueryable<TEntity> Get(Expression<Func<TEntity, bool>> filter = null,
+                                                Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderByFunc = null, string includeProperties = "")
         {
             IQueryable<TEntity> query = GetDbset();
 
             if (filter != null)
             {
-
                 query = query.Where(filter);
             }
 
@@ -46,11 +44,11 @@ namespace Infrastructure.Persistence.Repositories
 
             if (orderByFunc != null)
             {
-                return orderByFunc(query).ToList();
+                return orderByFunc(query);
             }
             else
             {
-                return query.ToList();
+                return query;
             }
         }
 

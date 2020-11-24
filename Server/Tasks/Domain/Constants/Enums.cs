@@ -23,5 +23,12 @@ namespace Core.Domain.Constants
             BA = 5,
             Member = 6
         }
+
+        public enum MenuSidebarOptions : byte
+        {
+            Dashboard = 0,
+            Today = 1,
+            Upcoming = 2
+        }
     }
 }

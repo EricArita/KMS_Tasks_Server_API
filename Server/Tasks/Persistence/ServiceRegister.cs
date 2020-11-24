@@ -51,6 +51,11 @@ namespace Persistence
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Key"]))
                 };
             });
+            //.AddMicrosoftAccount(microsoftOptions =>
+            //{
+            //    microsoftOptions.ClientId = Configuration["Authentication:Microsoft:ClientId"];
+            //    microsoftOptions.ClientSecret = Configuration["Authentication:Microsoft:ClientSecret"];
+            //});
 
             services.AddScoped<IAuthentication, AuthenticationService>();
         }
