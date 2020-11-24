@@ -19,8 +19,8 @@ namespace WebApi.Controllers.v1
             this.unitOfWork = unitOfWork;
         }
 
-        [HttpPost("addtask")]
-        public IActionResult AddNewTask(TaskRequestModel newTask)
+        [HttpPost("task")]
+        public IActionResult AddNewTask(NewTaskModel newTask)
         {
             this.unitOfWork.Repository<TaskRepository>().AddNewTask(newTask);
             var res = this.unitOfWork.SaveChanges();

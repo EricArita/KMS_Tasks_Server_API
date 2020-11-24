@@ -7,7 +7,7 @@ namespace Infrastructure.Persistence.Repositories
 {
     public interface ITaskRepository : IRepositoryBase<Tasks>
     {
-        bool AddNewTask(TaskRequestModel task);
+        bool AddNewTask(NewTaskModel task);
         IEnumerable<Tasks> GetAllTasks(int userId, byte category);
     }
 }

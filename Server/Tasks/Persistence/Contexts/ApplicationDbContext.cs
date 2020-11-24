@@ -98,6 +98,11 @@ namespace Infrastructure.Persistence.Contexts
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(100);
+                
+                entity.HasOne(d => d.Parent)
+                    .WithMany(p => p.Children)
+                    .HasForeignKey(d => d.ParentId)
+                    .HasConstraintName("FK_Project_Project");
 
                 entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
             });

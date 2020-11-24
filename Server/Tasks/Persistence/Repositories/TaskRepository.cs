@@ -14,7 +14,7 @@ namespace Infrastructure.Persistence.Repositories
         {
         }
 
-        public bool AddNewTask(TaskRequestModel task)
+        public bool AddNewTask(NewTaskModel task)
         {
             var newTask = new Tasks()
             {
@@ -46,7 +46,7 @@ namespace Infrastructure.Persistence.Repositories
                 case (byte)MenuSidebarOptions.Upcoming:
                     return query.Where(e => e.Schedule.HasValue && e.Schedule.Value > DateTime.Today).ToList();
                 default:
-                    return null;
+                    return query.Where(e => e != null).ToList(); ;
             }
         }
     }
