@@ -357,6 +357,11 @@
           "createdBy" : {
             "type" : "number",
             "format" : "int 32"
+          },
+          "updatedDate" : {
+            "type" : "string",
+            "format" : "date-time",
+            "example" : "2020-11-18T07:39:50.462Z"
           }
         }
       },
