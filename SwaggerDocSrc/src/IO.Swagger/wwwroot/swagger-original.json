@@ -23,9 +23,6 @@
     "name" : "Projects",
     "description" : "API for operations on Projects"
   }, {
-    "name" : "Sections",
-    "description" : "API for operations on Sections"
-  }, {
     "name" : "Tasks",
     "description" : "API for operations on Tasks"
   } ],
