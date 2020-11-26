@@ -23,9 +23,6 @@
     "name" : "Projects",
     "description" : "API for operations on Projects"
   }, {
-    "name" : "Sections",
-    "description" : "API for operations on Sections"
-  }, {
     "name" : "Tasks",
     "description" : "API for operations on Tasks"
   } ],
@@ -360,6 +357,11 @@
           "createdBy" : {
             "type" : "number",
             "format" : "int 32"
+          },
+          "updatedDate" : {
+            "type" : "string",
+            "format" : "date-time",
+            "example" : "2020-11-18T07:39:50.462Z"
           }
         }
       },

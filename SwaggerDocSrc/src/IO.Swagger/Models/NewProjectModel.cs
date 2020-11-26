@@ -53,6 +53,12 @@ namespace IO.Swagger.Models
         public decimal? CreatedBy { get; set; }
 
         /// <summary>
+        /// Gets or Sets UpdatedDate
+        /// </summary>
+        [DataMember(Name="updatedDate")]
+        public DateTime? UpdatedDate { get; set; }
+
+        /// <summary>
         /// Returns the string presentation of the object
         /// </summary>
         /// <returns>String presentation of the object</returns>
@@ -64,6 +70,7 @@ namespace IO.Swagger.Models
             sb.Append("  ParentId: ").Append(ParentId).Append("\n");
             sb.Append("  Description: ").Append(Description).Append("\n");
             sb.Append("  CreatedBy: ").Append(CreatedBy).Append("\n");
+            sb.Append("  UpdatedDate: ").Append(UpdatedDate).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -119,6 +126,11 @@ namespace IO.Swagger.Models
                     CreatedBy == other.CreatedBy ||
                     CreatedBy != null &&
                     CreatedBy.Equals(other.CreatedBy)
+                ) && 
+                (
+                    UpdatedDate == other.UpdatedDate ||
+                    UpdatedDate != null &&
+                    UpdatedDate.Equals(other.UpdatedDate)
                 );
         }
 
@@ -140,6 +152,8 @@ namespace IO.Swagger.Models
                     hashCode = hashCode * 59 + Description.GetHashCode();
                     if (CreatedBy != null)
                     hashCode = hashCode * 59 + CreatedBy.GetHashCode();
+                    if (UpdatedDate != null)
+                    hashCode = hashCode * 59 + UpdatedDate.GetHashCode();
                 return hashCode;
             }
         }
