@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WebApi.Models
+namespace Core.Application.Models
 {
     public class NewTaskModel
     {

@@ -3,8 +3,8 @@ using Infrastructure.Persistence.Contexts;
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using WebApi.Models;
 using static Core.Domain.Constants.Enums;
+using Core.Application.Models;
 
 namespace Infrastructure.Persistence.Repositories
 {
@@ -14,24 +14,8 @@ namespace Infrastructure.Persistence.Repositories
         {
         }
 
-        public bool AddNewTask(NewTaskModel task)
+        public bool AddNewTask(Tasks newTask)
         {
-            var newTask = new Tasks()
-            {
-                Name = task.Name,
-                Schedule = task.Schedule,
-                ScheduleString = task.ScheduleString,
-                PriorityId = task.PriorityId,
-                ProjectId = task.ProjectId,
-                SectionId = task.SectionId,
-                ParentId = task.ParentId,
-                Reminder = task.Reminder,
-                ReminderSchedule = task.ReminderSchedule,
-                AssignedBy = task.AssignedBy,
-                AssignedFor = task.AssignedFor,
-                CreatedBy = task.CreatedBy,
-                CreatedDate = DateTime.UtcNow,
-            };
             return base.Insert(newTask);
         }
 
