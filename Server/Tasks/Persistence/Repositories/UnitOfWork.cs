@@ -19,23 +19,16 @@ namespace Infrastructure.Persistence.Repositories
             repositoriesPrototypes = new Dictionary<string, dynamic>();
         }
 
-        public T Repository<T>() where T : class
+        public IGenericRepository<T> Repository<T>() where T : class
         {
             var repoType = typeof(T).Name;
 
             if (!repositoriesPrototypes.ContainsKey(repoType))
             {
-                switch (repoType)
-                {
-                    case "TaskRepository":
-                        repositoriesPrototypes.Add(repoType, new TaskRepository(_dbContext));
-                        break;
-                    default:
-                        return null;
-                }
+                repositoriesPrototypes.Add(repoType, new GenericRepository<T>(_dbContext));
             }
 
-            return (T)repositoriesPrototypes[repoType];
+            return (GenericRepository<T>)repositoriesPrototypes[repoType];
         }
 
 

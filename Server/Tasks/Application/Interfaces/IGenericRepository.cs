@@ -1,11 +1,10 @@
-﻿using Core.Domain.DbEntities;
-using System;
+﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
 
 namespace Core.Application.Interfaces
 {
-    public interface IRepositoryBase<TEntity> where TEntity : class
+    public interface IGenericRepository<TEntity> where TEntity : class
     {
         IQueryable<TEntity> Get(Expression<Func<TEntity, bool>> filter = null,
                                  Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderByFunc = null,

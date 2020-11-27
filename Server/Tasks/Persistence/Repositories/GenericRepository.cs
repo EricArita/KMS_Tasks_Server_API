@@ -11,12 +11,12 @@ using Infrastructure.Persistence.Contexts;
 
 namespace Infrastructure.Persistence.Repositories
 {
-    public class GenericRepositoryBase<TEntity> : IRepositoryBase<TEntity> where TEntity : class
+    public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
     {
         internal ApplicationDbContext _dbContext;
         private Logger _logger;
 
-        public GenericRepositoryBase(ApplicationDbContext context)
+        public GenericRepository(ApplicationDbContext context)
         {
             _dbContext = context;
             _logger = NLoggerService.GetLogger();

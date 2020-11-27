@@ -30,7 +30,7 @@ namespace WebApi.Controllers.v1
         [HttpGet("{userId}/tasks")]
         public IActionResult GetAllTasks(int userId, byte category)
         {
-            var listTasks = unitOfWork.Repository<TaskRepository>().GetAllTasks(userId, category);
+            var listTasks = taskService.GetAllTasks(userId, category);
             return Ok(new Response<IEnumerable<Tasks>>(listTasks));
         }
     }
