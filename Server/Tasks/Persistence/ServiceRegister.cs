@@ -58,6 +58,8 @@ namespace Persistence
             //});
 
             services.AddScoped<IAuthentication, AuthenticationService>();
+
+            services.AddScoped<IProjectService, ProjectService>();
         }
     }
 }

@@ -8,6 +8,7 @@ using Core.Application.Interfaces;
 using NLog;
 using Infrastructure.Persistence.Services;
 using Infrastructure.Persistence.Contexts;
+using Core.Domain.DbEntities;
 
 namespace Infrastructure.Persistence.Repositories
 {
