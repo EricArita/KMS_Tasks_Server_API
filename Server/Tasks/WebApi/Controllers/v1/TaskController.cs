@@ -24,14 +24,14 @@ namespace WebApi.Controllers.v1
         {
             var res = taskService.AddNewTask(newTask);
             if (res != 0) return Ok();
-            else return BadRequest(new Response<bool>(false, "Some errors has occured in server!"));
+            else return BadRequest(new Response<bool>(false, message:"Some errors has occured in server!"));
         }
 
         [HttpGet("{userId}/tasks")]
         public IActionResult GetAllTasks(int userId, byte category)
         {
             var listTasks = taskService.GetAllTasks(userId, category);
-            return Ok(new Response<IEnumerable<Tasks>>(listTasks));
+            return Ok(new Response<IEnumerable<Tasks>>(true, data: listTasks));
         }
     }
 }

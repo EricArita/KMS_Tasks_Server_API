@@ -2,7 +2,7 @@
 
 namespace Core.Application.Models
 {
-    public class RegisterModel
+    public class UserRegisterModel
     {
         [Required]
         public string FirstName { get; set; }

@@ -65,6 +65,9 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("MidName")
                         .HasColumnType("nvarchar(max)");
 
@@ -84,6 +87,9 @@ namespace Infrastructure.Persistence.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
