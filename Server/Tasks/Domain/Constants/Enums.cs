@@ -30,5 +30,12 @@ namespace Core.Domain.Constants
             Today = 1,
             Upcoming = 2
         }
+
+        public enum LoginProvider : byte
+        {
+            System = 0,
+            Facebook = 1,
+            Google = 2,
+        }
     }
 }
