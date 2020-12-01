@@ -12,7 +12,7 @@ namespace Infrastructure.Persistence.Services
     {
         protected IUnitOfWork _unitOfWork;
 
-        public ProjectService(IUnitOfWork unitOfWork)
+        public ProjectService(IUnitOfWork unitOfWork, )
         {
             _unitOfWork = (UnitOfWork) unitOfWork;
         }

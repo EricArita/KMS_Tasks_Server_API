@@ -28,12 +28,19 @@ namespace WebApi.Controllers.v1
         {
             try
             {
-                if (newProject.CreatedBy != null) throw new Exception("Unauthorized creation of project found"); 
+                // Check validity of the request
+                if (newProject.CreatedBy != null) {
+                    return Unauthorized(new Response<string>(false, "Unauthorized creation of project"));
+                }
                 var currentUser = HttpContext.User;
-                if (!currentUser.HasClaim(c => c.Type == "uid")) throw new Exception("Cannot add project for invalid user");
+                if (!currentUser.HasClaim(c => c.Type == "uid"))
+                {
+                    return BadRequest(new Response<string>(false, "Cannot add project for invalid user"));
+                }
                 newProject.CreatedBy = currentUser.Claims.FirstOrDefault(c => c.Type == "uid").Value;
+                // Carry on with the business logic
                 Project addedProject = await _projectService.AddNewProject(newProject);
-                return Ok(new Response<Project>(addedProject));
+                return Ok(new Response<Project>(true, addedProject, message: "Successfully added project"));
             }
             catch (Exception ex)
             {
@@ -47,14 +54,19 @@ namespace WebApi.Controllers.v1
         {
             try
             {
+                // Check validity of the request
                 var currentUser = HttpContext.User;
-                if (!currentUser.HasClaim(c => c.Type == "uid")) throw new Exception("Cannot add project for invalid user");
+                if (!currentUser.HasClaim(c => c.Type == "uid"))
+                {
+                    return BadRequest(new Response<string>(false, "Cannot add project for invalid user"));
+                }
                 GetAllProjectsModel model = new GetAllProjectsModel()
                 {
                     UserID = currentUser.Claims.FirstOrDefault(c => c.Type == "uid").Value,
                 };
+                // Carry on with the business logic
                 IEnumerable<Project> results = await _projectService.GetAllProjects(model);
-                return Ok(new Response<IEnumerable<Project>>(results));
+                return Ok(new Response<IEnumerable<Project>>(true, results, message: "Successfully fetched projects of user"));
             }
             catch (Exception ex)
             {
