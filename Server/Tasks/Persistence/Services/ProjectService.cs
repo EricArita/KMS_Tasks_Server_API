@@ -2,6 +2,7 @@
 using Core.Application.Models;
 using Core.Domain.DbEntities;
 using Infrastructure.Persistence.Repositories;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -10,40 +11,39 @@ namespace Infrastructure.Persistence.Services
 {
     public class ProjectService : IProjectService
     {
-        protected IUnitOfWork _unitOfWork;
+        protected readonly IUnitOfWork _unitOfWork;
+        protected readonly UserManager<ApplicationUser> _userManager;
 
-        public ProjectService(IUnitOfWork unitOfWork, )
+        public ProjectService(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager)
         {
-            _unitOfWork = (UnitOfWork) unitOfWork;
+            _unitOfWork = unitOfWork;
+            _userManager = userManager;
         }
 
         async Task<Project> IProjectService.AddNewProject(NewProjectModel newProject)
         {
             if (newProject.Name == null || newProject.Name.Length <= 0) throw new Exception("Cannot create new project without a name");
 
-            var currentUser = _unitOfWork.Repository<AspNetUsers>().Get(filter: user => user.Id == newProject.CreatedBy).GetEnumerator();
+            var currentUser = await _userManager.FindByIdAsync(newProject.CreatedBy);
+            if (currentUser == null) throw new Exception("Cannot find the user you are asking for");
 
-            if (currentUser.Current == null) throw new Exception("I cannot find the user you are asking for");
-            var toBeInteractedUser = currentUser.Current;
-            if(currentUser.MoveNext())  throw new Exception ("Found more than one user with the credentials");
-
-            Project toBeAddedProject = new Project()
+            Project addedProject = new Project()
             {
                 Name = newProject.Name,
                 Description = newProject.Description,
-                CreatedBy = (int) toBeInteractedUser.UserId,
-                UpdatedBy = (int)toBeInteractedUser.UserId,
+                //CreatedBy = (int) interactedUser.UserId,
+                //UpdatedBy = (int) interactedUser.UserId,
                 ParentId = newProject.ParentId,
                 CreatedDate = DateTime.UtcNow,
                 UpdatedDate = DateTime.UtcNow,
                 Deleted = false,
             };
 
-            _unitOfWork.Repository<Project>().Insert(toBeAddedProject);
+            _unitOfWork.Repository<Project>().Insert(addedProject);
 
             _unitOfWork.SaveChanges();
 
-            return toBeAddedProject;
+            return addedProject;
         }
 
         async Task<IEnumerable<Project>> IProjectService.GetAllProjects(GetAllProjectsModel model)

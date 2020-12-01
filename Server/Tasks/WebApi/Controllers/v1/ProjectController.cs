@@ -45,7 +45,7 @@ namespace WebApi.Controllers.v1
             catch (Exception ex)
             {
                 _logger.Error(ex);
-                return StatusCode(500, ex);
+                return StatusCode(500, new Response<Exception>(false, ex, "Server encountered an exception"));
             }
         }
 
@@ -71,7 +71,7 @@ namespace WebApi.Controllers.v1
             catch (Exception ex)
             {
                 _logger.Error(ex);
-                return StatusCode(500, ex);
+                return StatusCode(500, new Response<Exception>(false, ex, "Server encountered an exception"));
             }
         }
     }
