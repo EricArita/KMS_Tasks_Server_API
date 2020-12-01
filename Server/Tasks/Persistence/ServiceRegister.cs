@@ -23,13 +23,15 @@ namespace Persistence
         /// <param name="services"></param>
         public static void AddPersistenceServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<JWT>(configuration.GetSection("JWT"));
+            services.Configure<JWT>(configuration.GetSection("Authentication:JWT"));
+            services.Configure<FacebookAuthSettings>(configuration.GetSection("Authentication:Facebook"));
 
             services.AddDbContext<ApplicationDbContext>(options =>
                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
             services.AddIdentity<ApplicationUser, IdentityRole>(options => {
                 options.Password.RequireUppercase = false;
+                options.User.AllowedUserNameCharacters = null;
             }).AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddAuthentication(options =>
@@ -46,20 +48,19 @@ namespace Persistence
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero,
-                    ValidIssuer = configuration["JWT:Issuer"],
-                    ValidAudience = configuration["JWT:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Key"]))
+                    ValidIssuer = configuration["Authentication:JWT:Issuer"],
+                    ValidAudience = configuration["Authentication:JWT:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Authentication:JWT:Key"]))
                 };
+            })
+            .AddFacebook(facebookOptions =>
+            {
+                facebookOptions.AppId = configuration["Authentication:Facebook:AppId"];
+                facebookOptions.AppSecret = configuration["Authentication:Facebook:AppSecret"];
             });
-            //.AddMicrosoftAccount(microsoftOptions =>
-            //{
-            //    microsoftOptions.ClientId = Configuration["Authentication:Microsoft:ClientId"];
-            //    microsoftOptions.ClientSecret = Configuration["Authentication:Microsoft:ClientSecret"];
-            //});
 
             services.AddScoped<IAuthentication, AuthenticationService>();
-
-            services.AddScoped<IProjectService, ProjectService>();
+            services.AddScoped<ITaskService, TaskService>();
         }
     }
 }

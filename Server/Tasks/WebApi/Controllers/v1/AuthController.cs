@@ -1,6 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Core.Application.Interfaces;
 using Core.Application.Models;
+using Microsoft.AspNetCore.Authentication.Facebook;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Models;
 
@@ -18,7 +20,7 @@ namespace WebApi.Controllers.v1
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterModel model)
+        public async Task<IActionResult> Register(UserRegisterModel model)
         {
             var result = await _authService.RegisterAsync(model);
             return Ok(result);
@@ -28,6 +30,13 @@ namespace WebApi.Controllers.v1
         public async Task<IActionResult> Login(AuthRequestModel model)
         {
             var result = await _authService.VerifyAccount(model.Username, model.Password);
+            return Ok(result);
+        }
+
+        [HttpPost("facebook-login")]
+        public async Task<IActionResult> FacebookLogin([FromBody] string userAccessToken)
+        {
+            var result = await _authService.HandleFacebookLoginAsync(userAccessToken);
             return Ok(result);
         }
     }

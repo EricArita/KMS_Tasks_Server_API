@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
 
 namespace Core.Application.Helper
 {
@@ -10,21 +11,17 @@ namespace Core.Application.Helper
             Data = default(T);
         }
 
-        public Response(T data)
+        public Response(bool ok, T data = default(T), string message = "", List<IdentityError> errors = null)
         {
-            Data = data;
-            OK = true;
-        }
-
-        public Response(bool ok, string message)
-        {
-            OK = ok;
-            Message = message;
+            this.Data = data;
+            this.OK = ok;
+            this.Message = message;
+            this.Errors = errors;
         }
 
         public T Data { get; set; }
         public bool OK { get; set; }
-        public List<string> Errors { get; set; }
+        public List<IdentityError> Errors { get; set; }
         public string Message { get; set; }
     }
 }
