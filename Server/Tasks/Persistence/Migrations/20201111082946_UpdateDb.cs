@@ -95,12 +95,6 @@ namespace Infrastructure.Persistence.Migrations
                 table: "Project",
                 newName: "CreatedAt");
 
-            migrationBuilder.AddColumn<int>(
-                name: "UserId",
-                table: "Tasks",
-                type: "int",
-                nullable: true);
-
             migrationBuilder.CreateTable(
                 name: "Sections",
                 columns: table => new
@@ -123,11 +117,6 @@ namespace Infrastructure.Persistence.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tasks_SectionId",
-                table: "Tasks",
-                column: "SectionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Sections_ProjectId",

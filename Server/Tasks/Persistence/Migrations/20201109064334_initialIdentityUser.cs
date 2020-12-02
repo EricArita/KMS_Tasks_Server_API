@@ -70,7 +70,7 @@ namespace Infrastructure.Persistence.Migrations
                 name: "Project",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
+                    Id = table.Column<int>(nullable: false).Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(maxLength: 100, nullable: false),
                     Description = table.Column<string>(maxLength: 250, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime", nullable: true),

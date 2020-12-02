@@ -42,6 +42,7 @@ namespace Infrastructure.Persistence.Repositories
             catch (Exception e)
             {
                 StringBuilder myString = new StringBuilder("EF Core received an error:");
+                myString.Append(e);
                 //foreach (var eve in e.EntityValidationErrors)
                 //{
                 //    myString.AppendLine($"Entity of type \"{eve.Entry.Entity.GetType().Name}\" in state \"{eve.Entry.State}\" has the following validation errors:");
@@ -65,6 +66,7 @@ namespace Infrastructure.Persistence.Repositories
             catch (Exception e)
             {
                 StringBuilder myString = new StringBuilder("EF Core received an error:");
+                myString.Append(e);
                 //foreach (var eve in e.EntityValidationErrors)
                 //{
                 //    myString.AppendLine($"Entity of type \"{eve.Entry.Entity.GetType().Name}\" in state \"{eve.Entry.State}\" has the following validation errors:");

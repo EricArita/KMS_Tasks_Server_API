@@ -65,6 +65,10 @@ namespace Infrastructure.Persistence.Contexts
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<ApplicationUser>(entity => {
+                entity.Property(e => e.UserId).UseIdentityColumn();
+            });
+
             modelBuilder.Entity<ProjectRole>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
@@ -89,7 +93,7 @@ namespace Infrastructure.Persistence.Contexts
 
             modelBuilder.Entity<Project>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
@@ -103,6 +107,18 @@ namespace Infrastructure.Persistence.Contexts
                     .WithMany(p => p.Children)
                     .HasForeignKey(d => d.ParentId)
                     .HasConstraintName("FK_Project_Project");
+
+                entity.HasOne(p => p.CreatedByUser)
+                    .WithMany(u => u.ProjectsCreated)
+                    .HasPrincipalKey(u => u.UserId)
+                    .HasForeignKey(p => p.CreatedBy)
+                    .HasConstraintName("FK_Project_CreatedBy_User");
+
+                entity.HasOne(p => p.UpdatedByUser)
+                    .WithMany(u => u.ProjectsUpdated)
+                    .HasPrincipalKey(u => u.UserId)
+                    .HasForeignKey(p => p.UpdatedBy)
+                    .HasConstraintName("FK_Project_UpdatedBy_User");
 
                 entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
             });
@@ -135,6 +151,24 @@ namespace Infrastructure.Persistence.Contexts
                     .WithMany(p => p.Tasks)
                     .HasForeignKey(d => d.ProjectId)
                     .HasConstraintName("FK_Tasks_Project");
+
+                entity.HasOne(t => t.CreatedByUser)
+                   .WithMany(u => u.TasksCreated)
+                   .HasPrincipalKey(u => u.UserId)
+                   .HasForeignKey(t => t.CreatedBy)
+                   .HasConstraintName("FK_Task_CreatedBy_User");
+
+                entity.HasOne(t => t.AssignedByUser)
+                   .WithMany(u => u.TasksAssigned)
+                   .HasPrincipalKey(u => u.UserId)
+                   .HasForeignKey(t => t.AssignedBy)
+                   .HasConstraintName("FK_Task_AssignedBy_User");
+
+                entity.HasOne(t => t.AssignedForUser)
+                   .WithMany(u => u.AssignedTasks)
+                   .HasPrincipalKey(u => u.UserId)
+                   .HasForeignKey(t => t.AssignedFor)
+                   .HasConstraintName("FK_Task_AssignedFor_User");
             });
 
             modelBuilder.Entity<UserProjects>(entity =>
@@ -156,6 +190,12 @@ namespace Infrastructure.Persistence.Contexts
                    .HasForeignKey(d => d.RoleId)
                    .OnDelete(DeleteBehavior.ClientSetNull)
                    .HasConstraintName("FK_UserProjects_ProjectRole");
+
+                entity.HasOne(item => item.User)
+                   .WithMany()
+                   .HasPrincipalKey(u => u.UserId)
+                   .HasForeignKey(item => item.UserId)
+                   .HasConstraintName("FK_UserProjects_BelongsTo_User");
             });
 
             OnModelCreatingPartial(modelBuilder);

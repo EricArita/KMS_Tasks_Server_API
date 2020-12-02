@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace Core.Application.Interfaces
 {
@@ -13,5 +14,6 @@ namespace Core.Application.Interfaces
         bool Update(TEntity entityToUpdate);
         void DeleteById(object id);
         void DeleteByObject(TEntity entityToDelete);
+        Task<TEntity> InsertAsync(TEntity entity);
     }
 }

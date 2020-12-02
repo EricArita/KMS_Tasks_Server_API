@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Core.Application.Models;
+using Core.Domain.DbEntities;
 using Infrastructure.Persistence.Contexts;
 using Infrastructure.Persistence.Services;
 using Microsoft.AspNetCore.Hosting;

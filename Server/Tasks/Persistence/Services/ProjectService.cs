@@ -36,18 +36,20 @@ namespace Infrastructure.Persistence.Services
                 Deleted = false,
             };
 
-            _unitOfWork.Repository<Project>().Insert(addedProject);
+            await _unitOfWork.Repository<Project>().InsertAsync(addedProject);
 
-            _unitOfWork.SaveChanges();
+            await _unitOfWork.SaveChangesAsync();
 
             return addedProject;
         }
 
         async Task<IEnumerable<Project>> IProjectService.GetAllProjects(GetAllProjectsModel model)
         {
+            if (model.UserID == null) throw new Exception("Cannot find projects of this user if you don't provide a UserID");
+
             var result = _unitOfWork.Repository<Project>().Get(filter: e => (e.CreatedBy.HasValue && e.CreatedBy.Value == model.UserID)
                                  || (e.UpdatedBy.HasValue && e.UpdatedBy.Value == model.UserID));
-            _unitOfWork.SaveChanges();
+            await _unitOfWork.SaveChangesAsync();
 
             return result;
         }

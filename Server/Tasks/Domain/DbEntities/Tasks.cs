@@ -19,7 +19,6 @@ namespace Core.Domain.DbEntities
         public bool Deleted { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public int? ProjectId { get; set; }
-        public int? SectionId { get; set; }
         public int? ParentId { get; set; }
         public DateTime? ReminderSchedule { get; set; }
         public bool Reminder { get; set; }
@@ -30,6 +29,9 @@ namespace Core.Domain.DbEntities
         public virtual Tasks Parent { get; set; }
         public virtual PriorityLevel Priority { get; set; }
         public virtual Project Project { get; set; }
+        public virtual ApplicationUser AssignedByUser { get; set; }
+        public virtual ApplicationUser AssignedForUser { get; set; }
+        public virtual ApplicationUser CreatedByUser { get; set; }
         public virtual ICollection<Tasks> Children { get; set; }
     }
 }

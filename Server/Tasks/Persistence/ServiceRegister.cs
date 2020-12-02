@@ -1,5 +1,6 @@
 ﻿using Core.Application.Interfaces;
 using Core.Application.Models;
+using Core.Domain.DbEntities;
 using Infrastructure.Persistence.Contexts;
 using Infrastructure.Persistence.Services;
 using Infrastructure.Persistence.SettingModels;
@@ -61,6 +62,7 @@ namespace Persistence
 
             services.AddScoped<IAuthentication, AuthenticationService>();
             services.AddScoped<ITaskService, TaskService>();
+            services.AddScoped<IProjectService, ProjectService>();
         }
     }
 }

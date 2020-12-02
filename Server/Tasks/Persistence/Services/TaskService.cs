@@ -27,7 +27,6 @@ namespace Infrastructure.Persistence.Services
                 ScheduleString = task.ScheduleString,
                 PriorityId = task.PriorityId,
                 ProjectId = task.ProjectId,
-                SectionId = task.SectionId,
                 ParentId = task.ParentId,
                 Reminder = task.Reminder,
                 ReminderSchedule = task.ReminderSchedule,

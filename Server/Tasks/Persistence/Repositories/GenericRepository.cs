@@ -9,6 +9,7 @@ using NLog;
 using Infrastructure.Persistence.Services;
 using Infrastructure.Persistence.Contexts;
 using Core.Domain.DbEntities;
+using System.Threading.Tasks;
 
 namespace Infrastructure.Persistence.Repositories
 {
@@ -108,6 +109,12 @@ namespace Infrastructure.Persistence.Repositories
                 GetDbset().Attach(entityToDelete);
             }
             GetDbset().Remove(entityToDelete);
+        }
+
+        public virtual async Task<TEntity> InsertAsync(TEntity entity)
+        {
+            await GetDbset().AddAsync(entity);
+            return entity;
         }
     }
 }

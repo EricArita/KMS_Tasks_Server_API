@@ -7,7 +7,6 @@ namespace Core.Application.Models
 {
     public class GetAllProjectsModel
     {
-        [Required]
-        public int UserID;
+        public int? UserID;
     }
 }

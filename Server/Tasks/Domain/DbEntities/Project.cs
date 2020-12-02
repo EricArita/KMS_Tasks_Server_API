@@ -21,6 +21,8 @@ namespace Core.Domain.DbEntities
         public bool Deleted { get; set; }
 
         public virtual Project Parent { get; set; }
+        public virtual ApplicationUser CreatedByUser { get; set; }
+        public virtual ApplicationUser UpdatedByUser { get; set; }
         public virtual ICollection<Tasks> Tasks { get; set; }
         public virtual ICollection<Project> Children { get; set; }
     }
