@@ -9,8 +9,8 @@ namespace Core.Application.Models
     {
         [Required]
         public string Name { get; set; }
-        public long? ParentId { get; set; }
+        public int? ParentId { get; set; }
         public string Description { get; set; }
-        public long? CreatedBy { get; set; }
+        public int? CreatedBy { get; set; }
     }
 }

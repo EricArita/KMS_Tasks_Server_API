@@ -8,6 +8,6 @@ namespace Core.Application.Models
     public class GetAllProjectsModel
     {
         [Required]
-        public long UserID;
+        public int UserID;
     }
 }
