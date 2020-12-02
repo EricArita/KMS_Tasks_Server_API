@@ -32,12 +32,6 @@ namespace WebApi.Controllers.v1
                 if (newProject.CreatedBy != null) {
                     return Unauthorized(new Response<string>(false, "Unauthorized creation of project"));
                 }
-                var currentUser = HttpContext.User;
-                if (!currentUser.HasClaim(c => c.Type == "uid"))
-                {
-                    return BadRequest(new Response<string>(false, "Cannot add project for invalid user"));
-                }
-                newProject.CreatedBy = currentUser.Claims.FirstOrDefault(c => c.Type == "uid").Value;
                 // Carry on with the business logic
                 Project addedProject = await _projectService.AddNewProject(newProject);
                 return Ok(new Response<Project>(true, addedProject, message: "Successfully added project"));
@@ -54,15 +48,9 @@ namespace WebApi.Controllers.v1
         {
             try
             {
-                // Check validity of the request
-                var currentUser = HttpContext.User;
-                if (!currentUser.HasClaim(c => c.Type == "uid"))
-                {
-                    return BadRequest(new Response<string>(false, "Cannot add project for invalid user"));
-                }
                 GetAllProjectsModel model = new GetAllProjectsModel()
                 {
-                    UserID = currentUser.Claims.FirstOrDefault(c => c.Type == "uid").Value,
+                    UserID = userId,
                 };
                 // Carry on with the business logic
                 IEnumerable<Project> results = await _projectService.GetAllProjects(model);
