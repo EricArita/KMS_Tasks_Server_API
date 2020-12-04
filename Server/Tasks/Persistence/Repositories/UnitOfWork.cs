@@ -1,5 +1,6 @@
 ﻿using Core.Application.Interfaces;
 using Infrastructure.Persistence.Contexts;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -96,6 +97,11 @@ namespace Infrastructure.Persistence.Repositories
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        public async Task<IDbContextTransaction> CreateTransaction()
+        {
+            return await _dbContext.Database.BeginTransactionAsync();
         }
     }
 }

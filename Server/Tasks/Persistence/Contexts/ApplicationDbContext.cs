@@ -4,6 +4,7 @@ using Core.Domain.DbEntities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -78,6 +79,16 @@ namespace Infrastructure.Persistence.Contexts
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
+
+                entity.HasData(
+                    Enum.GetValues(typeof(Enums.ProjectRoles))
+                        .Cast<Enums.ProjectRoles>()
+                        .Select(e => new ProjectRole()
+                        {
+                            Id = e,
+                            Name = e.ToString()
+                        })
+                );
             });
 
             modelBuilder.Entity<PriorityLevel>(entity =>
@@ -89,6 +100,16 @@ namespace Infrastructure.Persistence.Contexts
                 entity.Property(e => e.DisplayName)
                     .IsRequired()
                     .HasMaxLength(50);
+
+                entity.HasData(
+                    Enum.GetValues(typeof(Enums.TaskPriorityLevel))
+                        .Cast<Enums.TaskPriorityLevel>()
+                        .Select(e => new PriorityLevel()
+                        {
+                            Id = e,
+                            DisplayName = e.ToString()
+                        })
+                );
             });
 
             modelBuilder.Entity<Project>(entity =>
@@ -125,6 +146,8 @@ namespace Infrastructure.Persistence.Contexts
 
             modelBuilder.Entity<Tasks>(entity =>
             {
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.Name)
@@ -173,11 +196,7 @@ namespace Infrastructure.Persistence.Contexts
 
             modelBuilder.Entity<UserProjects>(entity =>
             {
-                entity.HasNoKey();
-
-                entity.Property(e => e.UserId)
-                    .IsRequired()
-                    .HasMaxLength(450);
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
 
                 entity.HasOne(d => d.Project)
                     .WithMany()

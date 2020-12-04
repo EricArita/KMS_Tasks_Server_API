@@ -1,8 +1,10 @@
-﻿namespace Core.Domain.DbEntities
+﻿using Core.Domain.Constants;
+
+namespace Core.Domain.DbEntities
 {
     public class ProjectRole
     {
-        public byte Id { get; set; }
+        public Enums.ProjectRoles Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
     }

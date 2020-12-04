@@ -10,6 +10,7 @@ namespace Core.Application.Interfaces
     public interface IProjectService
     {
         public Task<Project> AddNewProject(NewProjectModel newProject);
-        public Task<IEnumerable<Project>> GetAllProjects(GetAllProjectsModel model);
+        public Task<IEnumerable<object>> GetAllProjects(GetAllProjectsModel model);
+        public Task<object> GetOneProject(GetOneProjectModel model);
     }
 }

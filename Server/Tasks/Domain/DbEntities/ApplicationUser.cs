@@ -7,7 +7,7 @@ namespace Core.Domain.DbEntities
 {
     public class ApplicationUser : IdentityUser
     {
-        public int UserId { get; set; }
+        public long UserId { get; set; }
         public string LoginProvider { get; set; }
         public string ProviderKey { get; set; }
         public string FirstName { get; set; }
@@ -21,10 +21,10 @@ namespace Core.Domain.DbEntities
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedDate { get; set; }
 
-        public ICollection<Project> ProjectsCreated { get; set; }
-        public ICollection<Project> ProjectsUpdated { get; set; }
-        public ICollection<Tasks> AssignedTasks { get; set; }
-        public ICollection<Tasks> TasksAssigned { get; set; }
-        public ICollection<Tasks> TasksCreated { get; set; }
+        public virtual ICollection<Project> ProjectsCreated { get; set; }
+        public virtual ICollection<Project> ProjectsUpdated { get; set; }
+        public virtual ICollection<Tasks> AssignedTasks { get; set; }
+        public virtual ICollection<Tasks> TasksAssigned { get; set; }
+        public virtual ICollection<Tasks> TasksCreated { get; set; }
     }
 }

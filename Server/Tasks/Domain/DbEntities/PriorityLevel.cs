@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Core.Domain.Constants;
+using System;
 using System.Collections.Generic;
 
 namespace Core.Domain.DbEntities
@@ -10,7 +11,7 @@ namespace Core.Domain.DbEntities
             Tasks = new HashSet<Tasks>();
         }
 
-        public int Id { get; set; }
+        public Enums.TaskPriorityLevel Id { get; set; }
         public string DisplayName { get; set; }
         public string Description { get; set; }
 

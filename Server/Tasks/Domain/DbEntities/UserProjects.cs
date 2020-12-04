@@ -1,10 +1,13 @@
-﻿namespace Core.Domain.DbEntities
+﻿using Core.Domain.Constants;
+
+namespace Core.Domain.DbEntities
 {
     public partial class UserProjects
     {
-        public int UserId { get; set; }
-        public int ProjectId { get; set; }
-        public byte RoleId { get; set; }
+        public long Id { get; set; }
+        public long UserId { get; set; }
+        public long ProjectId { get; set; }
+        public Enums.ProjectRoles RoleId { get; set; }
 
         public virtual Project Project { get; set; }
         public virtual ProjectRole ProjectRole { get; set; }

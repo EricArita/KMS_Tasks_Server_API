@@ -1,5 +1,6 @@
 ﻿using Core.Application.Interfaces;
 using Core.Application.Models;
+using Core.Domain.Constants;
 using Core.Domain.DbEntities;
 using Infrastructure.Persistence.Repositories;
 using System;
@@ -25,7 +26,7 @@ namespace Infrastructure.Persistence.Services
                 Name = task.Name,
                 Schedule = task.Schedule,
                 ScheduleString = task.ScheduleString,
-                PriorityId = task.PriorityId,
+                PriorityId = (TaskPriorityLevel) task.PriorityId,
                 ProjectId = task.ProjectId,
                 ParentId = task.ParentId,
                 Reminder = task.Reminder,

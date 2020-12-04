@@ -103,9 +103,9 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
+                    b.Property<long>("UserId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                        .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:IdentityIncrement", 1)
                         .HasAnnotation("SqlServer:IdentitySeed", 1)
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -129,8 +129,8 @@ namespace Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Core.Domain.DbEntities.PriorityLevel", b =>
                 {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
+                    b.Property<byte>("Id")
+                        .HasColumnType("tinyint");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(200)")
@@ -144,15 +144,44 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PriorityLevel");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = (byte)1,
+                            DisplayName = "Emergency"
+                        },
+                        new
+                        {
+                            Id = (byte)2,
+                            DisplayName = "High"
+                        },
+                        new
+                        {
+                            Id = (byte)3,
+                            DisplayName = "Medium"
+                        },
+                        new
+                        {
+                            Id = (byte)4,
+                            DisplayName = "Low"
+                        },
+                        new
+                        {
+                            Id = (byte)5,
+                            DisplayName = "Anytime"
+                        });
                 });
 
             modelBuilder.Entity("Core.Domain.DbEntities.Project", b =>
                 {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CreatedBy")
-                        .HasColumnType("int");
+                    b.Property<long?>("CreatedBy")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime?>("CreatedDate")
                         .HasColumnType("datetime");
@@ -169,11 +198,11 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
 
-                    b.Property<int?>("ParentId")
-                        .HasColumnType("int");
+                    b.Property<long?>("ParentId")
+                        .HasColumnType("bigint");
 
-                    b.Property<int?>("UpdatedBy")
-                        .HasColumnType("int");
+                    b.Property<long?>("UpdatedBy")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime");
@@ -206,23 +235,60 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ProjectRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = (byte)1,
+                            Name = "Owner"
+                        },
+                        new
+                        {
+                            Id = (byte)2,
+                            Name = "PM"
+                        },
+                        new
+                        {
+                            Id = (byte)3,
+                            Name = "Leader"
+                        },
+                        new
+                        {
+                            Id = (byte)4,
+                            Name = "QA"
+                        },
+                        new
+                        {
+                            Id = (byte)5,
+                            Name = "Dev"
+                        },
+                        new
+                        {
+                            Id = (byte)6,
+                            Name = "BA"
+                        },
+                        new
+                        {
+                            Id = (byte)7,
+                            Name = "Member"
+                        });
                 });
 
             modelBuilder.Entity("Core.Domain.DbEntities.Tasks", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                        .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("AssignedBy")
-                        .HasColumnType("int");
+                    b.Property<long?>("AssignedBy")
+                        .HasColumnType("bigint");
 
-                    b.Property<int?>("AssignedFor")
-                        .HasColumnType("int");
+                    b.Property<long?>("AssignedFor")
+                        .HasColumnType("bigint");
 
-                    b.Property<int?>("CreatedBy")
-                        .HasColumnType("int");
+                    b.Property<long?>("CreatedBy")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime");
@@ -235,14 +301,14 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
 
-                    b.Property<int?>("ParentId")
-                        .HasColumnType("int");
+                    b.Property<long?>("ParentId")
+                        .HasColumnType("bigint");
 
-                    b.Property<int?>("PriorityId")
-                        .HasColumnType("int");
+                    b.Property<byte?>("PriorityId")
+                        .HasColumnType("tinyint");
 
-                    b.Property<int?>("ProjectId")
-                        .HasColumnType("int");
+                    b.Property<long?>("ProjectId")
+                        .HasColumnType("bigint");
 
                     b.Property<bool>("Reminder")
                         .HasColumnType("bit");
@@ -278,15 +344,21 @@ namespace Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Core.Domain.DbEntities.UserProjects", b =>
                 {
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("int");
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<long>("ProjectId")
+                        .HasColumnType("bigint");
 
                     b.Property<byte>("RoleId")
                         .HasColumnType("tinyint");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int")
-                        .HasMaxLength(450);
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("ProjectId");
 

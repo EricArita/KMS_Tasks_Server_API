@@ -1,11 +1,16 @@
-﻿using Core.Application.Interfaces;
+﻿using Core.Application.Helper.Exceptions.Project;
+using Core.Application.Interfaces;
 using Core.Application.Models;
+using Core.Domain.Constants;
 using Core.Domain.DbEntities;
 using Infrastructure.Persistence.Repositories;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
+using System.Text;
 
 namespace Infrastructure.Persistence.Services
 {
@@ -22,36 +27,95 @@ namespace Infrastructure.Persistence.Services
 
         async Task<Project> IProjectService.AddNewProject(NewProjectModel newProject)
         {
-            if (newProject.Name == null || newProject.Name.Length <= 0) throw new Exception("Cannot create new project without a name");
+            if (!newProject.CreatedBy.HasValue) throw new ProjectServiceException("Cannot create new project with no user relation");
 
-            Project addedProject = new Project()
+            if (newProject.Name == null || newProject.Name.Length <= 0) throw new ProjectServiceException("Cannot create new project without a name");
+
+            await using var t = await _unitOfWork.CreateTransaction();
+
+            try
             {
-                Name = newProject.Name,
-                Description = newProject.Description,
-                CreatedBy = newProject.CreatedBy,
-                UpdatedBy = newProject.CreatedBy,
-                ParentId = newProject.ParentId,
-                CreatedDate = DateTime.UtcNow,
-                UpdatedDate = DateTime.UtcNow,
-                Deleted = false,
-            };
+                // Add project in first
+                Project addedProject = new Project()
+                {
+                    Name = newProject.Name,
+                    Description = newProject.Description,
+                    CreatedBy = newProject.CreatedBy,
+                    UpdatedBy = newProject.CreatedBy,
+                    ParentId = newProject.ParentId,
+                    CreatedDate = DateTime.UtcNow,
+                    UpdatedDate = DateTime.UtcNow,
+                    Deleted = false,
+                };
+                addedProject = await _unitOfWork.Repository<Project>().InsertAsync(addedProject);
+                await _unitOfWork.SaveChangesAsync();
 
-            await _unitOfWork.Repository<Project>().InsertAsync(addedProject);
+                // Add user project: project's relation to an owner
+                UserProjects relationToUser = new UserProjects()
+                {
+                    UserId = newProject.CreatedBy.Value,
+                    ProjectId = addedProject.Id,
+                    RoleId = Enums.ProjectRoles.Owner,
+                };
+                await _unitOfWork.Repository<UserProjects>().InsertAsync(relationToUser);
+                await _unitOfWork.SaveChangesAsync();
 
-            await _unitOfWork.SaveChangesAsync();
+                await t.CommitAsync();
 
-            return addedProject;
+                return addedProject;
+            }
+            catch (Exception ex)
+            {
+                await t.RollbackAsync();
+                throw ex;
+            }
         }
 
-        async Task<IEnumerable<Project>> IProjectService.GetAllProjects(GetAllProjectsModel model)
+        async Task<IEnumerable<object>> IProjectService.GetAllProjects(GetAllProjectsModel model)
         {
-            if (model.UserID == null) throw new Exception("Cannot find projects of this user if you don't provide a UserID");
+            if (model.UserID == null) throw new ProjectServiceException("Cannot find projects of this user if you don't provide a UserID");
 
-            var result = _unitOfWork.Repository<Project>().Get(filter: e => (e.CreatedBy.HasValue && e.CreatedBy.Value == model.UserID)
-                                 || (e.UpdatedBy.HasValue && e.UpdatedBy.Value == model.UserID));
+            // Query for  all the projects user participated in
+            var result = from userProjects in _unitOfWork.Repository<UserProjects>().GetDbset()
+                         join relatedProjects in _unitOfWork.Repository<Project>().GetDbset() on userProjects.ProjectId equals relatedProjects.Id
+                         join projectRoles in _unitOfWork.Repository<ProjectRole>().GetDbset() on userProjects.RoleId equals projectRoles.Id
+                         where userProjects.UserId == model.UserID
+                         select new { relatedProjects, projectRoles };
+
             await _unitOfWork.SaveChangesAsync();
 
-            return result;
+            return result.ToList();
+        }
+
+        async Task<object> IProjectService.GetOneProject(GetOneProjectModel model)
+        {
+            if (model.UserId == null || model.ProjectId == null) throw new ProjectServiceException("Cannot find projects of this user if you don't provide a UserID");
+
+            // Query for participations in projects with the provided info
+            var result = from userProjects in _unitOfWork.Repository<UserProjects>().GetDbset()
+                         join relatedProjects in _unitOfWork.Repository<Project>().GetDbset() on userProjects.ProjectId equals relatedProjects.Id
+                         join projectRoles in _unitOfWork.Repository<ProjectRole>().GetDbset() on userProjects.RoleId equals projectRoles.Id
+                         where userProjects.UserId == model.UserId && userProjects.ProjectId == model.ProjectId
+                         select new { relatedProjects, projectRoles };
+
+            // If cannot find the project from the infos provided, return a service exception
+            if(result.Count<object>() < 1)
+            {
+                throw new ProjectServiceException("Cannot find a single instance of a project from the infos you provided");
+            }
+
+            // If found more than one instance, the database probably is corrupted, in this case, return an internal error
+            if(result.Count<object>() > 1)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine("Inconsistency in database. Executing query returns more than one result: ");
+                sb.AppendLine(result.ToList().ToString());
+                throw new Exception();
+            }
+
+            await _unitOfWork.SaveChangesAsync();
+
+            return result.ToList()[0];
         }
     }
 }
