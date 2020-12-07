@@ -72,44 +72,24 @@ namespace Infrastructure.Persistence.Contexts
 
             modelBuilder.Entity<ProjectRole>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.Id).HasConversion<int>();
 
                 entity.Property(e => e.Description).HasMaxLength(200);
 
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(50);
-
-                entity.HasData(
-                    Enum.GetValues(typeof(Enums.ProjectRoles))
-                        .Cast<Enums.ProjectRoles>()
-                        .Select(e => new ProjectRole()
-                        {
-                            Id = e,
-                            Name = e.ToString()
-                        })
-                );
             });
 
             modelBuilder.Entity<PriorityLevel>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.Id).HasConversion<int>();
 
                 entity.Property(e => e.Description).HasMaxLength(200);
 
                 entity.Property(e => e.DisplayName)
                     .IsRequired()
                     .HasMaxLength(50);
-
-                entity.HasData(
-                    Enum.GetValues(typeof(Enums.TaskPriorityLevel))
-                        .Cast<Enums.TaskPriorityLevel>()
-                        .Select(e => new PriorityLevel()
-                        {
-                            Id = e,
-                            DisplayName = e.ToString()
-                        })
-                );
             });
 
             modelBuilder.Entity<Project>(entity =>
@@ -160,6 +140,8 @@ namespace Infrastructure.Persistence.Contexts
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
+                entity.Property(t => t.PriorityId).HasConversion<int>();
+
                 entity.HasOne(d => d.Parent)
                     .WithMany(p => p.Children)
                     .HasForeignKey(d => d.ParentId)
@@ -196,13 +178,15 @@ namespace Infrastructure.Persistence.Contexts
 
             modelBuilder.Entity<UserProjects>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedOnAdd();
-
+                entity.HasKey(item => new { item.UserId, item.ProjectId, item.RoleId });
+                
                 entity.HasOne(d => d.Project)
                     .WithMany()
                     .HasForeignKey(d => d.ProjectId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_UserProjects_Project");
+
+                entity.Property(item => item.RoleId).HasConversion<int>();
 
                 entity.HasOne(d => d.ProjectRole)
                    .WithMany()
@@ -216,6 +200,27 @@ namespace Infrastructure.Persistence.Contexts
                    .HasForeignKey(item => item.UserId)
                    .HasConstraintName("FK_UserProjects_BelongsTo_User");
             });
+
+            // Populate with data
+            modelBuilder.Entity<ProjectRole>().HasData(
+                    Enum.GetValues(typeof(Enums.ProjectRoles))
+                        .Cast<Enums.ProjectRoles>()
+                        .Select(e => new ProjectRole()
+                        {
+                            Id = e,
+                            Name = e.ToString()
+                        })
+                );
+
+           modelBuilder.Entity<PriorityLevel>().HasData(
+                    Enum.GetValues(typeof(Enums.TaskPriorityLevel))
+                        .Cast<Enums.TaskPriorityLevel>()
+                        .Select(e => new PriorityLevel()
+                        {
+                            Id = e,
+                            DisplayName = e.ToString()
+                        })
+                );
 
             OnModelCreatingPartial(modelBuilder);
         }

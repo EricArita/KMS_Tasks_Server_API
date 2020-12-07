@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Infrastructure.Persistence.Migrations
 {
-    public partial class RevampeddropDbandremoveallmigrationsplease : Migration
+    public partial class RevampedDb : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -65,7 +65,7 @@ namespace Infrastructure.Persistence.Migrations
                 name: "PriorityLevel",
                 columns: table => new
                 {
-                    Id = table.Column<byte>(nullable: false),
+                    Id = table.Column<int>(nullable: false),
                     DisplayName = table.Column<string>(maxLength: 50, nullable: false),
                     Description = table.Column<string>(maxLength: 200, nullable: true)
                 },
@@ -78,7 +78,7 @@ namespace Infrastructure.Persistence.Migrations
                 name: "ProjectRoles",
                 columns: table => new
                 {
-                    Id = table.Column<byte>(nullable: false),
+                    Id = table.Column<int>(nullable: false),
                     Name = table.Column<string>(maxLength: 50, nullable: false),
                     Description = table.Column<string>(maxLength: 200, nullable: true)
                 },
@@ -241,7 +241,7 @@ namespace Infrastructure.Persistence.Migrations
                     CreatedDate = table.Column<DateTime>(type: "datetime", nullable: false),
                     Schedule = table.Column<DateTime>(type: "datetime", nullable: true),
                     ScheduleString = table.Column<string>(nullable: true),
-                    PriorityId = table.Column<byte>(nullable: true),
+                    PriorityId = table.Column<int>(nullable: true),
                     Deleted = table.Column<bool>(nullable: false),
                     UpdatedDate = table.Column<DateTime>(nullable: true),
                     ProjectId = table.Column<long>(nullable: true),
@@ -297,15 +297,13 @@ namespace Infrastructure.Persistence.Migrations
                 name: "UserProjects",
                 columns: table => new
                 {
-                    Id = table.Column<long>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<long>(nullable: false),
                     ProjectId = table.Column<long>(nullable: false),
-                    RoleId = table.Column<byte>(nullable: false)
+                    RoleId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserProjects", x => x.Id);
+                    table.PrimaryKey("PK_UserProjects", x => new { x.UserId, x.ProjectId, x.RoleId });
                     table.ForeignKey(
                         name: "FK_UserProjects_Project",
                         column: x => x.ProjectId,
@@ -331,11 +329,11 @@ namespace Infrastructure.Persistence.Migrations
                 columns: new[] { "Id", "Description", "DisplayName" },
                 values: new object[,]
                 {
-                    { (byte)1, null, "Emergency" },
-                    { (byte)2, null, "High" },
-                    { (byte)3, null, "Medium" },
-                    { (byte)4, null, "Low" },
-                    { (byte)5, null, "Anytime" }
+                    { 1, null, "Emergency" },
+                    { 2, null, "High" },
+                    { 3, null, "Medium" },
+                    { 4, null, "Low" },
+                    { 5, null, "Anytime" }
                 });
 
             migrationBuilder.InsertData(
@@ -343,13 +341,13 @@ namespace Infrastructure.Persistence.Migrations
                 columns: new[] { "Id", "Description", "Name" },
                 values: new object[,]
                 {
-                    { (byte)1, null, "Owner" },
-                    { (byte)2, null, "PM" },
-                    { (byte)3, null, "Leader" },
-                    { (byte)4, null, "QA" },
-                    { (byte)5, null, "Dev" },
-                    { (byte)6, null, "BA" },
-                    { (byte)7, null, "Member" }
+                    { 1, null, "Owner" },
+                    { 2, null, "PM" },
+                    { 3, null, "Leader" },
+                    { 4, null, "QA" },
+                    { 5, null, "Dev" },
+                    { 6, null, "BA" },
+                    { 7, null, "Member" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -445,11 +443,6 @@ namespace Infrastructure.Persistence.Migrations
                 name: "IX_UserProjects_RoleId",
                 table: "UserProjects",
                 column: "RoleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserProjects_UserId",
-                table: "UserProjects",
-                column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

@@ -129,8 +129,8 @@ namespace Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Core.Domain.DbEntities.PriorityLevel", b =>
                 {
-                    b.Property<byte>("Id")
-                        .HasColumnType("tinyint");
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(200)")
@@ -148,27 +148,27 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = (byte)1,
+                            Id = 1,
                             DisplayName = "Emergency"
                         },
                         new
                         {
-                            Id = (byte)2,
+                            Id = 2,
                             DisplayName = "High"
                         },
                         new
                         {
-                            Id = (byte)3,
+                            Id = 3,
                             DisplayName = "Medium"
                         },
                         new
                         {
-                            Id = (byte)4,
+                            Id = 4,
                             DisplayName = "Low"
                         },
                         new
                         {
-                            Id = (byte)5,
+                            Id = 5,
                             DisplayName = "Anytime"
                         });
                 });
@@ -220,8 +220,8 @@ namespace Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Core.Domain.DbEntities.ProjectRole", b =>
                 {
-                    b.Property<byte>("Id")
-                        .HasColumnType("tinyint");
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(200)")
@@ -239,37 +239,37 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = (byte)1,
+                            Id = 1,
                             Name = "Owner"
                         },
                         new
                         {
-                            Id = (byte)2,
+                            Id = 2,
                             Name = "PM"
                         },
                         new
                         {
-                            Id = (byte)3,
+                            Id = 3,
                             Name = "Leader"
                         },
                         new
                         {
-                            Id = (byte)4,
+                            Id = 4,
                             Name = "QA"
                         },
                         new
                         {
-                            Id = (byte)5,
+                            Id = 5,
                             Name = "Dev"
                         },
                         new
                         {
-                            Id = (byte)6,
+                            Id = 6,
                             Name = "BA"
                         },
                         new
                         {
-                            Id = (byte)7,
+                            Id = 7,
                             Name = "Member"
                         });
                 });
@@ -304,8 +304,8 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<long?>("ParentId")
                         .HasColumnType("bigint");
 
-                    b.Property<byte?>("PriorityId")
-                        .HasColumnType("tinyint");
+                    b.Property<int?>("PriorityId")
+                        .HasColumnType("int");
 
                     b.Property<long?>("ProjectId")
                         .HasColumnType("bigint");
@@ -344,27 +344,20 @@ namespace Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Core.Domain.DbEntities.UserProjects", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
 
                     b.Property<long>("ProjectId")
                         .HasColumnType("bigint");
 
-                    b.Property<byte>("RoleId")
-                        .HasColumnType("tinyint");
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
+                    b.HasKey("UserId", "ProjectId", "RoleId");
 
                     b.HasIndex("ProjectId");
 
                     b.HasIndex("RoleId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("UserProjects");
                 });

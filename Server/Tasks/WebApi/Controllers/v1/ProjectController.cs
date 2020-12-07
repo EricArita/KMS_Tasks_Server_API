@@ -6,6 +6,7 @@ using Core.Domain.DbEntities;
 using Infrastructure.Persistence.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using NLog;
 using System;
 using System.Collections.Generic;
@@ -17,13 +18,13 @@ namespace WebApi.Controllers.v1
     public class ProjectController : BaseController
     {
         private IProjectService _projectService;
-        private Logger _logger;
+        private ILogger<ProjectController> _logger;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public ProjectController(IProjectService projectService, UserManager<ApplicationUser> userManager)
+        public ProjectController(IProjectService projectService, UserManager<ApplicationUser> userManager, ILogger<ProjectController> logger)
         {
             _projectService = projectService;
-            _logger = NLoggerService.GetLogger();
+            _logger = logger;
             _userManager = userManager;
         }
 
@@ -64,16 +65,16 @@ namespace WebApi.Controllers.v1
             }
             catch (Exception ex)
             {
-                _logger.Error(ex);
+                _logger.LogError(ex, "An exception occurred while processing request", ex.Message, ex.StackTrace);
                 if (ex is ProjectServiceException)
                 {
-                    return StatusCode(400, new Response<Exception>(false, ex, "A problem occurred when processing the content of your request, please recheck your request params"));
+                    return StatusCode(400, new Response<string>(false, "A problem occurred when processing the content of your request, please recheck your request params"));
                 }
                 return StatusCode(500, new Response<Exception>(false, ex, "Server encountered an exception"));
             }
         }
 
-        [HttpGet("{userId}/projects")]
+        [HttpGet("projects")]
         public async Task<IActionResult> GetAllProjects(int userId)
         {
             try
@@ -93,19 +94,11 @@ namespace WebApi.Controllers.v1
                 {
                     return Unauthorized(new Response<string>(false, "Token provided is invalid because the value for the confidential claim is invalid"));
                 }
-                //Check if userId provided is valid or not
-                if(userId != uid)
+                // Check if uid is valid or not
+                ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == uid);
+                if (validUser == null)
                 {
-                    return BadRequest(new Response<string>(false, "UserId provided doesn't match your claim"));
-                }
-                else
-                {
-                    // Check if uid is valid or not
-                    ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == uid);
-                    if (validUser == null)
-                    {
-                        return BadRequest(new Response<string>(false, "Cannot locate a valid user from the claim provided"));
-                    }
+                    return BadRequest(new Response<string>(false, "Cannot locate a valid user from the claim provided"));
                 }
 
                 // If passes all tests, then we submit it to the service layer
@@ -119,10 +112,10 @@ namespace WebApi.Controllers.v1
             }
             catch (Exception ex)
             {
-                _logger.Error(ex);
-                if(ex is ProjectServiceException)
+                _logger.LogError(ex, "An exception occurred while processing request", ex.Message, ex.StackTrace);
+                if (ex is ProjectServiceException)
                 {
-                    return StatusCode(400, new Response<Exception>(false, ex, "A problem occurred when processing the content of your request, please recheck your request params"));
+                    return StatusCode(400, new Response<string>(false, "A problem occurred when processing the content of your request, please recheck your request params"));
                 }
                 return StatusCode(500, new Response<Exception>(false, ex, "Server encountered an exception"));
             }
@@ -168,10 +161,10 @@ namespace WebApi.Controllers.v1
             }
             catch (Exception ex)
             {
-                _logger.Error(ex);
+                _logger.LogError(ex, "An exception occurred while processing request", ex.Message, ex.StackTrace);
                 if (ex is ProjectServiceException)
                 {
-                    return StatusCode(400, new Response<Exception>(false, ex, "A problem occurred when processing the content of your request, please recheck your request params"));
+                    return StatusCode(400, new Response<string>(false, "A problem occurred when processing the content of your request, please recheck your request params"));
                 }
                 return StatusCode(500, new Response<Exception>(false, ex, "Server encountered an exception"));
             }

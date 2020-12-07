@@ -9,7 +9,6 @@ namespace Core.Application.Models
         public string ScheduleString { get; set; }
         public int? PriorityId { get; set; }
         public int? ProjectId { get; set; }
-        public int? SectionId { get; set; }
         public int? ParentId { get; set; }
         public bool Reminder { get; set; }
         public DateTime? ReminderSchedule { get; set; }

@@ -4,7 +4,6 @@ namespace Core.Domain.DbEntities
 {
     public partial class UserProjects
     {
-        public long Id { get; set; }
         public long UserId { get; set; }
         public long ProjectId { get; set; }
         public Enums.ProjectRoles RoleId { get; set; }

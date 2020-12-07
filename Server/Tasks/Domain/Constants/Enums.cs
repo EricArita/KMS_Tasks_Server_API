@@ -13,7 +13,7 @@ namespace Core.Domain.Constants
             User = 2
         }
 
-        public enum ProjectRoles : byte
+        public enum ProjectRoles : int
         {
             Owner = 1,
             PM = 2,
@@ -38,7 +38,7 @@ namespace Core.Domain.Constants
             Google = 2,
         }
 
-        public enum TaskPriorityLevel : byte
+        public enum TaskPriorityLevel : int
         {
             Emergency = 1,
             High = 2,
