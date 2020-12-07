@@ -1,0 +1,43 @@
+﻿CREATE TABLE [dbo].[AspNetUsers] (
+    [Id]                   NVARCHAR (450)     NOT NULL,
+    [UserName]             NVARCHAR (256)     NULL,
+    [NormalizedUserName]   NVARCHAR (256)     NULL,
+    [Email]                NVARCHAR (256)     NULL,
+    [NormalizedEmail]      NVARCHAR (256)     NULL,
+    [EmailConfirmed]       BIT                NOT NULL,
+    [PasswordHash]         NVARCHAR (MAX)     NULL,
+    [SecurityStamp]        NVARCHAR (MAX)     NULL,
+    [ConcurrencyStamp]     NVARCHAR (MAX)     NULL,
+    [PhoneNumber]          NVARCHAR (MAX)     NULL,
+    [PhoneNumberConfirmed] BIT                NOT NULL,
+    [TwoFactorEnabled]     BIT                NOT NULL,
+    [LockoutEnd]           DATETIMEOFFSET (7) NULL,
+    [LockoutEnabled]       BIT                NOT NULL,
+    [AccessFailedCount]    INT                NOT NULL,
+    [UserId]               BIGINT             IDENTITY (1, 1) NOT NULL,
+    [LoginProvider]        NVARCHAR (MAX)     NULL,
+    [ProviderKey]          NVARCHAR (MAX)     NULL,
+    [FirstName]            NVARCHAR (MAX)     NULL,
+    [MidName]              NVARCHAR (MAX)     NULL,
+    [LastName]             NVARCHAR (MAX)     NULL,
+    [AvatarUrl]            NVARCHAR (MAX)     NULL,
+    [Address]              NVARCHAR (MAX)     NULL,
+    [Gender]               NVARCHAR (MAX)     NULL,
+    [DateOfBirth]          DATETIME2 (7)      NULL,
+    [Status]               TINYINT            NOT NULL,
+    [CreatedDate]          DATETIME2 (7)      NOT NULL,
+    [UpdatedDate]          DATETIME2 (7)      NULL,
+    CONSTRAINT [PK_AspNetUsers] PRIMARY KEY CLUSTERED ([Id] ASC),
+    CONSTRAINT [AK_AspNetUsers_UserId] UNIQUE NONCLUSTERED ([UserId] ASC)
+);
+
+
+GO
+CREATE NONCLUSTERED INDEX [EmailIndex]
+    ON [dbo].[AspNetUsers]([NormalizedEmail] ASC);
+
+
+GO
+CREATE UNIQUE NONCLUSTERED INDEX [UserNameIndex]
+    ON [dbo].[AspNetUsers]([NormalizedUserName] ASC) WHERE ([NormalizedUserName] IS NOT NULL);
+
