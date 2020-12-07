@@ -80,7 +80,7 @@ namespace Infrastructure.Persistence.Services
                          join relatedProjects in _unitOfWork.Repository<Project>().GetDbset() on userProjects.ProjectId equals relatedProjects.Id
                          join projectRoles in _unitOfWork.Repository<ProjectRole>().GetDbset() on userProjects.RoleId equals projectRoles.Id
                          where userProjects.UserId == model.UserID
-                         select new { relatedProjects, projectRoles };
+                         select new { project = relatedProjects, projectRole = projectRoles };
 
             await _unitOfWork.SaveChangesAsync();
 
@@ -96,7 +96,7 @@ namespace Infrastructure.Persistence.Services
                          join relatedProjects in _unitOfWork.Repository<Project>().GetDbset() on userProjects.ProjectId equals relatedProjects.Id
                          join projectRoles in _unitOfWork.Repository<ProjectRole>().GetDbset() on userProjects.RoleId equals projectRoles.Id
                          where userProjects.UserId == model.UserId && userProjects.ProjectId == model.ProjectId
-                         select new { relatedProjects, projectRoles };
+                         select new { project = relatedProjects, projectRole = projectRoles };
 
             // If cannot find the project from the infos provided, return a service exception
             if(result.Count<object>() < 1)
