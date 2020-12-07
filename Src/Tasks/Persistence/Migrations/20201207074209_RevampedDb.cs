@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Infrastructure.Persistence.Migrations
 {
-    public partial class initialIdentityUser : Migration
+    public partial class RevampedDb : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -40,17 +40,25 @@ namespace Infrastructure.Persistence.Migrations
                     LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
                     LockoutEnabled = table.Column<bool>(nullable: false),
                     AccessFailedCount = table.Column<int>(nullable: false),
+                    UserId = table.Column<long>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    LoginProvider = table.Column<string>(nullable: true),
+                    ProviderKey = table.Column<string>(nullable: true),
                     FirstName = table.Column<string>(nullable: true),
                     MidName = table.Column<string>(nullable: true),
                     LastName = table.Column<string>(nullable: true),
-                    Avatar = table.Column<string>(nullable: true),
+                    AvatarUrl = table.Column<string>(nullable: true),
+                    Address = table.Column<string>(nullable: true),
+                    Gender = table.Column<string>(nullable: true),
                     DateOfBirth = table.Column<DateTime>(nullable: true),
                     Status = table.Column<byte>(nullable: false),
-                    CreateAt = table.Column<DateTime>(nullable: false)
+                    CreatedDate = table.Column<DateTime>(nullable: false),
+                    UpdatedDate = table.Column<DateTime>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                    table.UniqueConstraint("AK_AspNetUsers_UserId", x => x.UserId);
                 });
 
             migrationBuilder.CreateTable(
@@ -67,19 +75,16 @@ namespace Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Project",
+                name: "ProjectRoles",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false),
-                    Name = table.Column<string>(maxLength: 100, nullable: false),
-                    Description = table.Column<string>(maxLength: 250, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: true),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime", nullable: true),
-                    Deleted = table.Column<bool>(nullable: false)
+                    Name = table.Column<string>(maxLength: 50, nullable: false),
+                    Description = table.Column<string>(maxLength: 200, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Project", x => x.Id);
+                    table.PrimaryKey("PK_ProjectRoles", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -189,42 +194,40 @@ namespace Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Sections",
+                name: "Project",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false),
-                    Name = table.Column<string>(maxLength: 50, nullable: false),
-                    Description = table.Column<string>(maxLength: 100, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
-                    Deleted = table.Column<bool>(nullable: false),
-                    ProjectId = table.Column<int>(nullable: true)
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(maxLength: 100, nullable: false),
+                    Description = table.Column<string>(maxLength: 250, nullable: true),
+                    ParentId = table.Column<long>(nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "datetime", nullable: true),
+                    CreatedBy = table.Column<long>(nullable: true),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime", nullable: true),
+                    UpdatedBy = table.Column<long>(nullable: true),
+                    Deleted = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Sections", x => x.Id);
+                    table.PrimaryKey("PK_Project", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Sections_Project",
-                        column: x => x.ProjectId,
+                        name: "FK_Project_CreatedBy_User",
+                        column: x => x.CreatedBy,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Project_Project",
+                        column: x => x.ParentId,
                         principalTable: "Project",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "UserProjects",
-                columns: table => new
-                {
-                    UserId = table.Column<string>(maxLength: 450, nullable: false),
-                    ProjectId = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
                     table.ForeignKey(
-                        name: "FK_UserProjects_Project",
-                        column: x => x.ProjectId,
-                        principalTable: "Project",
-                        principalColumn: "Id",
+                        name: "FK_Project_UpdatedBy_User",
+                        column: x => x.UpdatedBy,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "UserId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -232,7 +235,7 @@ namespace Infrastructure.Persistence.Migrations
                 name: "Tasks",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    Id = table.Column<long>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(maxLength: 100, nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime", nullable: false),
@@ -241,19 +244,35 @@ namespace Infrastructure.Persistence.Migrations
                     PriorityId = table.Column<int>(nullable: true),
                     Deleted = table.Column<bool>(nullable: false),
                     UpdatedDate = table.Column<DateTime>(nullable: true),
-                    ProjectId = table.Column<int>(nullable: true),
-                    SectionId = table.Column<int>(nullable: true),
-                    UserId = table.Column<int>(nullable: true),
-                    ParentId = table.Column<int>(nullable: true),
+                    ProjectId = table.Column<long>(nullable: true),
+                    ParentId = table.Column<long>(nullable: true),
                     ReminderSchedule = table.Column<DateTime>(type: "datetime", nullable: true),
                     Reminder = table.Column<bool>(nullable: false),
-                    AssignedBy = table.Column<int>(nullable: true),
-                    AssignedFor = table.Column<int>(nullable: true),
-                    CreatedBy = table.Column<int>(nullable: true)
+                    AssignedBy = table.Column<long>(nullable: true),
+                    AssignedFor = table.Column<long>(nullable: true),
+                    CreatedBy = table.Column<long>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tasks", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Task_AssignedBy_User",
+                        column: x => x.AssignedBy,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Task_AssignedFor_User",
+                        column: x => x.AssignedFor,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Task_CreatedBy_User",
+                        column: x => x.CreatedBy,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Tasks_Tasks",
                         column: x => x.ParentId,
@@ -272,12 +291,63 @@ namespace Infrastructure.Persistence.Migrations
                         principalTable: "Project",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserProjects",
+                columns: table => new
+                {
+                    UserId = table.Column<long>(nullable: false),
+                    ProjectId = table.Column<long>(nullable: false),
+                    RoleId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserProjects", x => new { x.UserId, x.ProjectId, x.RoleId });
                     table.ForeignKey(
-                        name: "FK_Tasks_Sections",
-                        column: x => x.SectionId,
-                        principalTable: "Sections",
+                        name: "FK_UserProjects_Project",
+                        column: x => x.ProjectId,
+                        principalTable: "Project",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_UserProjects_ProjectRole",
+                        column: x => x.RoleId,
+                        principalTable: "ProjectRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_UserProjects_BelongsTo_User",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "PriorityLevel",
+                columns: new[] { "Id", "Description", "DisplayName" },
+                values: new object[,]
+                {
+                    { 1, null, "Emergency" },
+                    { 2, null, "High" },
+                    { 3, null, "Medium" },
+                    { 4, null, "Low" },
+                    { 5, null, "Anytime" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "ProjectRoles",
+                columns: new[] { "Id", "Description", "Name" },
+                values: new object[,]
+                {
+                    { 1, null, "Owner" },
+                    { 2, null, "PM" },
+                    { 3, null, "Leader" },
+                    { 4, null, "QA" },
+                    { 5, null, "Dev" },
+                    { 6, null, "BA" },
+                    { 7, null, "Member" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -320,9 +390,34 @@ namespace Infrastructure.Persistence.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Sections_ProjectId",
-                table: "Sections",
-                column: "ProjectId");
+                name: "IX_Project_CreatedBy",
+                table: "Project",
+                column: "CreatedBy");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Project_ParentId",
+                table: "Project",
+                column: "ParentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Project_UpdatedBy",
+                table: "Project",
+                column: "UpdatedBy");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tasks_AssignedBy",
+                table: "Tasks",
+                column: "AssignedBy");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tasks_AssignedFor",
+                table: "Tasks",
+                column: "AssignedFor");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tasks_CreatedBy",
+                table: "Tasks",
+                column: "CreatedBy");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tasks_ParentId",
@@ -340,14 +435,14 @@ namespace Infrastructure.Persistence.Migrations
                 column: "ProjectId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_SectionId",
-                table: "Tasks",
-                column: "SectionId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_UserProjects_ProjectId",
                 table: "UserProjects",
                 column: "ProjectId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserProjects_RoleId",
+                table: "UserProjects",
+                column: "RoleId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -377,16 +472,16 @@ namespace Infrastructure.Persistence.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
                 name: "PriorityLevel");
 
             migrationBuilder.DropTable(
-                name: "Sections");
+                name: "Project");
 
             migrationBuilder.DropTable(
-                name: "Project");
+                name: "ProjectRoles");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
         }
     }
 }

@@ -2,6 +2,7 @@
 using Core.Application.Interfaces;
 using Core.Application.Models;
 using Core.Domain.Constants;
+using Core.Domain.DbEntities;
 using Infrastructure.Persistence.SettingModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -171,7 +172,7 @@ namespace Infrastructure.Persistence.Services
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim("uid", user.Id)
+                new Claim("uid", user.UserId.ToString()),
             }
             .Union(userClaims)
             .Union(roleClaims);

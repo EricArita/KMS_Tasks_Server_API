@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
-namespace Core.Application.Models
+namespace Core.Domain.DbEntities
 {
     public class ApplicationUser : IdentityUser
     {
+        public long UserId { get; set; }
         public string LoginProvider { get; set; }
         public string ProviderKey { get; set; }
         public string FirstName { get; set; }
@@ -17,5 +20,11 @@ namespace Core.Application.Models
         public byte Status { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedDate { get; set; }
+
+        public ICollection<Project> ProjectsCreated { get; set; }
+        public ICollection<Project> ProjectsUpdated { get; set; }
+        public ICollection<Tasks> AssignedTasks { get; set; }
+        public ICollection<Tasks> TasksAssigned { get; set; }
+        public ICollection<Tasks> TasksCreated { get; set; }
     }
 }

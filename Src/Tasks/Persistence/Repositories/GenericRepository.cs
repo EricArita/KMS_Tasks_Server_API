@@ -8,18 +8,19 @@ using Core.Application.Interfaces;
 using NLog;
 using Infrastructure.Persistence.Services;
 using Infrastructure.Persistence.Contexts;
+using Core.Domain.DbEntities;
+using System.Threading.Tasks;
+using System.Text;
 
 namespace Infrastructure.Persistence.Repositories
 {
     public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
     {
         internal ApplicationDbContext _dbContext;
-        private Logger _logger;
 
         public GenericRepository(ApplicationDbContext context)
         {
             _dbContext = context;
-            _logger = NLoggerService.GetLogger();
         }
 
         public DbSet<TEntity> GetDbset()
@@ -67,12 +68,7 @@ namespace Infrastructure.Persistence.Repositories
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, "An error occurred when updating an entity");
-                return false;
-            }
-            finally
-            {
-                LogManager.Shutdown();
+                throw new Exception("An error occurred when updating an entity: ", ex);
             }
         }
 
@@ -85,12 +81,7 @@ namespace Infrastructure.Persistence.Repositories
             }
             catch (Exception ex)
             {
-                _logger.Error(ex);
-                return false;
-            }
-            finally
-            {
-                LogManager.Shutdown();
+                throw new Exception("An error occurred when inserting an entity: ", ex);
             }
         }
 
@@ -107,6 +98,12 @@ namespace Infrastructure.Persistence.Repositories
                 GetDbset().Attach(entityToDelete);
             }
             GetDbset().Remove(entityToDelete);
+        }
+
+        public virtual async Task<TEntity> InsertAsync(TEntity entity)
+        {
+            await GetDbset().AddAsync(entity);
+            return entity;
         }
     }
 }

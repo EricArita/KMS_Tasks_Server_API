@@ -9,6 +9,7 @@ using Persistence;
 using Microsoft.AspNetCore.Mvc;
 using Core.Application.Interfaces;
 using Infrastructure.Persistence.Repositories;
+using Infrastructure.Persistence.Services;
 
 namespace WebApi
 {
@@ -32,7 +33,9 @@ namespace WebApi
 
             services.AddPersistenceServices(Configuration);
 
+            #region Dependency Injection on UnitOfWork
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            #endregion
 
             services.AddOptions();
 

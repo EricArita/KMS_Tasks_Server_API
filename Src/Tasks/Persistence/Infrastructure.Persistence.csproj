@@ -5,11 +5,28 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20201130023311_UpdateDb_3.cs" />
+    <Compile Remove="Migrations\20201130023311_UpdateDb_3.Designer.cs" />
+    <Compile Remove="Migrations\20201204102222_UpdateDb_6.cs" />
+    <Compile Remove="Migrations\20201204102222_UpdateDb_6.Designer.cs" />
+    <Compile Remove="Migrations\20201204103201_UpdateDb_6.cs" />
+    <Compile Remove="Migrations\20201204103201_UpdateDb_6.Designer.cs" />
+    <Compile Remove="Migrations\20201204105420_UpdateDb_6.cs" />
+    <Compile Remove="Migrations\20201204105420_UpdateDb_6.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="C:\Users\huydbui\.nuget\packages\nlog.config\4.7.5\contentFiles\any\any\NLog.config" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="3.1.10" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.9" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.9" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.9" />
+    <PackageReference Include="NLog" Version="4.7.5" />
     <PackageReference Include="NLog.Config" Version="4.7.5" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.9.3" />
     <PackageReference Include="System.Linq" Version="4.3.0" />
@@ -18,6 +35,10 @@
   <ItemGroup>
     <ProjectReference Include="..\Application\Core.Application.csproj" />
     <ProjectReference Include="..\Domain\Core.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
 </Project>

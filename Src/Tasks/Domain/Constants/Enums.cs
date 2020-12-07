@@ -13,15 +13,15 @@ namespace Core.Domain.Constants
             User = 2
         }
 
-        public enum ProjectRoles : byte
+        public enum ProjectRoles : int
         {
-            Owner = 0,
-            PM = 1,
-            Leader = 2,
-            QA = 3,
-            Dev = 4,
-            BA = 5,
-            Member = 6
+            Owner = 1,
+            PM = 2,
+            Leader = 3,
+            QA = 4,
+            Dev = 5,
+            BA = 6,
+            Member = 7
         }
 
         public enum MenuSidebarOptions : byte
@@ -36,6 +36,15 @@ namespace Core.Domain.Constants
             System = 0,
             Facebook = 1,
             Google = 2,
+        }
+
+        public enum TaskPriorityLevel : int
+        {
+            Emergency = 1,
+            High = 2,
+            Medium = 3,
+            Low = 4,
+            Anytime = 5
         }
     }
 }

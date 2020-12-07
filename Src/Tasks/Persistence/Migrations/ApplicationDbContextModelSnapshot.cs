@@ -19,7 +19,7 @@ namespace Infrastructure.Persistence.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Core.Application.Models.ApplicationUser", b =>
+            modelBuilder.Entity("Core.Domain.DbEntities.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -103,6 +103,13 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<long>("UserId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:IdentityIncrement", 1)
+                        .HasAnnotation("SqlServer:IdentitySeed", 1)
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
                     b.Property<string>("UserName")
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
@@ -137,15 +144,44 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PriorityLevel");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            DisplayName = "Emergency"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            DisplayName = "High"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            DisplayName = "Medium"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            DisplayName = "Low"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            DisplayName = "Anytime"
+                        });
                 });
 
             modelBuilder.Entity("Core.Domain.DbEntities.Project", b =>
                 {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("CreatedBy")
-                        .HasColumnType("int");
+                    b.Property<long?>("CreatedBy")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime?>("CreatedDate")
                         .HasColumnType("datetime");
@@ -162,26 +198,30 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
 
-                    b.Property<int?>("ParentId")
-                        .HasColumnType("int");
+                    b.Property<long?>("ParentId")
+                        .HasColumnType("bigint");
 
-                    b.Property<int?>("UpdatedBy")
-                        .HasColumnType("int");
+                    b.Property<long?>("UpdatedBy")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedBy");
+
                     b.HasIndex("ParentId");
+
+                    b.HasIndex("UpdatedBy");
 
                     b.ToTable("Project");
                 });
 
             modelBuilder.Entity("Core.Domain.DbEntities.ProjectRole", b =>
                 {
-                    b.Property<byte>("Id")
-                        .HasColumnType("tinyint");
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(200)")
@@ -195,23 +235,60 @@ namespace Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ProjectRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Owner"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "PM"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Leader"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "QA"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Dev"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "BA"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "Member"
+                        });
                 });
 
             modelBuilder.Entity("Core.Domain.DbEntities.Tasks", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                        .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("AssignedBy")
-                        .HasColumnType("int");
+                    b.Property<long?>("AssignedBy")
+                        .HasColumnType("bigint");
 
-                    b.Property<int?>("AssignedFor")
-                        .HasColumnType("int");
+                    b.Property<long?>("AssignedFor")
+                        .HasColumnType("bigint");
 
-                    b.Property<int?>("CreatedBy")
-                        .HasColumnType("int");
+                    b.Property<long?>("CreatedBy")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime");
@@ -224,14 +301,14 @@ namespace Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
 
-                    b.Property<int?>("ParentId")
-                        .HasColumnType("int");
+                    b.Property<long?>("ParentId")
+                        .HasColumnType("bigint");
 
                     b.Property<int?>("PriorityId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ProjectId")
-                        .HasColumnType("int");
+                    b.Property<long?>("ProjectId")
+                        .HasColumnType("bigint");
 
                     b.Property<bool>("Reminder")
                         .HasColumnType("bit");
@@ -245,13 +322,16 @@ namespace Infrastructure.Persistence.Migrations
                     b.Property<string>("ScheduleString")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("SectionId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AssignedBy");
+
+                    b.HasIndex("AssignedFor");
+
+                    b.HasIndex("CreatedBy");
 
                     b.HasIndex("ParentId");
 
@@ -264,16 +344,16 @@ namespace Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Core.Domain.DbEntities.UserProjects", b =>
                 {
-                    b.Property<int>("ProjectId")
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ProjectId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("RoleId")
                         .HasColumnType("int");
 
-                    b.Property<byte>("RoleId")
-                        .HasColumnType("tinyint");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)")
-                        .HasMaxLength(450);
+                    b.HasKey("UserId", "ProjectId", "RoleId");
 
                     b.HasIndex("ProjectId");
 
@@ -415,14 +495,44 @@ namespace Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Core.Domain.DbEntities.Project", b =>
                 {
+                    b.HasOne("Core.Domain.DbEntities.ApplicationUser", "CreatedByUser")
+                        .WithMany("ProjectsCreated")
+                        .HasForeignKey("CreatedBy")
+                        .HasConstraintName("FK_Project_CreatedBy_User")
+                        .HasPrincipalKey("UserId");
+
                     b.HasOne("Core.Domain.DbEntities.Project", "Parent")
                         .WithMany("Children")
                         .HasForeignKey("ParentId")
                         .HasConstraintName("FK_Project_Project");
+
+                    b.HasOne("Core.Domain.DbEntities.ApplicationUser", "UpdatedByUser")
+                        .WithMany("ProjectsUpdated")
+                        .HasForeignKey("UpdatedBy")
+                        .HasConstraintName("FK_Project_UpdatedBy_User")
+                        .HasPrincipalKey("UserId");
                 });
 
             modelBuilder.Entity("Core.Domain.DbEntities.Tasks", b =>
                 {
+                    b.HasOne("Core.Domain.DbEntities.ApplicationUser", "AssignedByUser")
+                        .WithMany("TasksAssigned")
+                        .HasForeignKey("AssignedBy")
+                        .HasConstraintName("FK_Task_AssignedBy_User")
+                        .HasPrincipalKey("UserId");
+
+                    b.HasOne("Core.Domain.DbEntities.ApplicationUser", "AssignedForUser")
+                        .WithMany("AssignedTasks")
+                        .HasForeignKey("AssignedFor")
+                        .HasConstraintName("FK_Task_AssignedFor_User")
+                        .HasPrincipalKey("UserId");
+
+                    b.HasOne("Core.Domain.DbEntities.ApplicationUser", "CreatedByUser")
+                        .WithMany("TasksCreated")
+                        .HasForeignKey("CreatedBy")
+                        .HasConstraintName("FK_Task_CreatedBy_User")
+                        .HasPrincipalKey("UserId");
+
                     b.HasOne("Core.Domain.DbEntities.Tasks", "Parent")
                         .WithMany("Children")
                         .HasForeignKey("ParentId")
@@ -452,6 +562,14 @@ namespace Infrastructure.Persistence.Migrations
                         .HasForeignKey("RoleId")
                         .HasConstraintName("FK_UserProjects_ProjectRole")
                         .IsRequired();
+
+                    b.HasOne("Core.Domain.DbEntities.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .HasConstraintName("FK_UserProjects_BelongsTo_User")
+                        .HasPrincipalKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -465,7 +583,7 @@ namespace Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Core.Application.Models.ApplicationUser", null)
+                    b.HasOne("Core.Domain.DbEntities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -474,7 +592,7 @@ namespace Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Core.Application.Models.ApplicationUser", null)
+                    b.HasOne("Core.Domain.DbEntities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -489,7 +607,7 @@ namespace Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Core.Application.Models.ApplicationUser", null)
+                    b.HasOne("Core.Domain.DbEntities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -498,7 +616,7 @@ namespace Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Core.Application.Models.ApplicationUser", null)
+                    b.HasOne("Core.Domain.DbEntities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
