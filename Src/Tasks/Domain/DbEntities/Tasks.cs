@@ -6,11 +6,6 @@ namespace Core.Domain.DbEntities
 {
     public partial class Tasks
     {
-        public Tasks()
-        {
-            Children = new HashSet<Tasks>();
-        }
-
         public long Id { get; set; }
         public string Name { get; set; }
         public DateTime CreatedDate { get; set; }
@@ -33,6 +28,5 @@ namespace Core.Domain.DbEntities
         public virtual ApplicationUser AssignedByUser { get; set; }
         public virtual ApplicationUser AssignedForUser { get; set; }
         public virtual ApplicationUser CreatedByUser { get; set; }
-        public virtual ICollection<Tasks> Children { get; set; }
     }
 }

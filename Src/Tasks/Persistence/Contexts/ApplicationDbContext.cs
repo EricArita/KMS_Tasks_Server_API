@@ -105,18 +105,18 @@ namespace Infrastructure.Persistence.Contexts
                     .HasMaxLength(100);
                 
                 entity.HasOne(d => d.Parent)
-                    .WithMany(p => p.Children)
+                    .WithMany()
                     .HasForeignKey(d => d.ParentId)
-                    .HasConstraintName("FK_Project_Project");
+                    .HasConstraintName("FK_Project_HaveParentProject");
 
                 entity.HasOne(p => p.CreatedByUser)
-                    .WithMany(u => u.ProjectsCreated)
+                    .WithMany()
                     .HasPrincipalKey(u => u.UserId)
                     .HasForeignKey(p => p.CreatedBy)
                     .HasConstraintName("FK_Project_CreatedBy_User");
 
                 entity.HasOne(p => p.UpdatedByUser)
-                    .WithMany(u => u.ProjectsUpdated)
+                    .WithMany()
                     .HasPrincipalKey(u => u.UserId)
                     .HasForeignKey(p => p.UpdatedBy)
                     .HasConstraintName("FK_Project_UpdatedBy_User");
@@ -143,34 +143,34 @@ namespace Infrastructure.Persistence.Contexts
                 entity.Property(t => t.PriorityId).HasConversion<int>();
 
                 entity.HasOne(d => d.Parent)
-                    .WithMany(p => p.Children)
+                    .WithMany()
                     .HasForeignKey(d => d.ParentId)
-                    .HasConstraintName("FK_Tasks_Tasks");
+                    .HasConstraintName("FK_Tasks_HaveParentTasks");
 
                 entity.HasOne(d => d.Priority)
-                    .WithMany(p => p.Tasks)
+                    .WithMany()
                     .HasForeignKey(d => d.PriorityId)
                     .HasConstraintName("FK_Tasks_PriorityLevel");
 
                 entity.HasOne(d => d.Project)
-                    .WithMany(p => p.Tasks)
+                    .WithMany()
                     .HasForeignKey(d => d.ProjectId)
                     .HasConstraintName("FK_Tasks_Project");
 
                 entity.HasOne(t => t.CreatedByUser)
-                   .WithMany(u => u.TasksCreated)
+                   .WithMany()
                    .HasPrincipalKey(u => u.UserId)
                    .HasForeignKey(t => t.CreatedBy)
                    .HasConstraintName("FK_Task_CreatedBy_User");
 
                 entity.HasOne(t => t.AssignedByUser)
-                   .WithMany(u => u.TasksAssigned)
+                   .WithMany()
                    .HasPrincipalKey(u => u.UserId)
                    .HasForeignKey(t => t.AssignedBy)
                    .HasConstraintName("FK_Task_AssignedBy_User");
 
                 entity.HasOne(t => t.AssignedForUser)
-                   .WithMany(u => u.AssignedTasks)
+                   .WithMany()
                    .HasPrincipalKey(u => u.UserId)
                    .HasForeignKey(t => t.AssignedFor)
                    .HasConstraintName("FK_Task_AssignedFor_User");
