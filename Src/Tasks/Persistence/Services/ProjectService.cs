@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Text;
+using Infrastructure.Persistence.DTOs;
 
 namespace Infrastructure.Persistence.Services
 {
@@ -80,7 +81,29 @@ namespace Infrastructure.Persistence.Services
                          join relatedProjects in _unitOfWork.Repository<Project>().GetDbset() on userProjects.ProjectId equals relatedProjects.Id
                          join projectRoles in _unitOfWork.Repository<ProjectRole>().GetDbset() on userProjects.RoleId equals projectRoles.Id
                          where userProjects.UserId == model.UserID
-                         select new { project = relatedProjects, projectRole = projectRoles };
+                         select new { 
+                             Project = new
+                             {
+                                 relatedProjects.Id,
+                                 relatedProjects.Name,
+                                 relatedProjects.Description,
+                                 relatedProjects.CreatedDate,
+                                 CreatedBy = new UserDTO(relatedProjects.CreatedByUser),
+                                 relatedProjects.UpdatedDate,
+                                 UpdatedBy = new UserDTO(relatedProjects.UpdatedByUser),
+                                 Parent = relatedProjects.Parent != null ? new
+                                 {
+                                     relatedProjects.Parent.Id,
+                                     relatedProjects.Parent.Name,
+                                     relatedProjects.Parent.Description,
+                                     relatedProjects.Parent.CreatedDate,
+                                     CreatedBy = new UserDTO(relatedProjects.Parent.CreatedByUser),
+                                     relatedProjects.Parent.UpdatedDate,
+                                     UpdatedBy = new UserDTO(relatedProjects.Parent.UpdatedByUser)
+                                 } : null,
+                                 ProjectRole = projectRoles
+                             }
+                         };
 
             await _unitOfWork.SaveChangesAsync();
 
@@ -96,7 +119,30 @@ namespace Infrastructure.Persistence.Services
                          join relatedProjects in _unitOfWork.Repository<Project>().GetDbset() on userProjects.ProjectId equals relatedProjects.Id
                          join projectRoles in _unitOfWork.Repository<ProjectRole>().GetDbset() on userProjects.RoleId equals projectRoles.Id
                          where userProjects.UserId == model.UserId && userProjects.ProjectId == model.ProjectId
-                         select new { project = relatedProjects, projectRole = projectRoles };
+                         select new
+                         {
+                             Project = new
+                             {
+                                 relatedProjects.Id,
+                                 relatedProjects.Name,
+                                 relatedProjects.Description,
+                                 relatedProjects.CreatedDate,
+                                 CreatedBy = new UserDTO(relatedProjects.CreatedByUser),
+                                 relatedProjects.UpdatedDate,
+                                 UpdatedBy = new UserDTO(relatedProjects.UpdatedByUser),
+                                 Parent = relatedProjects.Parent != null ? new
+                                 {
+                                     relatedProjects.Parent.Id,
+                                     relatedProjects.Parent.Name,
+                                     relatedProjects.Parent.Description,
+                                     relatedProjects.Parent.CreatedDate,
+                                     CreatedBy = new UserDTO(relatedProjects.Parent.CreatedByUser),
+                                     relatedProjects.Parent.UpdatedDate,
+                                     UpdatedBy = new UserDTO(relatedProjects.Parent.UpdatedByUser)
+                                 } : null,
+                                 ProjectRole = projectRoles
+                             }
+                         };
 
             // If cannot find the project from the infos provided, return a service exception
             if(result.Count<object>() < 1)

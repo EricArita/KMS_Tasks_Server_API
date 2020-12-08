@@ -35,12 +35,12 @@ namespace WebApi.Controllers.v1
             {
                 // Check validity of the request
                 if (newProject.CreatedBy != null) {
-                    return Unauthorized(new Response<string>(false, "Unauthorized creation of project"));
+                    return Unauthorized(new Response<object>(false, null, "Unauthorized creation of project"));
                 }
                 var claimsManager = HttpContext.User;
                 if(!claimsManager.HasClaim(c => c.Type == "uid"))
                 {
-                    return Unauthorized(new Response<string>(false, "Token provided is invalid because there is no valid confidential claim"));
+                    return Unauthorized(new Response<object>(false, null, "Token provided is invalid because there is no valid confidential claim"));
                 }
                 // Extract uid from token
                 int uid;
@@ -49,13 +49,13 @@ namespace WebApi.Controllers.v1
                     uid = int.Parse(claimsManager.Claims.FirstOrDefault(c => c.Type == "uid").Value);
                 } catch (Exception)
                 {
-                    return Unauthorized(new Response<string>(false, "Token provided is invalid because the value for the claim is invalid"));
+                    return Unauthorized(new Response<object>(false, null, "Token provided is invalid because the value for the claim is invalid"));
                 }
                 //Check if uid is valid
                 ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == uid);
                 if(validUser == null)
                 {
-                    return BadRequest(new Response<string>(false, "Cannot locate a valid user from the claim provided"));
+                    return BadRequest(new Response<object>(false, null, "Cannot locate a valid user from the claim provided"));
                 }
                 newProject.CreatedBy = uid;
 
@@ -68,14 +68,14 @@ namespace WebApi.Controllers.v1
                 _logger.LogError(ex, "An exception occurred while processing request", ex.Message, ex.StackTrace);
                 if (ex is ProjectServiceException)
                 {
-                    return StatusCode(400, new Response<string>(false, "A problem occurred when processing the content of your request, please recheck your request params"));
+                    return StatusCode(400, new Response<object>(false, null, "A problem occurred when processing the content of your request, please recheck your request params"));
                 }
                 return StatusCode(500, new Response<Exception>(false, ex, "Server encountered an exception"));
             }
         }
 
         [HttpGet("projects")]
-        public async Task<IActionResult> GetAllProjects(int userId)
+        public async Task<IActionResult> GetAllProjects()
         {
             try
             {
@@ -83,7 +83,7 @@ namespace WebApi.Controllers.v1
                 var claimsManager = HttpContext.User;
                 if (!claimsManager.HasClaim(c => c.Type == "uid"))
                 {
-                    return Unauthorized(new Response<string>(false, "Token provided is invalid because there is no valid confidential claim"));
+                    return Unauthorized(new Response<object>(false, null, "Token provided is invalid because there is no valid confidential claim"));
                 }
                 // Extract uid from token
                 int uid;
@@ -92,13 +92,13 @@ namespace WebApi.Controllers.v1
                     uid = int.Parse(claimsManager.Claims.FirstOrDefault(c => c.Type == "uid").Value);
                 } catch (Exception)
                 {
-                    return Unauthorized(new Response<string>(false, "Token provided is invalid because the value for the confidential claim is invalid"));
+                    return Unauthorized(new Response<object>(false, null, "Token provided is invalid because the value for the confidential claim is invalid"));
                 }
                 // Check if uid is valid or not
                 ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == uid);
                 if (validUser == null)
                 {
-                    return BadRequest(new Response<string>(false, "Cannot locate a valid user from the claim provided"));
+                    return BadRequest(new Response<object>(false, null, "Cannot locate a valid user from the claim provided"));
                 }
 
                 // If passes all tests, then we submit it to the service layer
@@ -115,7 +115,7 @@ namespace WebApi.Controllers.v1
                 _logger.LogError(ex, "An exception occurred while processing request", ex.Message, ex.StackTrace);
                 if (ex is ProjectServiceException)
                 {
-                    return StatusCode(400, new Response<string>(false, "A problem occurred when processing the content of your request, please recheck your request params"));
+                    return StatusCode(400, new Response<object>(false, null, "A problem occurred when processing the content of your request, please recheck your request params"));
                 }
                 return StatusCode(500, new Response<Exception>(false, ex, "Server encountered an exception"));
             }
@@ -130,7 +130,7 @@ namespace WebApi.Controllers.v1
                 var claimsManager = HttpContext.User;
                 if (!claimsManager.HasClaim(c => c.Type == "uid"))
                 {
-                    return Unauthorized(new Response<string>(false, "Token provided is invalid because there is no valid confidential claim"));
+                    return Unauthorized(new Response<object>(false, null, "Token provided is invalid because there is no valid confidential claim"));
                 }
                 // Extract uid from token
                 int uid;
@@ -140,13 +140,13 @@ namespace WebApi.Controllers.v1
                 }
                 catch (Exception)
                 {
-                    return Unauthorized(new Response<string>(false, "Token provided is invalid because the value for the confidential claim is invalid"));
+                    return Unauthorized(new Response<object>(false, null, "Token provided is invalid because the value for the confidential claim is invalid"));
                 }
                 // Check if uid is valid or not
                 ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == uid);
                 if (validUser == null)
                 {
-                    return BadRequest(new Response<string>(false, "Cannot locate a valid user from the claim provided"));
+                    return BadRequest(new Response<object>(false, null, "Cannot locate a valid user from the claim provided"));
                 }
 
                 // If passes all tests, then we submit it to the service layer
@@ -164,7 +164,7 @@ namespace WebApi.Controllers.v1
                 _logger.LogError(ex, "An exception occurred while processing request", ex.Message, ex.StackTrace);
                 if (ex is ProjectServiceException)
                 {
-                    return StatusCode(400, new Response<string>(false, "A problem occurred when processing the content of your request, please recheck your request params"));
+                    return StatusCode(400, new Response<object>(false, null, "A problem occurred when processing the content of your request, please recheck your request params"));
                 }
                 return StatusCode(500, new Response<Exception>(false, ex, "Server encountered an exception"));
             }

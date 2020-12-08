@@ -20,11 +20,5 @@ namespace Core.Domain.DbEntities
         public byte Status { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedDate { get; set; }
-
-        public ICollection<Project> ProjectsCreated { get; set; }
-        public ICollection<Project> ProjectsUpdated { get; set; }
-        public ICollection<Tasks> AssignedTasks { get; set; }
-        public ICollection<Tasks> TasksAssigned { get; set; }
-        public ICollection<Tasks> TasksCreated { get; set; }
     }
 }
