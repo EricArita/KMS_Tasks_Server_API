@@ -12,21 +12,25 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Text;
 using Infrastructure.Persistence.DTOs;
+using Core.Application.Models.Project;
+using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Persistence.Services
 {
     public class ProjectService : IProjectService
     {
         protected readonly IUnitOfWork _unitOfWork;
+        private ILogger<ProjectService> _logger;
         protected readonly UserManager<ApplicationUser> _userManager;
 
-        public ProjectService(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager)
+        public ProjectService(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, ILogger<ProjectService> logger)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
+            _logger = logger;
         }
 
-        async Task<Project> IProjectService.AddNewProject(NewProjectModel newProject)
+        async Task<ProjectResponseModel> IProjectService.AddNewProject(NewProjectModel newProject)
         {
             if (!newProject.CreatedBy.HasValue) throw new ProjectServiceException("Cannot create new project with no user relation");
 
@@ -36,6 +40,13 @@ namespace Infrastructure.Persistence.Services
 
             try
             {
+                // Check if uid is valid or not
+                ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == (newProject.CreatedBy ?? null));
+                if (validUser == null)
+                {
+                    throw new ProjectServiceException("Cannot locate a valid user from the claim provided");
+                }
+
                 // Add project in first
                 Project addedProject = new Project()
                 {
@@ -63,105 +74,298 @@ namespace Infrastructure.Persistence.Services
 
                 await t.CommitAsync();
 
-                return addedProject;
+                return new ProjectResponseModel(addedProject, relationToUser.ProjectRole);
             }
             catch (Exception ex)
             {
                 await t.RollbackAsync();
+                _logger.LogError(ex, "An error occurred when using ProjectService");
                 throw ex;
             }
         }
 
-        async Task<IEnumerable<object>> IProjectService.GetAllProjects(GetAllProjectsModel model)
+        async Task<IEnumerable<ProjectResponseModel>> IProjectService.GetAllProjects(GetAllProjectsModel model)
         {
             if (model.UserID == null) throw new ProjectServiceException("Cannot find projects of this user if you don't provide a UserID");
 
-            // Query for  all the projects user participated in
-            var result = from userProjects in _unitOfWork.Repository<UserProjects>().GetDbset()
-                         join relatedProjects in _unitOfWork.Repository<Project>().GetDbset() on userProjects.ProjectId equals relatedProjects.Id
-                         join projectRoles in _unitOfWork.Repository<ProjectRole>().GetDbset() on userProjects.RoleId equals projectRoles.Id
-                         where userProjects.UserId == model.UserID
-                         select new { 
-                             Project = new
-                             {
-                                 relatedProjects.Id,
-                                 relatedProjects.Name,
-                                 relatedProjects.Description,
-                                 relatedProjects.CreatedDate,
-                                 CreatedBy = new UserDTO(relatedProjects.CreatedByUser),
-                                 relatedProjects.UpdatedDate,
-                                 UpdatedBy = new UserDTO(relatedProjects.UpdatedByUser),
-                                 Parent = relatedProjects.Parent != null ? new
-                                 {
-                                     relatedProjects.Parent.Id,
-                                     relatedProjects.Parent.Name,
-                                     relatedProjects.Parent.Description,
-                                     relatedProjects.Parent.CreatedDate,
-                                     CreatedBy = new UserDTO(relatedProjects.Parent.CreatedByUser),
-                                     relatedProjects.Parent.UpdatedDate,
-                                     UpdatedBy = new UserDTO(relatedProjects.Parent.UpdatedByUser)
-                                 } : null,
-                                 ProjectRole = projectRoles
-                             }
-                         };
+            await using var t = await _unitOfWork.CreateTransaction();
 
-            await _unitOfWork.SaveChangesAsync();
+            try
+            {
+                // Check if uid is valid or not
+                ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == model.UserID);
+                if (validUser == null)
+                {
+                    throw new ProjectServiceException("Cannot locate a valid user from the claim provided");
+                }
 
-            return result.ToList();
-        }
+                // Query for  all the projects user participated in
+                var result = from userProjects in _unitOfWork.Repository<UserProjects>().GetDbset()
+                             join relatedProjects in _unitOfWork.Repository<Project>().GetDbset() on userProjects.ProjectId equals relatedProjects.Id
+                             join projectRoles in _unitOfWork.Repository<ProjectRole>().GetDbset() on userProjects.RoleId equals projectRoles.Id
+                             where userProjects.UserId == model.UserID
+                             select new ProjectResponseModel(relatedProjects, projectRoles);
 
-        async Task<object> IProjectService.GetOneProject(GetOneProjectModel model)
+                await _unitOfWork.SaveChangesAsync();
+
+                return result.ToList();
+            }
+            catch (Exception ex)
+            {
+                await t.RollbackAsync();
+                _logger.LogError(ex, "An error occurred when using ProjectService");
+                throw ex;
+            }
+}
+
+        async Task<ProjectResponseModel> IProjectService.GetOneProject(GetOneProjectModel model)
         {
             if (model.UserId == null || model.ProjectId == null) throw new ProjectServiceException("Cannot find projects of this user if you don't provide a UserID");
 
-            // Query for participations in projects with the provided info
-            var result = from userProjects in _unitOfWork.Repository<UserProjects>().GetDbset()
-                         join relatedProjects in _unitOfWork.Repository<Project>().GetDbset() on userProjects.ProjectId equals relatedProjects.Id
-                         join projectRoles in _unitOfWork.Repository<ProjectRole>().GetDbset() on userProjects.RoleId equals projectRoles.Id
-                         where userProjects.UserId == model.UserId && userProjects.ProjectId == model.ProjectId
-                         select new
-                         {
-                             Project = new
-                             {
-                                 relatedProjects.Id,
-                                 relatedProjects.Name,
-                                 relatedProjects.Description,
-                                 relatedProjects.CreatedDate,
-                                 CreatedBy = new UserDTO(relatedProjects.CreatedByUser),
-                                 relatedProjects.UpdatedDate,
-                                 UpdatedBy = new UserDTO(relatedProjects.UpdatedByUser),
-                                 Parent = relatedProjects.Parent != null ? new
-                                 {
-                                     relatedProjects.Parent.Id,
-                                     relatedProjects.Parent.Name,
-                                     relatedProjects.Parent.Description,
-                                     relatedProjects.Parent.CreatedDate,
-                                     CreatedBy = new UserDTO(relatedProjects.Parent.CreatedByUser),
-                                     relatedProjects.Parent.UpdatedDate,
-                                     UpdatedBy = new UserDTO(relatedProjects.Parent.UpdatedByUser)
-                                 } : null,
-                                 ProjectRole = projectRoles
-                             }
-                         };
+            await using var t = await _unitOfWork.CreateTransaction();
 
-            // If cannot find the project from the infos provided, return a service exception
-            if(result.Count<object>() < 1)
+            try
             {
-                throw new ProjectServiceException("Cannot find a single instance of a project from the infos you provided");
-            }
+                // Check if uid is valid or not
+                ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == model.UserId);
+                if (validUser == null)
+                {
+                    throw new ProjectServiceException("Cannot locate a valid user from the claim provided");
+                }
 
-            // If found more than one instance, the database probably is corrupted, in this case, return an internal error
-            if(result.Count<object>() > 1)
+                // Query for participations in projects with the provided info
+                var result = from userProjects in _unitOfWork.Repository<UserProjects>().GetDbset()
+                             join relatedProjects in _unitOfWork.Repository<Project>().GetDbset() on userProjects.ProjectId equals relatedProjects.Id
+                             join projectRoles in _unitOfWork.Repository<ProjectRole>().GetDbset() on userProjects.RoleId equals projectRoles.Id
+                             where userProjects.UserId == model.UserId && userProjects.ProjectId == model.ProjectId
+                             select new ProjectResponseModel(relatedProjects, projectRoles);
+
+                // If cannot find the project from the infos provided, return a service exception
+                if(result.Count() < 1)
+                {
+                    throw new ProjectServiceException("Cannot find a single instance of a project from the infos you provided");
+                }
+
+                // If found more than one instance, the database probably is corrupted, in this case, return an internal error
+                if(result.Count() > 1)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendLine("Inconsistency in database. Executing query returns more than one result: ");
+                    sb.AppendLine(result.ToList().ToString());
+                    throw new Exception(sb.ToString());
+                }
+
+                await _unitOfWork.SaveChangesAsync();
+
+                return result.ToList()[0];
+            }
+            catch (Exception ex)
             {
-                StringBuilder sb = new StringBuilder();
-                sb.AppendLine("Inconsistency in database. Executing query returns more than one result: ");
-                sb.AppendLine(result.ToList().ToString());
-                throw new Exception();
+                await t.RollbackAsync();
+                _logger.LogError(ex, "An error occurred when using ProjectService");
+                throw ex;
             }
+        }
 
-            await _unitOfWork.SaveChangesAsync();
+        public async Task<ProjectResponseModel> UpdateProjectInfo(int projectId, UpdateProjectInfoModel model)
+        {
+            if (!model.CreatedBy.HasValue) throw new ProjectServiceException("Cannot create new project with no user relation");
 
-            return result.ToList()[0];
+            // Start the update transaction
+            await using var t = await _unitOfWork.CreateTransaction();
+            try
+            {
+                // Check if uid is valid or not
+                ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == (model.CreatedBy ?? null));
+                if (validUser == null)
+                {
+                    throw new ProjectServiceException("Cannot locate a valid user from the claim provided");
+                }
+
+                // Check if project is in db first
+                var result = from project in _unitOfWork.Repository<Project>().GetDbset()
+                             where project.Id == projectId
+                             select project;
+                if (result == null || result.Count() < 1)
+                {
+                    throw new ProjectServiceException("Cannot find a single instance of a project from the infos you provided");
+                }
+                if (result.Count() > 1)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendLine("Inconsistency in database. Executing query returns more than one result: ");
+                    sb.AppendLine(result.ToList().ToString());
+                    throw new Exception(sb.ToString());
+                }
+
+                Project operatedProject = result.ToList()[0];
+
+                // flag to know if any field is going to be changed or not
+                bool isUpdated = false;
+
+                // Check if its parent project is valid
+                if (model.ParentId != null)
+                {
+                    var parent = from project in _unitOfWork.Repository<Project>().GetDbset()
+                                 where project.Id == model.ParentId
+                                 select project;
+                    if (parent == null || parent.Count() < 1)
+                    {
+                        throw new ProjectServiceException("Cannot find a single instance of a project from the infos you provided");
+                    }
+                    if (parent.Count() > 1)
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        sb.AppendLine("Inconsistency in database. Executing query returns more than one result: ");
+                        sb.AppendLine(parent.ToList().ToString());
+                        throw new Exception(sb.ToString());
+                    }
+
+                    Project newParentProject = parent.ToList()[0];
+
+                    if(newParentProject.Id == operatedProject.Id)
+                    {
+                        throw new ProjectServiceException("Cannot set a project to be its own parent");
+                    }
+
+                    // Only  register change only if parentId is not sent together with removefromparent field (we ignore the change)
+                    if (newParentProject.Id != operatedProject.ParentId && (model.MakeParentless == null || !model.MakeParentless.Value))
+                    {
+                        operatedProject.ParentId = newParentProject.Id;
+                        isUpdated = true;
+                    }
+                }
+
+                // If remove parent is true and the item has a parent, then we register the change
+                if (operatedProject.ParentId != null && model.MakeParentless != null && model.MakeParentless.Value)
+                {
+                    operatedProject.ParentId = null;
+                    isUpdated = true;
+                }
+
+                //Update fields
+                if (model.Name != null && model.Name.Length > 0 && model.Name != operatedProject.Name)
+                {
+                    operatedProject.Name = model.Name;
+                    isUpdated = true;
+                }
+                if (model.Description != null && model.Description.Length > 0 && model.Description != operatedProject.Description)
+                {
+                    operatedProject.Description = model.Description;
+                    isUpdated = true;
+                }
+
+                // Get project role for the response
+                var getUserProject = from userProject in _unitOfWork.Repository<UserProjects>().GetDbset()
+                                     where userProject.UserId == validUser.UserId && userProject.ProjectId == operatedProject.Id
+                                     select userProject;
+                if (getUserProject == null || getUserProject.Count() < 1)
+                {
+                    throw new ProjectServiceException("Cannot find a single instance of a project from the infos you provided");
+                }
+                if (getUserProject.Count() > 1)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendLine("Inconsistency in database. Executing query returns more than one result: ");
+                    sb.AppendLine(getUserProject.ToList().ToString());
+                    throw new Exception(sb.ToString());
+                }
+
+                // If there is any update, we update the object
+                if (isUpdated) {
+                    operatedProject.UpdatedBy = validUser.UserId;
+                    operatedProject.UpdatedDate = DateTime.UtcNow;
+                    _unitOfWork.Repository<Project>().Update(operatedProject);
+                    await _unitOfWork.SaveChangesAsync();
+                }       
+
+                await t.CommitAsync();
+
+                return new ProjectResponseModel(operatedProject, getUserProject.ToList()[0].ProjectRole);
+            }
+            catch (Exception ex)
+            {
+                await t.RollbackAsync();
+                _logger.LogError(ex, "An error occurred when using ProjectService");
+                throw ex;
+            }
+        }
+
+        public async Task<ProjectResponseModel> SoftDeleteExistingProject(int projectId, int deletedByUserId)
+        {
+            // Start the update transaction
+            await using var t = await _unitOfWork.CreateTransaction();
+            try
+            {
+                // Check if uid is valid or not
+                ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == deletedByUserId);
+                if (validUser == null)
+                {
+                    throw new ProjectServiceException("Cannot locate a valid user from the claim provided");
+                }
+
+                // Check if project is in db first
+                var result = from project in _unitOfWork.Repository<Project>().GetDbset()
+                             where project.Id == projectId
+                             select project;
+                if (result == null || result.Count() < 1)
+                {
+                    throw new ProjectServiceException("Cannot find a single instance of a project from the infos you provided");
+                }
+                if (result.Count() > 1)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendLine("Inconsistency in database. Executing query returns more than one result: ");
+                    sb.AppendLine(result.ToList().ToString());
+                    throw new Exception(sb.ToString());
+                }
+
+                Project operatedProject = result.ToList()[0];
+
+                // flag to know if any field is going to be changed or not
+                bool isUpdated = false;
+
+                if (!operatedProject.Deleted)
+                {
+                    operatedProject.Deleted = true;
+                    isUpdated = true;
+                }
+
+                // Get project role for the response
+                var getUserProject = from userProject in _unitOfWork.Repository<UserProjects>().GetDbset()
+                                     where userProject.UserId == validUser.UserId && userProject.ProjectId == operatedProject.Id
+                                     select userProject;
+                if (getUserProject == null || getUserProject.Count() < 1)
+                {
+                    throw new ProjectServiceException("Cannot find a single instance of a project from the infos you provided");
+                }
+                if (getUserProject.Count() > 1)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendLine("Inconsistency in database. Executing query returns more than one result: ");
+                    sb.AppendLine(getUserProject.ToList().ToString());
+                    throw new Exception(sb.ToString());
+                }
+
+                // If there is any update, we update the object
+                if (isUpdated)
+                {
+                    operatedProject.UpdatedBy = validUser.UserId;
+                    operatedProject.UpdatedDate = DateTime.UtcNow;
+                    _unitOfWork.Repository<Project>().Update(operatedProject);
+                    await _unitOfWork.SaveChangesAsync();
+                }
+
+                await t.CommitAsync();
+
+                return new ProjectResponseModel(operatedProject, getUserProject.ToList()[0].ProjectRole);
+            }
+            catch (Exception ex)
+            {
+                await t.RollbackAsync();
+                _logger.LogError(ex, "An error occurred when using ProjectService");
+                throw ex;
+            }
         }
     }
 }
