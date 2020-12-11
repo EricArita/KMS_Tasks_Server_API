@@ -32,9 +32,9 @@ namespace Infrastructure.Persistence.Services
 
         async Task<ProjectResponseModel> IProjectService.AddNewProject(NewProjectModel newProject)
         {
-            if (!newProject.CreatedBy.HasValue) throw new ProjectServiceException("Cannot create new project with no user relation");
+            if (!newProject.CreatedBy.HasValue) throw new ProjectServiceException(400, "Cannot create new project with no user relation");
 
-            if (newProject.Name == null || newProject.Name.Length <= 0) throw new ProjectServiceException("Cannot create new project without a name");
+            if (newProject.Name == null || newProject.Name.Length <= 0) throw new ProjectServiceException(400, "Cannot create new project without a name");
 
             await using var t = await _unitOfWork.CreateTransaction();
 
@@ -44,7 +44,7 @@ namespace Infrastructure.Persistence.Services
                 ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == (newProject.CreatedBy ?? null));
                 if (validUser == null)
                 {
-                    throw new ProjectServiceException("Cannot locate a valid user from the claim provided");
+                    throw new ProjectServiceException(404, "Cannot locate a valid user from the claim provided");
                 }
 
                 // Add project in first
@@ -86,7 +86,7 @@ namespace Infrastructure.Persistence.Services
 
         async Task<IEnumerable<ProjectResponseModel>> IProjectService.GetAllProjects(GetAllProjectsModel model)
         {
-            if (model.UserID == null) throw new ProjectServiceException("Cannot find projects of this user if you don't provide a UserID");
+            if (model.UserID == null) throw new ProjectServiceException(400, "Cannot find projects of this user if you don't provide a UserID");
 
             await using var t = await _unitOfWork.CreateTransaction();
 
@@ -96,7 +96,7 @@ namespace Infrastructure.Persistence.Services
                 ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == model.UserID);
                 if (validUser == null)
                 {
-                    throw new ProjectServiceException("Cannot locate a valid user from the claim provided");
+                    throw new ProjectServiceException(404, "Cannot locate a valid user from the claim provided");
                 }
 
                 // Query for  all the projects user participated in
@@ -120,7 +120,7 @@ namespace Infrastructure.Persistence.Services
 
         async Task<ProjectResponseModel> IProjectService.GetOneProject(GetOneProjectModel model)
         {
-            if (model.UserId == null || model.ProjectId == null) throw new ProjectServiceException("Cannot find projects of this user if you don't provide a UserID");
+            if (model.UserId == null || model.ProjectId == null) throw new ProjectServiceException(400, "Cannot find projects of this user if you don't provide a UserID");
 
             await using var t = await _unitOfWork.CreateTransaction();
 
@@ -130,7 +130,7 @@ namespace Infrastructure.Persistence.Services
                 ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == model.UserId);
                 if (validUser == null)
                 {
-                    throw new ProjectServiceException("Cannot locate a valid user from the claim provided");
+                    throw new ProjectServiceException(404, "Cannot locate a valid user from the claim provided");
                 }
 
                 // Query for participations in projects with the provided info
@@ -143,7 +143,7 @@ namespace Infrastructure.Persistence.Services
                 // If cannot find the project from the infos provided, return a service exception
                 if(result.Count() < 1)
                 {
-                    throw new ProjectServiceException("Cannot find a single instance of a project from the infos you provided");
+                    throw new ProjectServiceException(404, "Cannot find a single instance of a project from the infos you provided");
                 }
 
                 // If found more than one instance, the database probably is corrupted, in this case, return an internal error
@@ -169,7 +169,7 @@ namespace Infrastructure.Persistence.Services
 
         public async Task<ProjectResponseModel> UpdateProjectInfo(int projectId, UpdateProjectInfoModel model)
         {
-            if (!model.CreatedBy.HasValue) throw new ProjectServiceException("Cannot create new project with no user relation");
+            if (!model.CreatedBy.HasValue) throw new ProjectServiceException(400, "Cannot create new project with no user relation");
 
             // Start the update transaction
             await using var t = await _unitOfWork.CreateTransaction();
@@ -179,7 +179,7 @@ namespace Infrastructure.Persistence.Services
                 ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == (model.CreatedBy ?? null));
                 if (validUser == null)
                 {
-                    throw new ProjectServiceException("Cannot locate a valid user from the claim provided");
+                    throw new ProjectServiceException(404, "Cannot locate a valid user from the claim provided");
                 }
 
                 // Check if project is in db first
@@ -188,7 +188,7 @@ namespace Infrastructure.Persistence.Services
                              select project;
                 if (result == null || result.Count() < 1)
                 {
-                    throw new ProjectServiceException("Cannot find a single instance of a project from the infos you provided");
+                    throw new ProjectServiceException(404, "Cannot find a single instance of a project from the infos you provided");
                 }
                 if (result.Count() > 1)
                 {
@@ -211,7 +211,7 @@ namespace Infrastructure.Persistence.Services
                                  select project;
                     if (parent == null || parent.Count() < 1)
                     {
-                        throw new ProjectServiceException("Cannot find a single instance of a project from the infos you provided");
+                        throw new ProjectServiceException(404, "Cannot find a single instance of a project from the infos you provided");
                     }
                     if (parent.Count() > 1)
                     {
@@ -225,7 +225,7 @@ namespace Infrastructure.Persistence.Services
 
                     if(newParentProject.Id == operatedProject.Id)
                     {
-                        throw new ProjectServiceException("Cannot set a project to be its own parent");
+                        throw new ProjectServiceException(400, "Cannot set a project to be its own parent");
                     }
 
                     // Only  register change only if parentId is not sent together with removefromparent field (we ignore the change)
@@ -261,7 +261,7 @@ namespace Infrastructure.Persistence.Services
                                      select userProject;
                 if (getUserProject == null || getUserProject.Count() < 1)
                 {
-                    throw new ProjectServiceException("Cannot find a single instance of a project from the infos you provided");
+                    throw new ProjectServiceException(404, "Cannot find a single instance of a project from the infos you provided");
                 }
                 if (getUserProject.Count() > 1)
                 {
@@ -301,7 +301,7 @@ namespace Infrastructure.Persistence.Services
                 ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == deletedByUserId);
                 if (validUser == null)
                 {
-                    throw new ProjectServiceException("Cannot locate a valid user from the claim provided");
+                    throw new ProjectServiceException(404, "Cannot locate a valid user from the claim provided");
                 }
 
                 // Check if project is in db first
@@ -310,7 +310,7 @@ namespace Infrastructure.Persistence.Services
                              select project;
                 if (result == null || result.Count() < 1)
                 {
-                    throw new ProjectServiceException("Cannot find a single instance of a project from the infos you provided");
+                    throw new ProjectServiceException(404, "Cannot find a single instance of a project from the infos you provided");
                 }
                 if (result.Count() > 1)
                 {
@@ -337,7 +337,7 @@ namespace Infrastructure.Persistence.Services
                                      select userProject;
                 if (getUserProject == null || getUserProject.Count() < 1)
                 {
-                    throw new ProjectServiceException("Cannot find a single instance of a project from the infos you provided");
+                    throw new ProjectServiceException(404, "Cannot find a single instance of a project from the infos you provided");
                 }
                 if (getUserProject.Count() > 1)
                 {

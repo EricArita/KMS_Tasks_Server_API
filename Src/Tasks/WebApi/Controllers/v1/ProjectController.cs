@@ -57,12 +57,12 @@ namespace WebApi.Controllers.v1
             }
             catch (Exception ex)
             {
-                if (ex is ProjectServiceException)
+                if (ex is ProjectServiceException exception)
                 {
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
-                    sb.AppendLine(ex.Message);
-                    return StatusCode(400, new Response<object>(false, null, sb.ToString()));
+                    sb.AppendLine(exception.Message);
+                    return StatusCode(exception.StatusCode, new Response<object>(false, null, sb.ToString()));
                 }
                 return StatusCode(500, new Response<Exception>(false, ex, "Server encountered an exception"));
             }
@@ -100,12 +100,12 @@ namespace WebApi.Controllers.v1
             }
             catch (Exception ex)
             {
-                if (ex is ProjectServiceException)
+                if (ex is ProjectServiceException exception)
                 {
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
-                    sb.AppendLine(ex.Message);
-                    return StatusCode(400, new Response<object>(false, null, sb.ToString())); 
+                    sb.AppendLine(exception.Message);
+                    return StatusCode(exception.StatusCode, new Response<object>(false, null, sb.ToString()));
                 }
                 return StatusCode(500, new Response<Exception>(false, ex, "Server encountered an exception"));
             }
@@ -145,12 +145,12 @@ namespace WebApi.Controllers.v1
             }
             catch (Exception ex)
             {
-                if (ex is ProjectServiceException)
+                if (ex is ProjectServiceException exception)
                 {
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
-                    sb.AppendLine(ex.Message);
-                    return StatusCode(400, new Response<object>(false, null, sb.ToString()));
+                    sb.AppendLine(exception.Message);
+                    return StatusCode(exception.StatusCode, new Response<object>(false, null, sb.ToString()));
                 }
                 return StatusCode(500, new Response<Exception>(false, ex, "Server encountered an exception"));
             }
@@ -190,12 +190,12 @@ namespace WebApi.Controllers.v1
             }
             catch (Exception ex)
             {
-                if (ex is ProjectServiceException)
+                if (ex is ProjectServiceException exception)
                 {
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
-                    sb.AppendLine(ex.Message);
-                    return StatusCode(400, new Response<object>(false, null, sb.ToString()));
+                    sb.AppendLine(exception.Message);
+                    return StatusCode(exception.StatusCode, new Response<object>(false, null, sb.ToString()));
                 }
                 return StatusCode(500, new Response<Exception>(false, ex, "Server encountered an exception"));
             }
@@ -230,12 +230,12 @@ namespace WebApi.Controllers.v1
             }
             catch (Exception ex)
             {
-                if (ex is ProjectServiceException)
+                if (ex is ProjectServiceException exception)
                 {
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
-                    sb.AppendLine(ex.Message);
-                    return StatusCode(400, new Response<object>(false, null, sb.ToString()));
+                    sb.AppendLine(exception.Message);
+                    return StatusCode(exception.StatusCode, new Response<object>(false, null, sb.ToString()));
                 }
                 return StatusCode(500, new Response<Exception>(false, ex, "Server encountered an exception"));
             }

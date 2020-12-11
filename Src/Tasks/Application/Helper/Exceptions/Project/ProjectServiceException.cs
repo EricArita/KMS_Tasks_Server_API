@@ -4,13 +4,10 @@ using System.Text;
 
 namespace Core.Application.Helper.Exceptions.Project
 {
-    public class ProjectServiceException : Exception
+    public class ProjectServiceException : BaseServiceException
     {
-        private string v;
-
-        public ProjectServiceException(string v)
+        public ProjectServiceException(int statusCode, string message) : base(statusCode, message)
         {
-            this.v = v;
         }
     }
 }
