@@ -20,7 +20,7 @@ namespace Infrastructure.Persistence.Services
     public class ProjectService : IProjectService
     {
         protected readonly IUnitOfWork _unitOfWork;
-        private ILogger<ProjectService> _logger;
+        protected ILogger<ProjectService> _logger;
         protected readonly UserManager<ApplicationUser> _userManager;
 
         public ProjectService(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, ILogger<ProjectService> logger)
@@ -30,10 +30,8 @@ namespace Infrastructure.Persistence.Services
             _logger = logger;
         }
 
-        async Task<ProjectResponseModel> IProjectService.AddNewProject(NewProjectModel newProject)
+        async Task<ProjectResponseModel> IProjectService.AddNewProject(long createdByUserId, NewProjectModel newProject)
         {
-            if (!newProject.CreatedBy.HasValue) throw new ProjectServiceException(400, "Cannot create new project with no user relation");
-
             if (newProject.Name == null || newProject.Name.Length <= 0) throw new ProjectServiceException(400, "Cannot create new project without a name");
 
             await using var t = await _unitOfWork.CreateTransaction();
@@ -41,10 +39,29 @@ namespace Infrastructure.Persistence.Services
             try
             {
                 // Check if uid is valid or not
-                ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == (newProject.CreatedBy ?? null));
+                ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == createdByUserId);
                 if (validUser == null)
                 {
                     throw new ProjectServiceException(404, "Cannot locate a valid user from the claim provided");
+                }
+
+                // Check if its parent project is valid
+                if (newProject.ParentId != null)
+                {
+                    var parent = from project in _unitOfWork.Repository<Project>().GetDbset()
+                                 where project.Id == newProject.ParentId
+                                 select project;
+                    if (parent == null || parent.Count() < 1)
+                    {
+                        throw new ProjectServiceException(404, "Cannot find a single instance of a parent project from the infos you provided");
+                    }
+                    if (parent.Count() > 1)
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        sb.AppendLine("Inconsistency in database. Executing query returns more than one result: ");
+                        sb.AppendLine(parent.ToList().ToString());
+                        throw new Exception(sb.ToString());
+                    }
                 }
 
                 // Add project in first
@@ -52,8 +69,8 @@ namespace Infrastructure.Persistence.Services
                 {
                     Name = newProject.Name,
                     Description = newProject.Description,
-                    CreatedBy = newProject.CreatedBy,
-                    UpdatedBy = newProject.CreatedBy,
+                    CreatedBy = validUser.UserId,
+                    UpdatedBy = validUser.UserId,
                     ParentId = newProject.ParentId,
                     CreatedDate = DateTime.UtcNow,
                     UpdatedDate = DateTime.UtcNow,
@@ -65,7 +82,7 @@ namespace Infrastructure.Persistence.Services
                 // Add user project: project's relation to an owner
                 UserProjects relationToUser = new UserProjects()
                 {
-                    UserId = newProject.CreatedBy.Value,
+                    UserId = validUser.UserId,
                     ProjectId = addedProject.Id,
                     RoleId = Enums.ProjectRoles.Owner,
                 };
@@ -167,16 +184,14 @@ namespace Infrastructure.Persistence.Services
             }
         }
 
-        public async Task<ProjectResponseModel> UpdateProjectInfo(int projectId, UpdateProjectInfoModel model)
+        public async Task<ProjectResponseModel> UpdateProjectInfo(long projectId, long updatedByUserId, UpdateProjectInfoModel model)
         {
-            if (!model.CreatedBy.HasValue) throw new ProjectServiceException(400, "Cannot create new project with no user relation");
-
             // Start the update transaction
             await using var t = await _unitOfWork.CreateTransaction();
             try
             {
                 // Check if uid is valid or not
-                ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == (model.CreatedBy ?? null));
+                ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == updatedByUserId);
                 if (validUser == null)
                 {
                     throw new ProjectServiceException(404, "Cannot locate a valid user from the claim provided");
@@ -261,7 +276,7 @@ namespace Infrastructure.Persistence.Services
                                      select userProject;
                 if (getUserProject == null || getUserProject.Count() < 1)
                 {
-                    throw new ProjectServiceException(404, "Cannot find a single instance of a project from the infos you provided");
+                    throw new ProjectServiceException(404, "Cannot find a single instance of a parent project from the infos you provided");
                 }
                 if (getUserProject.Count() > 1)
                 {
@@ -291,7 +306,7 @@ namespace Infrastructure.Persistence.Services
             }
         }
 
-        public async Task<ProjectResponseModel> SoftDeleteExistingProject(int projectId, int deletedByUserId)
+        public async Task<ProjectResponseModel> SoftDeleteExistingProject(long projectId, long deletedByUserId)
         {
             // Start the update transaction
             await using var t = await _unitOfWork.CreateTransaction();

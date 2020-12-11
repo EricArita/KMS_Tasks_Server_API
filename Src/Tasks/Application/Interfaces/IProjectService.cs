@@ -10,10 +10,10 @@ namespace Core.Application.Interfaces
 {
     public interface IProjectService
     {
-        public Task<ProjectResponseModel> AddNewProject(NewProjectModel newProject);
+        public Task<ProjectResponseModel> AddNewProject(long createdByUserId, NewProjectModel newProject);
         public Task<IEnumerable<ProjectResponseModel>> GetAllProjects(GetAllProjectsModel model);
         public Task<ProjectResponseModel> GetOneProject(GetOneProjectModel model);
-        public Task<ProjectResponseModel> UpdateProjectInfo(int projectId, UpdateProjectInfoModel model);
-        public Task<ProjectResponseModel> SoftDeleteExistingProject(int projectId, int deletedByUserId);
+        public Task<ProjectResponseModel> UpdateProjectInfo(long projectId, long updatedByUserId, UpdateProjectInfoModel model);
+        public Task<ProjectResponseModel> SoftDeleteExistingProject(long projectId, long deletedByUserId);
     }
 }

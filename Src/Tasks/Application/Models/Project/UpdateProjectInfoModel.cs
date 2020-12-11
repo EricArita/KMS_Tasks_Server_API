@@ -10,7 +10,6 @@ namespace Core.Application.Models.Project
         public string Name { get; set; }
         public long? ParentId { get; set; }
         public string Description { get; set; }
-        public long? CreatedBy { get; set; }
         public bool? MakeParentless { get; set; }
     }
 }

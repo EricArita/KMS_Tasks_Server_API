@@ -8,7 +8,7 @@ namespace Core.Application.Models.Project
 {
     public class ProjectResponseModel
     {
-        public ProjectResponseModel(Domain.DbEntities.Project project, Domain.DbEntities.ProjectRole role)
+        public ProjectResponseModel(Domain.DbEntities.Project project, ProjectRole role)
         {
             if (project == null) return;
             Id = project.Id;
@@ -18,7 +18,10 @@ namespace Core.Application.Models.Project
             CreatedBy = project.CreatedByUser == null ? null : new UserDTO(project.CreatedByUser);
             UpdatedDate = project.UpdatedDate;
             UpdatedBy = project.UpdatedByUser == null ? null : new UserDTO(project.UpdatedByUser);
-            ProjectRole = role;
+            if (role != null)
+            {
+                ProjectRole = role;
+            }
             IsDeleted = project.Deleted;
             if (project.Parent == null) return;
             Parent = new ProjectResponseModel(project.Parent, null);

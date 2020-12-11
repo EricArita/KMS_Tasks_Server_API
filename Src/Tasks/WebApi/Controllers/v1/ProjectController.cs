@@ -27,32 +27,28 @@ namespace WebApi.Controllers.v1
         }
 
         [HttpPost("project")]
-        public async Task<IActionResult> AddNewProject(NewProjectModel newProject)
+        public async Task<IActionResult> AddNewProject([FromBody] NewProjectModel newProject)
         {
             try
             {
                 // Check validity of the request
-                if (newProject.CreatedBy != null) {
-                    return Unauthorized(new Response<object>(false, null, "Unauthorized creation of project"));
-                }
                 var claimsManager = HttpContext.User;
                 if(!claimsManager.HasClaim(c => c.Type == "uid"))
                 {
                     return Unauthorized(new Response<object>(false, null, "Token provided is invalid because there is no valid confidential claim"));
                 }
                 // Extract uid from token
-                int uid;
+                long uid;
                 try
                 {
-                    uid = int.Parse(claimsManager.Claims.FirstOrDefault(c => c.Type == "uid").Value);
+                    uid = long.Parse(claimsManager.Claims.FirstOrDefault(c => c.Type == "uid").Value);
                 } catch (Exception)
                 {
                     return Unauthorized(new Response<object>(false, null, "Token provided is invalid because the value for the claim is invalid"));
                 }
-                newProject.CreatedBy = uid;
 
                 // Carry on with the business logic
-                ProjectResponseModel addedProject = await _projectService.AddNewProject(newProject);
+                ProjectResponseModel addedProject = await _projectService.AddNewProject(uid, newProject);
                 return Ok(new Response<ProjectResponseModel>(true, addedProject, message: "Successfully added project"));
             }
             catch (Exception ex)
@@ -80,13 +76,14 @@ namespace WebApi.Controllers.v1
                     return Unauthorized(new Response<object>(false, null, "Token provided is invalid because there is no valid confidential claim"));
                 }
                 // Extract uid from token
-                int uid;
-                try 
+                long uid;
+                try
                 {
-                    uid = int.Parse(claimsManager.Claims.FirstOrDefault(c => c.Type == "uid").Value);
-                } catch (Exception)
+                    uid = long.Parse(claimsManager.Claims.FirstOrDefault(c => c.Type == "uid").Value);
+                }
+                catch (Exception)
                 {
-                    return Unauthorized(new Response<object>(false, null, "Token provided is invalid because the value for the confidential claim is invalid"));
+                    return Unauthorized(new Response<object>(false, null, "Token provided is invalid because the value for the claim is invalid"));
                 }
 
                 // If passes all tests, then we submit it to the service layer
@@ -123,14 +120,14 @@ namespace WebApi.Controllers.v1
                     return Unauthorized(new Response<object>(false, null, "Token provided is invalid because there is no valid confidential claim"));
                 }
                 // Extract uid from token
-                int uid;
+                long uid;
                 try
                 {
-                    uid = int.Parse(claimsManager.Claims.FirstOrDefault(c => c.Type == "uid").Value);
+                    uid = long.Parse(claimsManager.Claims.FirstOrDefault(c => c.Type == "uid").Value);
                 }
                 catch (Exception)
                 {
-                    return Unauthorized(new Response<object>(false, null, "Token provided is invalid because the value for the confidential claim is invalid"));
+                    return Unauthorized(new Response<object>(false, null, "Token provided is invalid because the value for the claim is invalid"));
                 }
 
                 // If passes all tests, then we submit it to the service layer
@@ -157,35 +154,30 @@ namespace WebApi.Controllers.v1
         }
 
         [HttpPatch("project/{projectId}")]
-        public async Task<IActionResult> UpdateExistingProject(int projectId, UpdateProjectInfoModel model)
+        public async Task<IActionResult> UpdateExistingProject(int projectId, [FromBody] UpdateProjectInfoModel model)
         {
             try
             {
                 //Check validity of the token
-                if (model.CreatedBy != null)
-                {
-                    return Unauthorized(new Response<object>(false, null, "Unauthorized creation of project"));
-                }
                 var claimsManager = HttpContext.User;
                 if (!claimsManager.HasClaim(c => c.Type == "uid"))
                 {
                     return Unauthorized(new Response<object>(false, null, "Token provided is invalid because there is no valid confidential claim"));
                 }
                 // Extract uid from token
-                int uid;
+                long uid;
                 try
                 {
-                    uid = int.Parse(claimsManager.Claims.FirstOrDefault(c => c.Type == "uid").Value);
+                    uid = long.Parse(claimsManager.Claims.FirstOrDefault(c => c.Type == "uid").Value);
                 }
                 catch (Exception)
                 {
-                    return Unauthorized(new Response<object>(false, null, "Token provided is invalid because the value for the confidential claim is invalid"));
+                    return Unauthorized(new Response<object>(false, null, "Token provided is invalid because the value for the claim is invalid"));
                 }
 
                 // If passes all tests, then we submit it to the service layer
-                model.CreatedBy = uid;
                 // Carry on with the business logic
-                ProjectResponseModel participatedProject = await _projectService.UpdateProjectInfo(projectId, model);
+                ProjectResponseModel participatedProject = await _projectService.UpdateProjectInfo(projectId, uid, model);
                 return Ok(new Response<ProjectResponseModel>(true, participatedProject, message: "Successfully patched specified project of user"));
             }
             catch (Exception ex)
@@ -213,14 +205,14 @@ namespace WebApi.Controllers.v1
                     return Unauthorized(new Response<object>(false, null, "Token provided is invalid because there is no valid confidential claim"));
                 }
                 // Extract uid from token
-                int uid;
+                long uid;
                 try
                 {
-                    uid = int.Parse(claimsManager.Claims.FirstOrDefault(c => c.Type == "uid").Value);
+                    uid = long.Parse(claimsManager.Claims.FirstOrDefault(c => c.Type == "uid").Value);
                 }
                 catch (Exception)
                 {
-                    return Unauthorized(new Response<object>(false, null, "Token provided is invalid because the value for the confidential claim is invalid"));
+                    return Unauthorized(new Response<object>(false, null, "Token provided is invalid because the value for the claim is invalid"));
                 }
 
                 // If passes all tests, then we submit it to the service layer
