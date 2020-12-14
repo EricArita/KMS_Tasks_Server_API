@@ -58,5 +58,6 @@ namespace Core.Application.Models.Task
         public UserDTO AssignedBy { get; set; }
         public UserDTO AssignedFor { get; set; }
         public UserDTO CreatedBy { get; set; }
+
     }
 }

@@ -65,11 +65,15 @@ namespace WebApi.Controllers.v1
         }
 
         [HttpGet("projects")]
-        public async Task<IActionResult> GetAllProjects()
+        public async Task<IActionResult> GetAllProjects([FromQuery] GetAllProjectsModel model)
         {
             try
             {
                 //Check validity of the token
+                if (model.UserID != null)
+                {
+                    return BadRequest(new Response<object>(false, null, "Found illegal parameter UserID in query, we refuse to carry on with your request"));
+                }
                 var claimsManager = HttpContext.User;
                 if (!claimsManager.HasClaim(c => c.Type == "uid"))
                 {
@@ -87,10 +91,7 @@ namespace WebApi.Controllers.v1
                 }
 
                 // If passes all tests, then we submit it to the service layer
-                GetAllProjectsModel model = new GetAllProjectsModel()
-                {
-                    UserID = uid,
-                };
+                model.UserID = uid;
                 // Carry on with the business logic
                 IEnumerable<ProjectResponseModel> projectParticipations = await _projectService.GetAllProjects(model);
                 return Ok(new Response<IEnumerable<ProjectResponseModel>>(true, projectParticipations, message: "Successfully fetched projects of user"));

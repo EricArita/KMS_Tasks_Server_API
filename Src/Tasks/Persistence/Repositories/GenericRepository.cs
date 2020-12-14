@@ -102,8 +102,8 @@ namespace Infrastructure.Persistence.Repositories
 
         public virtual async Task<TEntity> InsertAsync(TEntity entity)
         {
-            await GetDbset().AddAsync(entity);
-            return entity;
+            var newOne = await GetDbset().AddAsync(entity);
+            return newOne.Entity;
         }
     }
 }

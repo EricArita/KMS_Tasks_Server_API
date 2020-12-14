@@ -133,7 +133,7 @@ namespace Infrastructure.Persistence.Services
                 _logger.LogError(ex, "An error occurred when using ProjectService");
                 throw ex;
             }
-}
+        }
 
         async Task<ProjectResponseModel> IProjectService.GetOneProject(GetOneProjectModel model)
         {

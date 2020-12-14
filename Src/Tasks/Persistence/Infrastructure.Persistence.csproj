@@ -15,6 +15,8 @@
     <Compile Remove="Migrations\20201204105420_UpdateDb_6.Designer.cs" />
     <Compile Remove="Migrations\20201214080847_NewSeedData.cs" />
     <Compile Remove="Migrations\20201214080847_NewSeedData.Designer.cs" />
+    <Compile Remove="Migrations\20201214115926_a.cs" />
+    <Compile Remove="Migrations\20201214115926_a.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

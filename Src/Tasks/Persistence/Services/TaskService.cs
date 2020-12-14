@@ -7,6 +7,7 @@ using Core.Domain.Constants;
 using Core.Domain.DbEntities;
 using Infrastructure.Persistence.Repositories;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -28,21 +29,6 @@ namespace Infrastructure.Persistence.Services
             _unitOfWork = unitOfWork;
             _userManager = userManager;
             _logger = logger;
-        }
-
-        public IEnumerable<Tasks> GetAllTasks(int userId, byte category)
-        {
-            var query = _unitOfWork.Repository<Tasks>().Get(filter: e => (e.CreatedBy.HasValue && e.CreatedBy.Value == userId) || (e.AssignedFor.HasValue && e.AssignedFor.Value == userId)
-                                 || (e.AssignedBy.HasValue && e.AssignedBy.Value == userId));
-            switch (category)
-            {
-                case (byte)MenuSidebarOptions.Today:
-                    return query.Where(e => e.Schedule.HasValue && e.Schedule.Value == DateTime.Today).ToList();
-                case (byte)MenuSidebarOptions.Upcoming:
-                    return query.Where(e => e.Schedule.HasValue && e.Schedule.Value > DateTime.Today).ToList();
-                default:
-                    return query.Where(e => e != null).ToList();
-            }
         }
 
         public async Task<TaskResponseModel> AddNewTask(long createdByUserId, NewTaskModel task)
@@ -134,9 +120,15 @@ namespace Infrastructure.Persistence.Services
                     UpdatedDate = DateTime.UtcNow,
                     Deleted = false,
                 };  
-                newTask = await _unitOfWork.Repository<Tasks>().InsertAsync(newTask);
+                await _unitOfWork.Repository<Tasks>().InsertAsync(newTask);
                 await _unitOfWork.SaveChangesAsync();
-                
+
+                // Eager load instance
+                var entry = _unitOfWork.Entry(newTask);
+                entry.Reference(e => e.Project).Load();
+                entry.Reference(e => e.Priority).Load();
+                entry.Reference(e => e.Parent).Load();
+
                 await t.CommitAsync();
 
                 return new TaskResponseModel(newTask);
@@ -151,7 +143,60 @@ namespace Infrastructure.Persistence.Services
 
         public async Task<IEnumerable<TaskResponseModel>> GetAllTasks(GetAllTasksModel model)
         {
-            throw new NotImplementedException();
+            if (model.UserId == null) throw new TaskServiceException(400, "Cannot find tasks of this project if you don't provide a UserID for us to check if you have access rights");
+
+            await using var t = await _unitOfWork.CreateTransaction();
+
+            try
+            {
+                // Check if uid is valid or not
+                ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == model.UserId);
+                if (validUser == null)
+                {
+                    throw new TaskServiceException(404, "Cannot locate a valid user from the claim provided");
+                }
+
+                // Query for all the tasks in projects that the user participated in that matches the queries
+                var result = from userProjects in _unitOfWork.Repository<UserProjects>().GetDbset()
+                             join tasks in _unitOfWork.Repository<Tasks>().GetDbset() on userProjects.ProjectId equals tasks.ProjectId
+                             where userProjects.UserId == model.UserId
+                             select tasks;
+
+                // Run original statement through additional queries
+                if(model.ProjectId != null)
+                {
+                    result.Where(e => e.ProjectId == model.ProjectId);
+                }
+
+                if(model.CategoryType != null)
+                {
+                    switch (model.CategoryType)
+                    {
+                        case (byte)MenuSidebarOptions.Today:
+                            result.Where(e => e.Schedule.HasValue && e.Schedule.Value == DateTime.Today); break;
+                        case (byte)MenuSidebarOptions.Upcoming:
+                            result.Where(e => e.Schedule.HasValue && e.Schedule.Value > DateTime.Today); break;
+                        default:
+                            result.Where(e => e != null); break;
+                    }
+                }
+
+                // Finally, convert the result by selecting in the form of response (eager load everything)
+                var finalResult = result.Include(e => e.Project)
+                    .Include(e => e.Priority)
+                    .Include(e => e.Parent)
+                    .Select(e => new TaskResponseModel(e));
+
+                await _unitOfWork.SaveChangesAsync();
+
+                return finalResult.ToList();
+            }
+            catch (Exception ex)
+            {
+                await t.RollbackAsync();
+                _logger.LogError(ex, "An error occurred when using ProjectService");
+                throw ex;
+            }
         }
 
         public async Task<TaskResponseModel> GetOneTask(long taskId)

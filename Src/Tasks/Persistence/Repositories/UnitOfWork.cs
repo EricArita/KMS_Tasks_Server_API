@@ -1,5 +1,6 @@
 ﻿using Core.Application.Interfaces;
 using Infrastructure.Persistence.Contexts;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
@@ -102,6 +103,11 @@ namespace Infrastructure.Persistence.Repositories
         public async Task<IDbContextTransaction> CreateTransaction()
         {
             return await _dbContext.Database.BeginTransactionAsync();
+        }
+
+        public EntityEntry<T> Entry<T>(T obj) where T : class
+        {
+            return _dbContext.Entry(obj);
         }
     }
 }

@@ -6,7 +6,7 @@ namespace Core.Application.Models
 {
     public class GetOneProjectModel
     {
-        public long? ProjectId;
-        public long? UserId;
+        public long? ProjectId { get; set; }
+        public long? UserId { get; set; }
     }
 }
