@@ -3,15 +3,15 @@ using System.Collections.Generic;
 
 namespace Core.Application.Helper
 {
-    public class Response<T> { 
-        public Response() {
+    public class HttpResponse<T> { 
+        public HttpResponse() {
             OK = true;
             Message = string.Empty;
             Errors = null;
             Data = default(T);
         }
 
-        public Response(bool ok, T data = default(T), string message = "", List<IdentityError> errors = null)
+        public HttpResponse(bool ok, T data = default(T), string message = "", List<IdentityError> errors = null)
         {
             this.Data = data;
             this.OK = ok;

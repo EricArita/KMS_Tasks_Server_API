@@ -37,8 +37,4 @@
     <ProjectReference Include="..\Domain\Core.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Migrations\" />
-  </ItemGroup>
-
 </Project>

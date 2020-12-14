@@ -14,6 +14,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -34,10 +35,10 @@ namespace Infrastructure.Persistence.Services
             _fbAuthSettings = fbAuthSettings.Value;
         }
 
-        public async Task<Response<ApplicationUser>> RegisterAsync(UserRegisterModel model)
+        public async Task<HttpResponse<ApplicationUser>> RegisterAsync(UserRegisterModel model)
         {
             var userWithSameEmail = await _userManager.FindByEmailAsync(model.Email);
-            var res = new Response<ApplicationUser>();
+            var res = new HttpResponse<ApplicationUser>();
 
             if (userWithSameEmail == null)
             {
@@ -76,10 +77,10 @@ namespace Infrastructure.Persistence.Services
             return res;
         }
 
-        public async Task<Response<AuthResponseModel>> VerifyAccount(string userName, string password)
+        public async Task<HttpResponse<AuthResponseModel>> VerifyAccount(string userName, string password)
         {
             var authResponseModel = new AuthResponseModel();
-            var res = new Response<AuthResponseModel>();
+            var res = new HttpResponse<AuthResponseModel>();
 
             var user = await _userManager.FindByNameAsync(userName) ?? await _userManager.FindByEmailAsync(userName);
 
@@ -99,13 +100,15 @@ namespace Infrastructure.Persistence.Services
             }
             else
             {
-                res = await GenerateUserWithTokenResponse(user);
+                res.Data = await GenerateUserWithAccessToken(user);
+                res.OK = true;
+                res.Message = "Login Successfully";
             }
 
             return res;
         }
 
-        public async Task<Response<AuthResponseModel>> HandleFacebookLoginAsync(string userAccessToken)
+        public async Task<HttpResponse<AuthResponseModel>> HandleFacebookLoginAsync(string userAccessToken)
         {
             var client = new HttpClient();
             var authResponse = await client.GetStringAsync($"https://graph.facebook.com/oauth/access_token?client_id={_fbAuthSettings.AppId}&client_secret={_fbAuthSettings.AppSecret}&grant_type=client_credentials");
@@ -115,15 +118,17 @@ namespace Infrastructure.Persistence.Services
             var userAccessTokenValidation = JsonConvert.DeserializeObject<FacebookUserAccessTokenValidation>(userAccessTokenValidationResponse);
 
             if (!userAccessTokenValidation.Data.IsValid)
-            { 
-               return new Response<AuthResponseModel>(false, data: null, message:"User access token is not valid or has been expired");
+            {
+                return new HttpResponse<AuthResponseModel>(false, data: null, message: "User access token is not valid or has been expired");
             }
 
-            var registeredUser = _userManager.Users.Where(e => e.LoginProvider == Enums.LoginProvider.Facebook.ToString() 
+            var registeredUser = _userManager.Users.Where(e => e.LoginProvider == Enums.LoginProvider.Facebook.ToString()
                                                             && e.ProviderKey == userAccessTokenValidation.Data.UserId).FirstOrDefault();
             if (registeredUser != null)
             {
-                return await GenerateUserWithTokenResponse(registeredUser);
+                var resp = new HttpResponse<AuthResponseModel>(true, data: null, message: "Login successfully");
+                resp.Data = await GenerateUserWithAccessToken(registeredUser);
+                return resp;
             }
 
             var userInfoResponse = await client.GetStringAsync($"https://graph.facebook.com/v9.0/me?fields=id,email,name,first_name,middle_name,last_name,gender,birthday,picture&access_token={userAccessToken}");
@@ -148,10 +153,37 @@ namespace Infrastructure.Persistence.Services
 
             if (res.Succeeded)
             {
-                return await GenerateUserWithTokenResponse(user);
+                var resp = new HttpResponse<AuthResponseModel>(true, data: null, message: "Login successfully");
+                resp.Data = await GenerateUserWithAccessToken(user);
+                return resp;
             }
 
-            return new Response<AuthResponseModel>(false, data: null, message: "Login fail. See list of errors for details", errors: res.Errors.ToList()) ;
+            return new HttpResponse<AuthResponseModel>(false, data: null, message: "Login fail. See list of errors for details", errors: res.Errors.ToList());
+        }
+
+        public async Task<HttpResponse<AuthResponseModel>> RefreshTokenAsync(string token)
+        {
+            var authResponseModel = new AuthResponseModel();
+            var res = new HttpResponse<AuthResponseModel>();
+
+            if (!String.IsNullOrEmpty(token))
+            {
+                var user = _userManager.Users.SingleOrDefault(u => u.RefreshTokens.Any(t => t.Token == token));
+                if (user != null)
+                {
+                    var refreshToken = user.RefreshTokens.Single(x => x.Token == token);
+                    if (!refreshToken.IsExpired)
+                    {
+                        res.Data = await GenerateUserWithAccessToken(user, refreshToken);
+                        res.OK = true;
+                        return res;
+                    }
+                }
+            }
+
+            res.Message = "Refresh token invalid or expired! Need to sign in again";
+            res.OK = false;
+            return res;
         }
 
         protected override async Task<JwtSecurityToken> GenerateJwtToken(ApplicationUser user)
@@ -189,24 +221,49 @@ namespace Infrastructure.Persistence.Services
             return jwtSecurityToken;
         }
 
-        private async Task<Response<AuthResponseModel>> GenerateUserWithTokenResponse(ApplicationUser user)
+        private RefreshToken GenerateRefreshToken()
+        {
+            var randomNumber = new byte[32];
+            using (var generator = new RNGCryptoServiceProvider())
+            {
+                generator.GetBytes(randomNumber);
+                return new RefreshToken
+                {
+                    Token = Convert.ToBase64String(randomNumber),
+                    ExpiredDate = DateTime.UtcNow.AddMinutes(5),
+                    CreatedDate = DateTime.UtcNow
+                };
+            }
+        }
+
+        private async Task<AuthResponseModel> GenerateUserWithAccessToken(ApplicationUser user, RefreshToken activeRefreshToken = null)
         {
             var listRoles = await _userManager.GetRolesAsync(user);
             var jwtSecurityTokenTask = GenerateJwtToken(user);
             var authResponse = new AuthResponseModel();
-            var res = new Response<AuthResponseModel>();
 
             authResponse.IsAuthenticated = true;
             authResponse.Email = user.Email;
             authResponse.UserName = user.UserName;
+            authResponse.Avatar = user.AvatarUrl;
             authResponse.Roles = listRoles;
             authResponse.Token = new JwtSecurityTokenHandler().WriteToken(await jwtSecurityTokenTask);
 
-            res.OK = true;
-            res.Message = "Login Successfully";
-            res.Data = authResponse;
+            if (activeRefreshToken != null)
+            {
+                authResponse.RefreshToken = activeRefreshToken.Token;
+                authResponse.RefreshTokenExpiration = activeRefreshToken.ExpiredDate;
+            }
+            else
+            {
+                var refreshToken = GenerateRefreshToken();
+                authResponse.RefreshToken = refreshToken.Token;
+                authResponse.RefreshTokenExpiration = refreshToken.ExpiredDate;
+                user.RefreshTokens.Add(refreshToken);
+                await _userManager.UpdateAsync(user);
+            }
 
-            return res;
+            return authResponse;
         }
     }
 }

@@ -20,5 +20,6 @@ namespace Core.Domain.DbEntities
         public byte Status { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedDate { get; set; }
+        public List<RefreshToken> RefreshTokens { get; set; }
     }
 }
