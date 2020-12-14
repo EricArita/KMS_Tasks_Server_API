@@ -205,22 +205,28 @@ namespace Infrastructure.Persistence.Contexts
             modelBuilder.Entity<ProjectRole>().HasData(
                     Enum.GetValues(typeof(Enums.ProjectRoles))
                         .Cast<Enums.ProjectRoles>()
-                        .Select(e => new ProjectRole()
-                        {
-                            Id = e,
-                            Name = e.ToString()
+                        .Where(e => e != 0)
+                        .Select(e => {
+                            return new ProjectRole()
+                            {
+                                Id = e,
+                                Name = e.ToString()
+                            };
                         })
                 );
 
            modelBuilder.Entity<PriorityLevel>().HasData(
                     Enum.GetValues(typeof(Enums.TaskPriorityLevel))
                         .Cast<Enums.TaskPriorityLevel>()
-                        .Select(e => new PriorityLevel()
+                        .Where(e => e != 0)
+                        .Select(e =>
                         {
-                            Id = e,
-                            DisplayName = e.ToString()
-                        })
-                );
+                            return new PriorityLevel()
+                            {
+                                Id = e,
+                                DisplayName = e.ToString()
+                            };
+                        }));
 
             OnModelCreatingPartial(modelBuilder);
         }

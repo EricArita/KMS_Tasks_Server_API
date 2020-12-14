@@ -51,6 +51,11 @@ namespace Infrastructure.Persistence.Services
 
             if (task.ProjectId == null) throw new TaskServiceException(400, "Cannot create new task without an associated project");
 
+            if (task.PriorityId != null && ((int)task.PriorityId < 0 || (int)task.PriorityId >= Enum.GetValues(typeof(TaskPriorityLevel)).Length))
+            {
+                throw new TaskServiceException(400, "Provided priority Id for task is invalid");
+            }
+
             await using var t = await _unitOfWork.CreateTransaction();
 
             try
@@ -117,7 +122,7 @@ namespace Infrastructure.Persistence.Services
                     Name = task.Name,
                     Schedule = task.Schedule,
                     ScheduleString = task.ScheduleString,
-                    PriorityId = (TaskPriorityLevel)task.PriorityId,
+                    PriorityId = task.PriorityId == 0 ? null : task.PriorityId,
                     ProjectId = task.ProjectId,
                     ParentId = task.ParentId,
                     Reminder = task.Reminder,
@@ -126,11 +131,12 @@ namespace Infrastructure.Persistence.Services
                     AssignedFor = task.AssignedFor,
                     CreatedBy = validUser.UserId,
                     CreatedDate = DateTime.UtcNow,
+                    UpdatedDate = DateTime.UtcNow,
                     Deleted = false,
-                };
+                };  
                 newTask = await _unitOfWork.Repository<Tasks>().InsertAsync(newTask);
                 await _unitOfWork.SaveChangesAsync();
-
+                
                 await t.CommitAsync();
 
                 return new TaskResponseModel(newTask);
@@ -138,7 +144,7 @@ namespace Infrastructure.Persistence.Services
             catch (Exception ex)
             {
                 await t.RollbackAsync();
-                _logger.LogError(ex, "An error occurred when using TaskService");
+                _logger.LogError(ex, "An error occurred while using TaskService");
                 throw ex;
             }
         }

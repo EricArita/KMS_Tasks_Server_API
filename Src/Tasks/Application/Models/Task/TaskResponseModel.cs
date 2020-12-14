@@ -11,6 +11,7 @@ namespace Core.Application.Models.Task
     {
         public TaskResponseModel(Tasks coreTask)
         {
+            if (coreTask == null) return;
             Id = coreTask.Id;
             Name = coreTask.Name;
             CreatedDate = coreTask.CreatedDate;
@@ -19,13 +20,28 @@ namespace Core.Application.Models.Task
             TaskPriority = coreTask.Priority;
             Deleted = coreTask.Deleted;
             UpdatedDate = coreTask.UpdatedDate;
-            Project = new ProjectResponseModel(coreTask.Project, null);
-            Parent = new TaskResponseModel(coreTask.Parent);
+            if (coreTask.Project != null)
+            {
+                Project = new ProjectResponseModel(coreTask.Project, null);
+            }
             ReminderSchedule = coreTask.ReminderSchedule;
             Reminder = coreTask.Reminder;
-            AssignedBy = new UserDTO(coreTask.AssignedByUser);
-            AssignedFor = new UserDTO(coreTask.AssignedForUser);
-            CreatedBy = new UserDTO(coreTask.CreatedByUser);
+            if (coreTask.AssignedByUser != null)
+            {
+                AssignedBy = new UserDTO(coreTask.AssignedByUser);
+            }
+            if (coreTask.AssignedForUser != null)
+            {
+                AssignedFor = new UserDTO(coreTask.AssignedForUser);
+            }
+            if (coreTask.CreatedByUser != null)
+            {
+                CreatedBy = new UserDTO(coreTask.CreatedByUser);
+            }
+            if (coreTask.Parent != null)
+            {
+                Parent = new TaskResponseModel(coreTask.Parent);
+            }
         }
         public long Id { get; set; }
         public string Name { get; set; }
