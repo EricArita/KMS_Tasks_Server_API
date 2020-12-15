@@ -163,6 +163,12 @@ namespace Infrastructure.Persistence.Contexts
                    .HasForeignKey(t => t.CreatedBy)
                    .HasConstraintName("FK_Task_CreatedBy_User");
 
+                entity.HasOne(t => t.UpdatedByUser)
+                   .WithMany()
+                   .HasPrincipalKey(u => u.UserId)
+                   .HasForeignKey(t => t.UpdatedBy)
+                   .HasConstraintName("FK_Task_UpdatedBy_User");
+
                 entity.HasOne(t => t.AssignedByUser)
                    .WithMany()
                    .HasPrincipalKey(u => u.UserId)

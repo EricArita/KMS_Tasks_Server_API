@@ -38,6 +38,10 @@ namespace Core.Application.Models.Task
             {
                 CreatedBy = new UserDTO(coreTask.CreatedByUser);
             }
+            if (coreTask.UpdatedByUser != null)
+            {
+                UpdatedBy = new UserDTO(coreTask.UpdatedByUser);
+            }
             if (coreTask.Parent != null)
             {
                 Parent = new TaskResponseModel(coreTask.Parent);
@@ -58,6 +62,7 @@ namespace Core.Application.Models.Task
         public UserDTO AssignedBy { get; set; }
         public UserDTO AssignedFor { get; set; }
         public UserDTO CreatedBy { get; set; }
+        public UserDTO UpdatedBy { get; set; }
 
     }
 }

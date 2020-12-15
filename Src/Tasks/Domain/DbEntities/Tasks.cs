@@ -21,6 +21,7 @@ namespace Core.Domain.DbEntities
         public long? AssignedBy { get; set; }
         public long? AssignedFor { get; set; }
         public long? CreatedBy { get; set; }
+        public long? UpdatedBy { get; set; }
 
         public virtual Tasks Parent { get; set; }
         public virtual PriorityLevel Priority { get; set; }
@@ -28,5 +29,6 @@ namespace Core.Domain.DbEntities
         public virtual ApplicationUser AssignedByUser { get; set; }
         public virtual ApplicationUser AssignedForUser { get; set; }
         public virtual ApplicationUser CreatedByUser { get; set; }
+        public virtual ApplicationUser UpdatedByUser { get; set; }
     }
 }

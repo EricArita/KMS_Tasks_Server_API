@@ -9,6 +9,8 @@ namespace Infrastructure.Persistence.DTOs
     {
         public UserDTO(ApplicationUser user)
         {
+            if (user == null) return;
+            Id = user.UserId;
             UserName = user.UserName;
             Email = user.Email;
             LoginProvider = user.LoginProvider;
@@ -23,6 +25,8 @@ namespace Infrastructure.Persistence.DTOs
             CreatedDate = user.CreatedDate;
             UpdatedDate = user.UpdatedDate;
         }
+
+        public long Id { get; set; }
         public string UserName { get; set; }
         public string Email { get; set; }
         public string LoginProvider { get; set; }

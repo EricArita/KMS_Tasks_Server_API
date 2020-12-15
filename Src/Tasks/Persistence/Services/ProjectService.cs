@@ -89,9 +89,14 @@ namespace Infrastructure.Persistence.Services
                 await _unitOfWork.Repository<UserProjects>().InsertAsync(relationToUser);
                 await _unitOfWork.SaveChangesAsync();
 
+                List<ProjectRole> roles = new List<ProjectRole>();
+                var entry = _unitOfWork.Entry(relationToUser);
+                await entry.Reference(e => e.ProjectRole).LoadAsync();
+                roles.Add(relationToUser.ProjectRole);
+
                 await t.CommitAsync();
 
-                return new ProjectResponseModel(addedProject, relationToUser.ProjectRole);
+                return new ProjectResponseModel(addedProject, roles);
             }
             catch (Exception ex)
             {
@@ -116,16 +121,32 @@ namespace Infrastructure.Persistence.Services
                     throw new ProjectServiceException(404, "Cannot locate a valid user from the claim provided");
                 }
 
-                // Query for  all the projects user participated in
-                var result = from userProjects in _unitOfWork.Repository<UserProjects>().GetDbset()
-                             join relatedProjects in _unitOfWork.Repository<Project>().GetDbset() on userProjects.ProjectId equals relatedProjects.Id
-                             join projectRoles in _unitOfWork.Repository<ProjectRole>().GetDbset() on userProjects.RoleId equals projectRoles.Id
-                             where userProjects.UserId == model.UserID
-                             select new ProjectResponseModel(relatedProjects, projectRoles);
+                // Query for participations in projects with the provided info => roles
+                var participation = (from userProject in _unitOfWork.Repository<UserProjects>().GetDbset()
+                                     where userProject.UserId == model.UserID
+                                     select userProject);
+                // If cannot find any participation from the infos provided, return a service exception
+                if (participation == null || participation.Count() < 1)
+                {
+                    throw new ProjectServiceException(404, "Cannot find any project you participated in");
+                }
+                // Get all the projects participated, then for each of them 
+                var resultProjects = _unitOfWork.Repository<Project>().GetDbset()
+                    .Where(project => participation.Any(p => p.ProjectId == project.Id));
+
+                List<ProjectResponseModel> result = new List<ProjectResponseModel>();
+                var projectRoles = _unitOfWork.Repository<ProjectRole>().GetDbset();
+                foreach(var project in resultProjects)
+                {
+                    // get the roles for this project
+                    var roles = projectRoles.Where(role => participation.Where(p => p.ProjectId == project.Id)
+                                .Any(p => p.RoleId == role.Id));
+                    result.Add(new ProjectResponseModel(project, roles));
+                }
 
                 await _unitOfWork.SaveChangesAsync();
 
-                return result.ToList();
+                return result;
             }
             catch (Exception ex)
             {
@@ -150,31 +171,46 @@ namespace Infrastructure.Persistence.Services
                     throw new ProjectServiceException(404, "Cannot locate a valid user from the claim provided");
                 }
 
-                // Query for participations in projects with the provided info
-                var result = from userProjects in _unitOfWork.Repository<UserProjects>().GetDbset()
-                             join relatedProjects in _unitOfWork.Repository<Project>().GetDbset() on userProjects.ProjectId equals relatedProjects.Id
-                             join projectRoles in _unitOfWork.Repository<ProjectRole>().GetDbset() on userProjects.RoleId equals projectRoles.Id
-                             where userProjects.UserId == model.UserId && userProjects.ProjectId == model.ProjectId
-                             select new ProjectResponseModel(relatedProjects, projectRoles);
+                // Query for participations in projects with the provided info => roles
+                var participation = (from userProject in _unitOfWork.Repository<UserProjects>().GetDbset()
+                                     where userProject.UserId == model.UserId && userProject.ProjectId == model.ProjectId
+                                     select userProject);
+                // If cannot find any participation from the infos provided, return a service exception
+                if (participation == null || participation.Count() < 1)
+                {
+                    throw new ProjectServiceException(404, "Cannot find any project you participated in");
+                }
 
+                // Get the only one project participated 
+                var resultProject = _unitOfWork.Repository<Project>().GetDbset()
+                    .Where(project => participation.Any(p => p.ProjectId == project.Id));
                 // If cannot find the project from the infos provided, return a service exception
-                if(result.Count() < 1)
+                if (resultProject == null || resultProject.Count() < 1)
                 {
                     throw new ProjectServiceException(404, "Cannot find a single instance of a project from the infos you provided");
                 }
-
-                // If found more than one instance, the database probably is corrupted, in this case, return an internal error
-                if(result.Count() > 1)
+                // Corrupted Db
+                if (resultProject.Count() > 1)
                 {
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("Inconsistency in database. Executing query returns more than one result: ");
-                    sb.AppendLine(result.ToList().ToString());
+                    sb.AppendLine(resultProject.ToList().ToString());
                     throw new Exception(sb.ToString());
+                }
+
+                List<ProjectResponseModel> result = new List<ProjectResponseModel>();
+                var projectRoles = _unitOfWork.Repository<ProjectRole>().GetDbset();
+                foreach(var project in resultProject)
+                {
+                    // get the roles for this project
+                    var roles = projectRoles.Where(role => participation.Where(p => p.ProjectId == project.Id)
+                                .Any(p => p.RoleId == role.Id));
+                    result.Add(new ProjectResponseModel(project, roles));
                 }
 
                 await _unitOfWork.SaveChangesAsync();
 
-                return result.ToList()[0];
+                return result[0];
             }
             catch (Exception ex)
             {
@@ -214,6 +250,15 @@ namespace Infrastructure.Persistence.Services
                 }
 
                 Project operatedProject = result.ToList()[0];
+
+                // Get if user have the authorization to change project info
+                var getUserProject = from userProject in _unitOfWork.Repository<UserProjects>().GetDbset()
+                                     where userProject.UserId == validUser.UserId && userProject.ProjectId == operatedProject.Id
+                                     select userProject;
+                if (getUserProject == null || getUserProject.Count() < 1)
+                {
+                    throw new ProjectServiceException(404, "Cannot find the project you are looking for");
+                }
 
                 // flag to know if any field is going to be changed or not
                 bool isUpdated = false;
@@ -270,22 +315,6 @@ namespace Infrastructure.Persistence.Services
                     isUpdated = true;
                 }
 
-                // Get project role for the response
-                var getUserProject = from userProject in _unitOfWork.Repository<UserProjects>().GetDbset()
-                                     where userProject.UserId == validUser.UserId && userProject.ProjectId == operatedProject.Id
-                                     select userProject;
-                if (getUserProject == null || getUserProject.Count() < 1)
-                {
-                    throw new ProjectServiceException(404, "Cannot find a single instance of a parent project from the infos you provided");
-                }
-                if (getUserProject.Count() > 1)
-                {
-                    StringBuilder sb = new StringBuilder();
-                    sb.AppendLine("Inconsistency in database. Executing query returns more than one result: ");
-                    sb.AppendLine(getUserProject.ToList().ToString());
-                    throw new Exception(sb.ToString());
-                }
-
                 // If there is any update, we update the object
                 if (isUpdated) {
                     operatedProject.UpdatedBy = validUser.UserId;
@@ -296,7 +325,7 @@ namespace Infrastructure.Persistence.Services
 
                 await t.CommitAsync();
 
-                return new ProjectResponseModel(operatedProject, getUserProject.ToList()[0].ProjectRole);
+                return new ProjectResponseModel(operatedProject, getUserProject.Select(e => e.ProjectRole).ToList());
             }
             catch (Exception ex)
             {
@@ -337,6 +366,15 @@ namespace Infrastructure.Persistence.Services
 
                 Project operatedProject = result.ToList()[0];
 
+                // Get if user have the authorization to change project info
+                var getUserProject = from userProject in _unitOfWork.Repository<UserProjects>().GetDbset()
+                                     where userProject.UserId == validUser.UserId && userProject.ProjectId == operatedProject.Id
+                                     select userProject;
+                if (getUserProject == null || getUserProject.Count() < 1)
+                {
+                    throw new ProjectServiceException(404, "Cannot find the project you are looking for");
+                }
+
                 // flag to know if any field is going to be changed or not
                 bool isUpdated = false;
 
@@ -344,22 +382,6 @@ namespace Infrastructure.Persistence.Services
                 {
                     operatedProject.Deleted = true;
                     isUpdated = true;
-                }
-
-                // Get project role for the response
-                var getUserProject = from userProject in _unitOfWork.Repository<UserProjects>().GetDbset()
-                                     where userProject.UserId == validUser.UserId && userProject.ProjectId == operatedProject.Id
-                                     select userProject;
-                if (getUserProject == null || getUserProject.Count() < 1)
-                {
-                    throw new ProjectServiceException(404, "Cannot find a single instance of a project from the infos you provided");
-                }
-                if (getUserProject.Count() > 1)
-                {
-                    StringBuilder sb = new StringBuilder();
-                    sb.AppendLine("Inconsistency in database. Executing query returns more than one result: ");
-                    sb.AppendLine(getUserProject.ToList().ToString());
-                    throw new Exception(sb.ToString());
                 }
 
                 // If there is any update, we update the object
@@ -373,7 +395,7 @@ namespace Infrastructure.Persistence.Services
 
                 await t.CommitAsync();
 
-                return new ProjectResponseModel(operatedProject, getUserProject.ToList()[0].ProjectRole);
+                return new ProjectResponseModel(operatedProject, getUserProject.Select(e => e.ProjectRole).ToList());
             }
             catch (Exception ex)
             {

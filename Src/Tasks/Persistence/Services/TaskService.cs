@@ -89,19 +89,26 @@ namespace Infrastructure.Persistence.Services
                 }
 
                 // Check if its assignedBy person is in the Db
-                ApplicationUser assignedByUser = _userManager.Users.FirstOrDefault(e => e.UserId == task.AssignedBy);
-                if (validUser == null)
+                if (task.AssignedBy != null)
                 {
-                    throw new TaskServiceException(404, "Cannot locate a valid user for assignedBy field from the data provided");
+                    ApplicationUser assignedByUser = _userManager.Users.FirstOrDefault(e => e.UserId == task.AssignedBy);
+                    if (assignedByUser == null)
+                    {
+                        throw new TaskServiceException(404, "Cannot locate a valid user for assignedBy field from the data provided");
+                    }
                 }
 
                 // Check if its assignedFor person is in the Db
-                ApplicationUser assignedForUser = _userManager.Users.FirstOrDefault(e => e.UserId == task.AssignedFor);
-                if (validUser == null)
+                if (task.AssignedFor != null)
                 {
-                    throw new TaskServiceException(404, "Cannot locate a valid user for assignedFor field from the data provided");
+                    ApplicationUser assignedForUser = _userManager.Users.FirstOrDefault(e => e.UserId == task.AssignedFor);
+                    if (assignedForUser == null)
+                    {
+                        throw new TaskServiceException(404, "Cannot locate a valid user for assignedFor field from the data provided");
+                    }
                 }
 
+                DateTime insertTime = DateTime.UtcNow;
                 // Add task in first
                 Tasks newTask = new Tasks()
                 {
@@ -116,18 +123,19 @@ namespace Infrastructure.Persistence.Services
                     AssignedBy = task.AssignedBy,
                     AssignedFor = task.AssignedFor,
                     CreatedBy = validUser.UserId,
-                    CreatedDate = DateTime.UtcNow,
-                    UpdatedDate = DateTime.UtcNow,
+                    CreatedDate = insertTime,
+                    UpdatedBy = validUser.UserId,
+                    UpdatedDate = insertTime,
                     Deleted = false,
                 };  
                 await _unitOfWork.Repository<Tasks>().InsertAsync(newTask);
                 await _unitOfWork.SaveChangesAsync();
 
-                // Eager load instance
+                // Eager load instance for initialization of response model
                 var entry = _unitOfWork.Entry(newTask);
-                entry.Reference(e => e.Project).Load();
-                entry.Reference(e => e.Priority).Load();
-                entry.Reference(e => e.Parent).Load();
+                await entry.Reference(e => e.Project).LoadAsync();
+                await entry.Reference(e => e.Priority).LoadAsync();
+                await entry.Reference(e => e.Parent).LoadAsync();
 
                 await t.CommitAsync();
 
@@ -156,10 +164,10 @@ namespace Infrastructure.Persistence.Services
                     throw new TaskServiceException(404, "Cannot locate a valid user from the claim provided");
                 }
 
-                // Query for all the tasks in projects that the user participated in that matches the queries
+                // Query for all the tasks in projects that the user participated in and that matches the queries
                 var result = from userProjects in _unitOfWork.Repository<UserProjects>().GetDbset()
                              join tasks in _unitOfWork.Repository<Tasks>().GetDbset() on userProjects.ProjectId equals tasks.ProjectId
-                             where userProjects.UserId == model.UserId
+                             where userProjects.UserId == validUser.UserId
                              select tasks;
 
                 // Run original statement through additional queries
@@ -194,7 +202,7 @@ namespace Infrastructure.Persistence.Services
             catch (Exception ex)
             {
                 await t.RollbackAsync();
-                _logger.LogError(ex, "An error occurred when using ProjectService");
+                _logger.LogError(ex, "An error occurred when using TaskService");
                 throw ex;
             }
         }
@@ -206,7 +214,191 @@ namespace Infrastructure.Persistence.Services
 
         public async Task<TaskResponseModel> UpdateTaskInfo(long taskId, long updatedByUserId, UpdateTaskInfoModel model)
         {
-            throw new NotImplementedException();
+            // Validate if priority level is valid first (from request) 
+            if (model.PriorityId != null && ((int)model.PriorityId < 0 || (int)model.PriorityId >= Enum.GetValues(typeof(TaskPriorityLevel)).Length))
+            {
+                throw new TaskServiceException(400, "Provided priority Id for task is invalid");
+            }
+
+            // Start the update transaction
+            await using var t = await _unitOfWork.CreateTransaction();
+            try
+            {
+                // Check if uid is valid or not
+                ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == updatedByUserId);
+                if (validUser == null)
+                {
+                    throw new TaskServiceException(404, "Cannot locate a valid user from the claim provided");
+                }
+
+                // Check if task is in db first
+                var result = from task in _unitOfWork.Repository<Tasks>().GetDbset()
+                             where task.Id == taskId
+                             select task;
+                if (result == null || result.Count() < 1)
+                {
+                    throw new TaskServiceException(404, "Cannot find a single instance of a task from the infos you provided");
+                }
+                if (result.Count() > 1)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendLine("Inconsistency in database. Executing query returns more than one result: ");
+                    sb.AppendLine(result.ToList().ToString());
+                    throw new Exception(sb.ToString());
+                }
+
+                Tasks operatedTask = result.ToList()[0];
+
+                // Query if the current user is associated with the project that the operated task is in???
+                var userIsAssociated = from userProjects in _unitOfWork.Repository<UserProjects>().GetDbset()
+                             where userProjects.UserId == validUser.UserId && operatedTask.ProjectId == userProjects.ProjectId
+                             select userProjects;
+                if (userIsAssociated == null || userIsAssociated.Count() < 1)
+                {
+                    throw new TaskServiceException(404, "Cannot find the task for your operation");
+                }
+
+                // flag to know if any field is going to be changed or not
+                bool isUpdated = false;
+
+                // Check if its new project is valid (if have)
+                if (model.ProjectId != null)
+                {
+                    if (model.ProjectId == operatedTask.ProjectId)
+                    {
+                        throw new TaskServiceException(400, "Cannot set a task to be its own parent");
+                    }
+
+                    var parentProject = from project in _unitOfWork.Repository<Project>().GetDbset()
+                                 where project.Id == model.ProjectId
+                                 select project;
+                    if (parentProject == null || parentProject.Count() < 1)
+                    {
+                        throw new TaskServiceException(404, "Cannot find a single instance of a project from the projectId infos you provided");
+                    }
+                    if (parentProject.Count() > 1)
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        sb.AppendLine("Inconsistency in database. Executing query returns more than one result: ");
+                        sb.AppendLine(parentProject.ToList().ToString());
+                        throw new Exception(sb.ToString());
+                    }
+
+                    Project newParentProject = parentProject.ToList()[0];
+
+                    operatedTask.ProjectId = newParentProject.Id;
+                    isUpdated = true;
+                }
+
+                // Check if its new parent task is valid (if have)
+                if (model.ParentId != null)
+                {
+                    var parentTask = from task in _unitOfWork.Repository<Tasks>().GetDbset()
+                                 where task.Id == model.ParentId
+                                 select task;
+                    if (parentTask == null || parentTask.Count() < 1)
+                    {
+                        throw new TaskServiceException(404, "Cannot find a single instance of a parent task from the infos you provided");
+                    }
+                    if (parentTask.Count() > 1)
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        sb.AppendLine("Inconsistency in database. Executing query returns more than one result: ");
+                        sb.AppendLine(parentTask.ToList().ToString());
+                        throw new Exception(sb.ToString());
+                    }
+
+                    Tasks newParentTask = parentTask.ToList()[0];
+
+                    if (newParentTask.Id == operatedTask.Id)
+                    {
+                        throw new TaskServiceException(400, "Cannot set a task to be its own parent");
+                    }
+
+                    // Only  register change only if parentId is not sent together with removefromparent field (we ignore the change)
+                    if (newParentTask.Id != operatedTask.ParentId && (model.MakeParentless == null || !model.MakeParentless.Value))
+                    {
+                        operatedTask.ParentId = newParentTask.Id;
+                        isUpdated = true;
+                    }
+                }
+
+                // If remove parent is true and the task item has a parent, then we register the change (if request have MakeParentless)
+                if (operatedTask.ParentId != null && model.MakeParentless != null && model.MakeParentless.Value)
+                {
+                    operatedTask.ParentId = null;
+                    isUpdated = true;
+                }
+
+                // Check if its assignedBy person is in the Db (if have)
+                if (model.AssignedBy != null)
+                {
+                    ApplicationUser assignedByUser = _userManager.Users.FirstOrDefault(e => e.UserId == model.AssignedBy);
+                    if (assignedByUser == null)
+                    {
+                        throw new TaskServiceException(404, "Cannot locate a valid user for assignedBy field from the data provided");
+                    }
+                    else
+                    {
+                        operatedTask.AssignedBy = assignedByUser.UserId;
+                        isUpdated = true;
+                    }
+                }
+
+                // Check if its assignedFor person is in the Db
+                if (model.AssignedFor != null)
+                {
+                    ApplicationUser assignedForUser = _userManager.Users.FirstOrDefault(e => e.UserId == model.AssignedFor);
+                    if (assignedForUser == null)
+                    {
+                        throw new TaskServiceException(404, "Cannot locate a valid user for assignedFor field from the data provided");
+                    }
+                    else
+                    {
+                        operatedTask.AssignedFor = assignedForUser.UserId;
+                        isUpdated = true;
+                    }
+                }
+
+                // Priority level
+                if(model.PriorityId != null)
+                {
+                    operatedTask.PriorityId = model.PriorityId == 0 ? null : model.PriorityId;
+                    isUpdated = true;
+                }
+
+                //Update normal fields that are not references
+                if (model.Name != null && model.Name.Length > 0 && model.Name != operatedTask.Name)
+                {
+                    operatedTask.Name = model.Name;
+                    isUpdated = true;
+                }
+
+                // If there is any update, we update the object
+                if (isUpdated)
+                {
+                    operatedTask.UpdatedBy = validUser.UserId;
+                    operatedTask.UpdatedDate = DateTime.UtcNow;
+                    _unitOfWork.Repository<Tasks>().Update(operatedTask);
+                    await _unitOfWork.SaveChangesAsync();
+                }
+
+                // Eager load instance for initialization of response model
+                var entry = _unitOfWork.Entry(operatedTask);
+                await entry.Reference(e => e.Project).LoadAsync();
+                await entry.Reference(e => e.Priority).LoadAsync();
+                await entry.Reference(e => e.Parent).LoadAsync();
+
+                await t.CommitAsync();
+
+                return new TaskResponseModel(operatedTask);
+            }
+            catch (Exception ex)
+            {
+                await t.RollbackAsync();
+                _logger.LogError(ex, "An error occurred when using TaskService");
+                throw ex;
+            }
         }
 
         public async Task<TaskResponseModel> SoftDeleteExistingTask(long taskId, long deletedByUserId)

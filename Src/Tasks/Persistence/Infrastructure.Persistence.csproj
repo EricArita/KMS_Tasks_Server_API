@@ -5,18 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20201130023311_UpdateDb_3.cs" />
-    <Compile Remove="Migrations\20201130023311_UpdateDb_3.Designer.cs" />
-    <Compile Remove="Migrations\20201204102222_UpdateDb_6.cs" />
-    <Compile Remove="Migrations\20201204102222_UpdateDb_6.Designer.cs" />
-    <Compile Remove="Migrations\20201204103201_UpdateDb_6.cs" />
-    <Compile Remove="Migrations\20201204103201_UpdateDb_6.Designer.cs" />
-    <Compile Remove="Migrations\20201204105420_UpdateDb_6.cs" />
-    <Compile Remove="Migrations\20201204105420_UpdateDb_6.Designer.cs" />
-    <Compile Remove="Migrations\20201214080847_NewSeedData.cs" />
-    <Compile Remove="Migrations\20201214080847_NewSeedData.Designer.cs" />
-    <Compile Remove="Migrations\20201214115926_a.cs" />
-    <Compile Remove="Migrations\20201214115926_a.Designer.cs" />
+    <Compile Remove="Migrations\20201215050920_UpdateBy_field_for_Tasks.cs" />
+    <Compile Remove="Migrations\20201215050920_UpdateBy_field_for_Tasks.Designer.cs" />
+    <Compile Remove="Migrations\20201215063328_UpdatedBy field for Tasks.cs" />
+    <Compile Remove="Migrations\20201215063328_UpdatedBy field for Tasks.Designer.cs" />
+    <Compile Remove="Migrations\20201215070149_UpdatedBy for Task.cs" />
+    <Compile Remove="Migrations\20201215070149_UpdatedBy for Task.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

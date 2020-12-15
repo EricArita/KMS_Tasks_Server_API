@@ -8,7 +8,7 @@ namespace Core.Application.Models.Project
 {
     public class ProjectResponseModel
     {
-        public ProjectResponseModel(Domain.DbEntities.Project project, ProjectRole role)
+        public ProjectResponseModel(Domain.DbEntities.Project project, IEnumerable<ProjectRole> roles)
         {
             if (project == null) return;
             Id = project.Id;
@@ -18,9 +18,9 @@ namespace Core.Application.Models.Project
             CreatedBy = project.CreatedByUser == null ? null : new UserDTO(project.CreatedByUser);
             UpdatedDate = project.UpdatedDate;
             UpdatedBy = project.UpdatedByUser == null ? null : new UserDTO(project.UpdatedByUser);
-            if (role != null)
+            if (roles != null)
             {
-                ProjectRole = role;
+                ProjectRoles = roles;
             }
             IsDeleted = project.Deleted;
             if (project.Parent == null) return;
@@ -36,6 +36,6 @@ namespace Core.Application.Models.Project
         public UserDTO UpdatedBy { get; set; }
         public bool IsDeleted { get; set; }
         public ProjectResponseModel Parent { get; set; }
-        public ProjectRole ProjectRole { get; set; }
+        public IEnumerable<ProjectRole> ProjectRoles { get; set; }
     }
 }

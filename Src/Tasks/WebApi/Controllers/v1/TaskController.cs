@@ -35,7 +35,7 @@ namespace WebApi.Controllers.v1
                 var claimsManager = HttpContext.User;
                 if (!claimsManager.HasClaim(c => c.Type == "uid"))
                 {
-                    return Unauthorized(new Response<object>(false, null, "Token provided is invalid because there is no valid confidential claim"));
+                    return Unauthorized(new HttpResponse<object>(false, null, "Token provided is invalid because there is no valid confidential claim"));
                 }
                 // Extract uid from token
                 long uid;
@@ -45,12 +45,12 @@ namespace WebApi.Controllers.v1
                 }
                 catch (Exception)
                 {
-                    return Unauthorized(new Response<object>(false, null, "Token provided is invalid because the value for the claim is invalid"));
+                    return Unauthorized(new HttpResponse<object>(false, null, "Token provided is invalid because the value for the claim is invalid"));
                 }
 
                 // Carry on with the business logic
                 TaskResponseModel addedTask = await _taskService.AddNewTask(uid, newTask);
-                return Ok(new Response<TaskResponseModel>(true, addedTask, message: "Successfully added task"));
+                return Ok(new HttpResponse<TaskResponseModel>(true, addedTask, message: "Successfully added task"));
             }
             catch (Exception ex)
             {
@@ -59,9 +59,9 @@ namespace WebApi.Controllers.v1
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
                     sb.AppendLine(exception.Message);
-                    return StatusCode(exception.StatusCode, new Response<object>(false, null, sb.ToString()));
+                    return StatusCode(exception.StatusCode, new HttpResponse<object>(false, null, sb.ToString()));
                 }
-                return StatusCode(500, new Response<Exception>(false, ex, "Server encountered an exception"));
+                return StatusCode(500, new HttpResponse<Exception>(false, ex, "Server encountered an exception"));
             }
         }
 
@@ -73,12 +73,12 @@ namespace WebApi.Controllers.v1
                 //Check validity of the token
                 if (model.UserId != null)
                 {
-                    return BadRequest(new Response<object>(false, null, "Found illegal parameter UserId in query, we refuse to carry on with your request"));
+                    return BadRequest(new HttpResponse<object>(false, null, "Found illegal parameter UserId in query, we refuse to carry on with your request"));
                 }
                 var claimsManager = HttpContext.User;
                 if (!claimsManager.HasClaim(c => c.Type == "uid"))
                 {
-                    return Unauthorized(new Response<object>(false, null, "Token provided is invalid because there is no valid confidential claim"));
+                    return Unauthorized(new HttpResponse<object>(false, null, "Token provided is invalid because there is no valid confidential claim"));
                 }
                 // Extract uid from token
                 long uid;
@@ -88,14 +88,14 @@ namespace WebApi.Controllers.v1
                 }
                 catch (Exception)
                 {
-                    return Unauthorized(new Response<object>(false, null, "Token provided is invalid because the value for the claim is invalid"));
+                    return Unauthorized(new HttpResponse<object>(false, null, "Token provided is invalid because the value for the claim is invalid"));
                 }
 
                 // If passes all tests, then we submit it to the service layer
                 model.UserId = uid;
                 // Carry on with the business logic
                 IEnumerable<TaskResponseModel> tasks = await _taskService.GetAllTasks(model);
-                return Ok(new Response<IEnumerable<TaskResponseModel>>(true, tasks, message: "Successfully fetched tasks of user"));
+                return Ok(new HttpResponse<IEnumerable<TaskResponseModel>>(true, tasks, message: "Successfully fetched tasks of user"));
             }
             catch (Exception ex)
             {
@@ -104,9 +104,9 @@ namespace WebApi.Controllers.v1
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
                     sb.AppendLine(exception.Message);
-                    return StatusCode(exception.StatusCode, new Response<object>(false, null, sb.ToString()));
+                    return StatusCode(exception.StatusCode, new HttpResponse<object>(false, null, sb.ToString()));
                 }
-                return StatusCode(500, new Response<Exception>(false, ex, "Server encountered an exception"));
+                return StatusCode(500, new HttpResponse<Exception>(false, ex, "Server encountered an exception"));
             }
         }
 
@@ -119,7 +119,41 @@ namespace WebApi.Controllers.v1
         [HttpPatch("task/{taskId}")]
         public async Task<IActionResult> UpdateAnExistingTask(int taskId, [FromBody] UpdateTaskInfoModel model)
         {
-            throw new NotImplementedException();
+            try
+            {
+                //Check validity of the token
+                var claimsManager = HttpContext.User;
+                if (!claimsManager.HasClaim(c => c.Type == "uid"))
+                {
+                    return Unauthorized(new HttpResponse<object>(false, null, "Token provided is invalid because there is no valid confidential claim"));
+                }
+                // Extract uid from token
+                long uid;
+                try
+                {
+                    uid = long.Parse(claimsManager.Claims.FirstOrDefault(c => c.Type == "uid").Value);
+                }
+                catch (Exception)
+                {
+                    return Unauthorized(new HttpResponse<object>(false, null, "Token provided is invalid because the value for the claim is invalid"));
+                }
+
+                // If passes all tests, then we submit it to the service layer
+                // Carry on with the business logic
+                TaskResponseModel updatedTask = await _taskService.UpdateTaskInfo(taskId, uid, model);
+                return Ok(new HttpResponse<TaskResponseModel>(true, updatedTask, message: "Successfully patched specified task of user"));
+            }
+            catch (Exception ex)
+            {
+                if (ex is TaskServiceException exception)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
+                    sb.AppendLine(exception.Message);
+                    return StatusCode(exception.StatusCode, new HttpResponse<object>(false, null, sb.ToString()));
+                }
+                return StatusCode(500, new HttpResponse<Exception>(false, ex, "Server encountered an exception"));
+            }
         }
 
         [HttpDelete("task/{taskId}")]
