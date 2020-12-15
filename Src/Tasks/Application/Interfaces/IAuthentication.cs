@@ -8,9 +8,10 @@ namespace Core.Application.Interfaces
 {
     public interface IAuthentication
     {
-        Task<Response<ApplicationUser>> RegisterAsync(UserRegisterModel model);
-        Task<Response<AuthResponseModel>> VerifyAccount(string userName, string password);
-        Task<Response<AuthResponseModel>> HandleFacebookLoginAsync(string userAccessToken);
+        Task<HttpResponse<ApplicationUser>> RegisterAsync(UserRegisterModel model);
+        Task<HttpResponse<AuthResponseModel>> VerifyAccount(string userName, string password);
+        Task<HttpResponse<AuthResponseModel>> HandleFacebookLoginAsync(string userAccessToken);
+        Task<HttpResponse<AuthResponseModel>> RefreshTokenAsync(string token);
     }
 
     public abstract class JWTAuthenticationBase {

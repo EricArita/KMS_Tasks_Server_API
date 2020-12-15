@@ -35,7 +35,7 @@ namespace WebApi.Controllers.v1
                 var claimsManager = HttpContext.User;
                 if(!claimsManager.HasClaim(c => c.Type == "uid"))
                 {
-                    return Unauthorized(new Response<object>(false, null, "Token provided is invalid because there is no valid confidential claim"));
+                    return Unauthorized(new HttpResponse<object>(false, null, "Token provided is invalid because there is no valid confidential claim"));
                 }
                 // Extract uid from token
                 long uid;
@@ -44,12 +44,12 @@ namespace WebApi.Controllers.v1
                     uid = long.Parse(claimsManager.Claims.FirstOrDefault(c => c.Type == "uid").Value);
                 } catch (Exception)
                 {
-                    return Unauthorized(new Response<object>(false, null, "Token provided is invalid because the value for the claim is invalid"));
+                    return Unauthorized(new HttpResponse<object>(false, null, "Token provided is invalid because the value for the claim is invalid"));
                 }
 
                 // Carry on with the business logic
                 ProjectResponseModel addedProject = await _projectService.AddNewProject(uid, newProject);
-                return Ok(new Response<ProjectResponseModel>(true, addedProject, message: "Successfully added project"));
+                return Ok(new HttpResponse<ProjectResponseModel>(true, addedProject, message: "Successfully added project"));
             }
             catch (Exception ex)
             {
@@ -58,9 +58,9 @@ namespace WebApi.Controllers.v1
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
                     sb.AppendLine(exception.Message);
-                    return StatusCode(exception.StatusCode, new Response<object>(false, null, sb.ToString()));
+                    return StatusCode(exception.StatusCode, new HttpResponse<object>(false, null, sb.ToString()));
                 }
-                return StatusCode(500, new Response<Exception>(false, ex, "Server encountered an exception"));
+                return StatusCode(500, new HttpResponse<Exception>(false, ex, "Server encountered an exception"));
             }
         }
 
@@ -77,7 +77,7 @@ namespace WebApi.Controllers.v1
                 var claimsManager = HttpContext.User;
                 if (!claimsManager.HasClaim(c => c.Type == "uid"))
                 {
-                    return Unauthorized(new Response<object>(false, null, "Token provided is invalid because there is no valid confidential claim"));
+                    return Unauthorized(new HttpResponse<object>(false, null, "Token provided is invalid because there is no valid confidential claim"));
                 }
                 // Extract uid from token
                 long uid;
@@ -105,7 +105,7 @@ namespace WebApi.Controllers.v1
                     sb.AppendLine(exception.Message);
                     return StatusCode(exception.StatusCode, new Response<object>(false, null, sb.ToString()));
                 }
-                return StatusCode(500, new Response<Exception>(false, ex, "Server encountered an exception"));
+                return StatusCode(500, new HttpResponse<Exception>(false, ex, "Server encountered an exception"));
             }
         }
 
@@ -118,7 +118,7 @@ namespace WebApi.Controllers.v1
                 var claimsManager = HttpContext.User;
                 if (!claimsManager.HasClaim(c => c.Type == "uid"))
                 {
-                    return Unauthorized(new Response<object>(false, null, "Token provided is invalid because there is no valid confidential claim"));
+                    return Unauthorized(new HttpResponse<object>(false, null, "Token provided is invalid because there is no valid confidential claim"));
                 }
                 // Extract uid from token
                 long uid;
@@ -230,7 +230,7 @@ namespace WebApi.Controllers.v1
                     sb.AppendLine(exception.Message);
                     return StatusCode(exception.StatusCode, new Response<object>(false, null, sb.ToString()));
                 }
-                return StatusCode(500, new Response<Exception>(false, ex, "Server encountered an exception"));
+                return StatusCode(500, new HttpResponse<Exception>(false, ex, "Server encountered an exception"));
             }
         }
     }
