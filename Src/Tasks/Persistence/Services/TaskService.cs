@@ -54,18 +54,18 @@ namespace Infrastructure.Persistence.Services
                 }
 
                 // Check if its associated project is valid
-                var parent = from project in _unitOfWork.Repository<Project>().GetDbset()
+                var parentProject = from project in _unitOfWork.Repository<Project>().GetDbset()
                                  where project.Id == task.ProjectId
                                  select project;
-                if (parent == null || parent.Count() < 1)
+                if (parentProject == null || parentProject.Count() < 1)
                 {
                     throw new TaskServiceException(404, "Cannot find a single instance of the parent project from the infos you provided");
                 }
-                if (parent.Count() > 1)
+                if (parentProject.Count() > 1)
                 {
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("Inconsistency in database. Executing query returns more than one result: ");
-                    sb.AppendLine(parent.ToList().ToString());
+                    sb.AppendLine(parentProject.ToList().ToString());
                     throw new Exception(sb.ToString());
                 }
 
@@ -83,7 +83,7 @@ namespace Infrastructure.Persistence.Services
                     {
                         StringBuilder sb = new StringBuilder();
                         sb.AppendLine("Inconsistency in database. Executing query returns more than one result: ");
-                        sb.AppendLine(parent.ToList().ToString());
+                        sb.AppendLine(parentTask.ToList().ToString());
                         throw new Exception(sb.ToString());
                     }
                 }
