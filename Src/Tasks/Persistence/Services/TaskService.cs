@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using static Core.Domain.Constants.Enums;
@@ -72,7 +73,7 @@ namespace Infrastructure.Persistence.Services
                 // Check if its parent task is valid
                 if (task.ParentId != null)
                 {
-                    var parentTask = from Task in _unitOfWork.Repository<Task>().GetDbset()
+                    var parentTask = from Task in _unitOfWork.Repository<Tasks>().GetDbset()
                                  where Task.Id == task.ParentId
                                  select Task;
                     if (parentTask == null || parentTask.Count() < 1)
@@ -85,6 +86,12 @@ namespace Infrastructure.Persistence.Services
                         sb.AppendLine("Inconsistency in database. Executing query returns more than one result: ");
                         sb.AppendLine(parentTask.ToList().ToString());
                         throw new Exception(sb.ToString());
+                    }
+
+                    // If parent task is not in the same project =>  it's false
+                    if(parentTask.ToList()[0].ProjectId != parentProject.ToList()[0].Id)
+                    {
+                        throw new TaskServiceException(400, "Your parent task of this task could not be from another project");
                     }
                 }
 
@@ -167,7 +174,7 @@ namespace Infrastructure.Persistence.Services
                 // Query for all the tasks in projects that the user participated in and that matches the queries
                 var result = from userProjects in _unitOfWork.Repository<UserProjects>().GetDbset()
                              join tasks in _unitOfWork.Repository<Tasks>().GetDbset() on userProjects.ProjectId equals tasks.ProjectId
-                             where userProjects.UserId == validUser.UserId
+                             where userProjects.UserId == validUser.UserId && tasks.Deleted == false
                              select tasks;
 
                 // Run original statement through additional queries
@@ -224,6 +231,8 @@ namespace Infrastructure.Persistence.Services
             await using var t = await _unitOfWork.CreateTransaction();
             try
             {
+                DateTime rightNow = DateTime.UtcNow;
+
                 // Check if uid is valid or not
                 ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == updatedByUserId);
                 if (validUser == null)
@@ -266,7 +275,7 @@ namespace Infrastructure.Persistence.Services
                 {
                     if (model.ProjectId == operatedTask.ProjectId)
                     {
-                        throw new TaskServiceException(400, "Cannot set a task to be its own parent");
+                        throw new TaskServiceException(400, "Cannot set a task to belong to its current project, it already is");
                     }
 
                     var parentProject = from project in _unitOfWork.Repository<Project>().GetDbset()
@@ -286,7 +295,34 @@ namespace Infrastructure.Persistence.Services
 
                     Project newParentProject = parentProject.ToList()[0];
 
+                    //First change the project Id of the task and make it parentless
                     operatedTask.ProjectId = newParentProject.Id;
+                    operatedTask.ParentId = null;
+
+                    // Define recursive call to update children tasks to the the new project
+                    var tasksDbSet = _unitOfWork.Repository<Tasks>().GetDbset();
+                    async Task<bool> recursiveChangeProjectId(Tasks task)
+                    {
+                        if (task == null) return false;
+                        // Find all tasks that have this task as parent
+                        var query = tasksDbSet.Where(t => t.ParentId == task.Id);
+                        if (query == null || query.Count() < 1) return true;
+                        // Stop query and get results
+                        var childrenTasks = query.ToList();
+                        // For each of them change the project they belong to, to this new parent project
+                        foreach (Tasks t in childrenTasks)
+                        {
+                            t.ProjectId = newParentProject.Id;
+                            t.UpdatedBy = validUser.UserId;
+                            t.UpdatedDate = rightNow;
+                            _unitOfWork.Repository<Tasks>().Update(t);
+                            await recursiveChangeProjectId(t);
+                        }
+                        return true;
+                    }
+
+                    // Run the recursive call
+                    await recursiveChangeProjectId(operatedTask);     
                     isUpdated = true;
                 }
 
@@ -313,6 +349,11 @@ namespace Infrastructure.Persistence.Services
                     if (newParentTask.Id == operatedTask.Id)
                     {
                         throw new TaskServiceException(400, "Cannot set a task to be its own parent");
+                    }
+
+                    if (newParentTask.ProjectId != operatedTask.ProjectId)
+                    {
+                        throw new TaskServiceException(400, "Cannot set parent of a task to be a task from another project");
                     }
 
                     // Only  register change only if parentId is not sent together with removefromparent field (we ignore the change)
@@ -378,7 +419,7 @@ namespace Infrastructure.Persistence.Services
                 if (isUpdated)
                 {
                     operatedTask.UpdatedBy = validUser.UserId;
-                    operatedTask.UpdatedDate = DateTime.UtcNow;
+                    operatedTask.UpdatedDate = rightNow;
                     _unitOfWork.Repository<Tasks>().Update(operatedTask);
                     await _unitOfWork.SaveChangesAsync();
                 }
