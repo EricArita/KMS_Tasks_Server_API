@@ -43,7 +43,7 @@ namespace Infrastructure.Persistence.Services
                 throw new TaskServiceException(400, "Provided priority Id for task is invalid");
             }
 
-            await using var t = await _unitOfWork.CreateTransaction();
+            await using var transaction = await _unitOfWork.CreateTransaction();
 
             try
             {
@@ -144,13 +144,13 @@ namespace Infrastructure.Persistence.Services
                 await entry.Reference(e => e.Priority).LoadAsync();
                 await entry.Reference(e => e.Parent).LoadAsync();
 
-                await t.CommitAsync();
+                await transaction.CommitAsync();
 
                 return new TaskResponseModel(newTask);
             }
             catch (Exception ex)
             {
-                await t.RollbackAsync();
+                await transaction.RollbackAsync();
                 _logger.LogError(ex, "An error occurred while using TaskService");
                 throw ex;
             }
@@ -160,7 +160,7 @@ namespace Infrastructure.Persistence.Services
         {
             if (model.UserId == null) throw new TaskServiceException(400, "Cannot find tasks of this project if you don't provide a UserID for us to check if you have access rights");
 
-            await using var t = await _unitOfWork.CreateTransaction();
+            await using var transaction = await _unitOfWork.CreateTransaction();
 
             try
             {
@@ -204,11 +204,13 @@ namespace Infrastructure.Persistence.Services
 
                 await _unitOfWork.SaveChangesAsync();
 
+                await transaction.CommitAsync();
+
                 return finalResult.ToList();
             }
             catch (Exception ex)
             {
-                await t.RollbackAsync();
+                await transaction.RollbackAsync();
                 _logger.LogError(ex, "An error occurred when using TaskService");
                 throw ex;
             }
@@ -228,7 +230,7 @@ namespace Infrastructure.Persistence.Services
             }
 
             // Start the update transaction
-            await using var t = await _unitOfWork.CreateTransaction();
+            await using var transaction = await _unitOfWork.CreateTransaction();
             try
             {
                 DateTime rightNow = DateTime.UtcNow;
@@ -430,13 +432,13 @@ namespace Infrastructure.Persistence.Services
                 await entry.Reference(e => e.Priority).LoadAsync();
                 await entry.Reference(e => e.Parent).LoadAsync();
 
-                await t.CommitAsync();
+                await transaction.CommitAsync();
 
                 return new TaskResponseModel(operatedTask);
             }
             catch (Exception ex)
             {
-                await t.RollbackAsync();
+                await transaction.RollbackAsync();
                 _logger.LogError(ex, "An error occurred when using TaskService");
                 throw ex;
             }
@@ -445,7 +447,7 @@ namespace Infrastructure.Persistence.Services
         public async Task<TaskResponseModel> SoftDeleteExistingTask(long taskId, long deletedByUserId)
         {
             // Start the update transaction
-            await using var t = await _unitOfWork.CreateTransaction();
+            await using var transaction = await _unitOfWork.CreateTransaction();
             try
             {
                 DateTime rightNow = DateTime.UtcNow;
@@ -528,13 +530,13 @@ namespace Infrastructure.Persistence.Services
                     await _unitOfWork.SaveChangesAsync();
                 }
 
-                await t.CommitAsync();
+                await transaction.CommitAsync();
 
                 return new TaskResponseModel(operatedTask);
             }
             catch (Exception ex)
             {
-                await t.RollbackAsync();
+                await transaction.RollbackAsync();
                 _logger.LogError(ex, "An error occurred when using TaskService");
                 throw ex;
             }

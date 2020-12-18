@@ -34,7 +34,7 @@ namespace Infrastructure.Persistence.Services
         {
             if (newProject.Name == null || newProject.Name.Length <= 0) throw new ProjectServiceException(400, "Cannot create new project without a name");
 
-            await using var t = await _unitOfWork.CreateTransaction();
+            await using var transaction = await _unitOfWork.CreateTransaction();
 
             try
             {
@@ -94,13 +94,13 @@ namespace Infrastructure.Persistence.Services
                 await entry.Reference(e => e.ProjectRole).LoadAsync();
                 roles.Add(relationToUser.ProjectRole);
 
-                await t.CommitAsync();
+                await transaction.CommitAsync();
 
                 return new ProjectResponseModel(addedProject, roles);
             }
             catch (Exception ex)
             {
-                await t.RollbackAsync();
+                await transaction.RollbackAsync();
                 _logger.LogError(ex, "An error occurred when using ProjectService");
                 throw ex;
             }
@@ -110,7 +110,7 @@ namespace Infrastructure.Persistence.Services
         {
             if (model.UserID == null) throw new ProjectServiceException(400, "Cannot find projects of this user if you don't provide a UserID");
 
-            await using var t = await _unitOfWork.CreateTransaction();
+            await using var transaction = await _unitOfWork.CreateTransaction();
 
             try
             {
@@ -146,11 +146,13 @@ namespace Infrastructure.Persistence.Services
 
                 await _unitOfWork.SaveChangesAsync();
 
+                await transaction.CommitAsync();
+
                 return result;
             }
             catch (Exception ex)
             {
-                await t.RollbackAsync();
+                await transaction.RollbackAsync();
                 _logger.LogError(ex, "An error occurred when using ProjectService");
                 throw ex;
             }
@@ -160,7 +162,7 @@ namespace Infrastructure.Persistence.Services
         {
             if (model.UserId == null || model.ProjectId == null) throw new ProjectServiceException(400, "Cannot find projects of this user if you don't provide a UserID");
 
-            await using var t = await _unitOfWork.CreateTransaction();
+            await using var transaction = await _unitOfWork.CreateTransaction();
 
             try
             {
@@ -210,11 +212,13 @@ namespace Infrastructure.Persistence.Services
 
                 await _unitOfWork.SaveChangesAsync();
 
+                await transaction.CommitAsync();
+
                 return result[0];
             }
             catch (Exception ex)
             {
-                await t.RollbackAsync();
+                await transaction.RollbackAsync();
                 _logger.LogError(ex, "An error occurred when using ProjectService");
                 throw ex;
             }
@@ -223,7 +227,7 @@ namespace Infrastructure.Persistence.Services
         public async Task<ProjectResponseModel> UpdateProjectInfo(long projectId, long updatedByUserId, UpdateProjectInfoModel model)
         {
             // Start the update transaction
-            await using var t = await _unitOfWork.CreateTransaction();
+            await using var transaction = await _unitOfWork.CreateTransaction();
             try
             {
                 // Check if uid is valid or not
@@ -323,13 +327,13 @@ namespace Infrastructure.Persistence.Services
                     await _unitOfWork.SaveChangesAsync();
                 }       
 
-                await t.CommitAsync();
+                await transaction.CommitAsync();
 
                 return new ProjectResponseModel(operatedProject, getUserProject.Select(e => e.ProjectRole).ToList());
             }
             catch (Exception ex)
             {
-                await t.RollbackAsync();
+                await transaction.RollbackAsync();
                 _logger.LogError(ex, "An error occurred when using ProjectService");
                 throw ex;
             }
@@ -338,7 +342,7 @@ namespace Infrastructure.Persistence.Services
         public async Task<ProjectResponseModel> SoftDeleteExistingProject(long projectId, long deletedByUserId)
         {
             // Start the update transaction
-            await using var t = await _unitOfWork.CreateTransaction();
+            await using var transaction = await _unitOfWork.CreateTransaction();
             try
             {
                 // Check if uid is valid or not
@@ -393,13 +397,13 @@ namespace Infrastructure.Persistence.Services
                     await _unitOfWork.SaveChangesAsync();
                 }
 
-                await t.CommitAsync();
+                await transaction.CommitAsync();
 
                 return new ProjectResponseModel(operatedProject, getUserProject.Select(e => e.ProjectRole).ToList());
             }
             catch (Exception ex)
             {
-                await t.RollbackAsync();
+                await transaction.RollbackAsync();
                 _logger.LogError(ex, "An error occurred when using ProjectService");
                 throw ex;
             }

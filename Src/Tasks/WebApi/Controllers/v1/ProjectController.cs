@@ -33,22 +33,23 @@ namespace WebApi.Controllers.v1
             {
                 // Check validity of the request
                 var claimsManager = HttpContext.User;
-                if(!claimsManager.HasClaim(c => c.Type == "uid"))
-                {
-                    return Unauthorized(new HttpResponse<object>(false, null, "Token provided is invalid because there is no valid confidential claim"));
-                }
-                // Extract uid from token
-                long uid;
+                long? uid = null;
                 try
                 {
-                    uid = long.Parse(claimsManager.Claims.FirstOrDefault(c => c.Type == "uid").Value);
-                } catch (Exception)
+                    uid = GetUserId(claimsManager);
+                }
+                catch (Exception e)
                 {
-                    return Unauthorized(new HttpResponse<object>(false, null, "Token provided is invalid because the value for the claim is invalid"));
+                    return Unauthorized(e.Message);
+                }
+
+                if (!uid.HasValue)
+                {
+                    return Unauthorized("Unauthorized individuals cannot access this route");
                 }
 
                 // Carry on with the business logic
-                ProjectResponseModel addedProject = await _projectService.AddNewProject(uid, newProject);
+                ProjectResponseModel addedProject = await _projectService.AddNewProject(uid.Value, newProject);
                 return Ok(new HttpResponse<ProjectResponseModel>(true, addedProject, message: "Successfully added project"));
             }
             catch (Exception ex)
@@ -75,19 +76,19 @@ namespace WebApi.Controllers.v1
                     return BadRequest(new HttpResponse<object>(false, null, "Found illegal parameter UserID in query, we refuse to carry on with your request"));
                 }
                 var claimsManager = HttpContext.User;
-                if (!claimsManager.HasClaim(c => c.Type == "uid"))
-                {
-                    return Unauthorized(new HttpResponse<object>(false, null, "Token provided is invalid because there is no valid confidential claim"));
-                }
-                // Extract uid from token
-                long uid;
+                long? uid = null;
                 try
                 {
-                    uid = long.Parse(claimsManager.Claims.FirstOrDefault(c => c.Type == "uid").Value);
+                    uid = GetUserId(claimsManager);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-                    return Unauthorized(new HttpResponse<object>(false, null, "Token provided is invalid because the value for the claim is invalid"));
+                    return Unauthorized(e.Message);
+                }
+
+                if (!uid.HasValue)
+                {
+                    return Unauthorized("Unauthorized individuals cannot access this route");
                 }
 
                 // If passes all tests, then we submit it to the service layer
@@ -116,19 +117,19 @@ namespace WebApi.Controllers.v1
             {
                 //Check validity of the token
                 var claimsManager = HttpContext.User;
-                if (!claimsManager.HasClaim(c => c.Type == "uid"))
-                {
-                    return Unauthorized(new HttpResponse<object>(false, null, "Token provided is invalid because there is no valid confidential claim"));
-                }
-                // Extract uid from token
-                long uid;
+                long? uid = null;
                 try
                 {
-                    uid = long.Parse(claimsManager.Claims.FirstOrDefault(c => c.Type == "uid").Value);
+                    uid = GetUserId(claimsManager);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-                    return Unauthorized(new HttpResponse<object>(false, null, "Token provided is invalid because the value for the claim is invalid"));
+                    return Unauthorized(e.Message);
+                }
+
+                if (!uid.HasValue)
+                {
+                    return Unauthorized("Unauthorized individuals cannot access this route");
                 }
 
                 // If passes all tests, then we submit it to the service layer
@@ -161,24 +162,24 @@ namespace WebApi.Controllers.v1
             {
                 //Check validity of the token
                 var claimsManager = HttpContext.User;
-                if (!claimsManager.HasClaim(c => c.Type == "uid"))
-                {
-                    return Unauthorized(new HttpResponse<object>(false, null, "Token provided is invalid because there is no valid confidential claim"));
-                }
-                // Extract uid from token
-                long uid;
+                long? uid = null;
                 try
                 {
-                    uid = long.Parse(claimsManager.Claims.FirstOrDefault(c => c.Type == "uid").Value);
+                    uid = GetUserId(claimsManager);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-                    return Unauthorized(new HttpResponse<object>(false, null, "Token provided is invalid because the value for the claim is invalid"));
+                    return Unauthorized(e.Message);
+                }
+
+                if (!uid.HasValue)
+                {
+                    return Unauthorized("Unauthorized individuals cannot access this route");
                 }
 
                 // If passes all tests, then we submit it to the service layer
                 // Carry on with the business logic
-                ProjectResponseModel participatedProject = await _projectService.UpdateProjectInfo(projectId, uid, model);
+                ProjectResponseModel participatedProject = await _projectService.UpdateProjectInfo(projectId, uid.Value, model);
                 return Ok(new HttpResponse<ProjectResponseModel>(true, participatedProject, message: "Successfully patched specified project of user"));
             }
             catch (Exception ex)
@@ -201,24 +202,24 @@ namespace WebApi.Controllers.v1
             {
                 //Check validity of the token
                 var claimsManager = HttpContext.User;
-                if (!claimsManager.HasClaim(c => c.Type == "uid"))
-                {
-                    return Unauthorized(new HttpResponse<object>(false, null, "Token provided is invalid because there is no valid confidential claim"));
-                }
-                // Extract uid from token
-                long uid;
+                long? uid = null;
                 try
                 {
-                    uid = long.Parse(claimsManager.Claims.FirstOrDefault(c => c.Type == "uid").Value);
+                    uid = GetUserId(claimsManager);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-                    return Unauthorized(new HttpResponse<object>(false, null, "Token provided is invalid because the value for the claim is invalid"));
+                    return Unauthorized(e.Message);
+                }
+
+                if (!uid.HasValue)
+                {
+                    return Unauthorized("Unauthorized individuals cannot access this route");
                 }
 
                 // If passes all tests, then we submit it to the service layer
                 // Carry on with the business logic
-                ProjectResponseModel participatedProject = await _projectService.SoftDeleteExistingProject(projectId, uid);
+                ProjectResponseModel participatedProject = await _projectService.SoftDeleteExistingProject(projectId, uid.Value);
                 return Ok(new HttpResponse<ProjectResponseModel>(true, participatedProject, message: "Successfully patched specified project of user"));
             }
             catch (Exception ex)

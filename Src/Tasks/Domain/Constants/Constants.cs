@@ -8,5 +8,8 @@ namespace Core.Domain.Constants
         public const string DefaultEmail = "admin@test.com";
         public const string DefaultPassword = "admin@123";
         public const UserRoles DefaultRole = UserRoles.Administrator;
+
+        //Errors
+
     }
 }
