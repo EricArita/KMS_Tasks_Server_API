@@ -444,7 +444,100 @@ namespace Infrastructure.Persistence.Services
 
         public async Task<TaskResponseModel> SoftDeleteExistingTask(long taskId, long deletedByUserId)
         {
-            throw new NotImplementedException();
+            // Start the update transaction
+            await using var t = await _unitOfWork.CreateTransaction();
+            try
+            {
+                DateTime rightNow = DateTime.UtcNow;
+
+                // Check if uid is valid or not
+                ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == deletedByUserId);
+                if (validUser == null)
+                {
+                    throw new TaskServiceException(404, "Cannot locate a valid user from the claim provided");
+                }
+
+                // Check if task is in db first
+                var result = from task in _unitOfWork.Repository<Tasks>().GetDbset()
+                             where task.Id == taskId
+                             select task;
+                if (result == null || result.Count() < 1)
+                {
+                    throw new TaskServiceException(404, "Cannot find a single instance of a task from the infos you provided");
+                }
+                if (result.Count() > 1)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendLine("Inconsistency in database. Executing query returns more than one result: ");
+                    sb.AppendLine(result.ToList().ToString());
+                    throw new Exception(sb.ToString());
+                }
+
+                Tasks operatedTask = result.ToList()[0];
+
+                // Get if user have the authorization to change tag info (query the projects the user is participating)
+                var getUserProject = from userProject in _unitOfWork.Repository<UserProjects>().GetDbset()
+                                     where userProject.UserId == validUser.UserId && userProject.ProjectId == operatedTask.ProjectId
+                                     select userProject;
+                if (getUserProject == null || getUserProject.Count() < 1)
+                {
+                    throw new TaskServiceException(404, "Cannot find the task you are looking for");
+                }
+
+                // flag to know if any field is going to be changed or not
+                bool isUpdated = false;
+
+                if (!operatedTask.Deleted)
+                {
+                    //First change the delete state of the task
+                    operatedTask.Deleted = true;
+
+                    // Define recursive call to set delete state of children of a task
+                    var tasksDbSet = _unitOfWork.Repository<Tasks>().GetDbset();
+                    async Task<bool> recursiveDeleteChildrenTasks(Tasks task)
+                    {
+                        if (task == null) return false;
+                        // Find all tasks that have this task as parent
+                        var query = tasksDbSet.Where(t => t.ParentId == task.Id);
+                        if (query == null || query.Count() < 1) return true;
+                        // Stop query and get results
+                        var childrenTasks = query.ToList();
+                        // For each of them change the project they belong to, to this new parent project
+                        foreach (Tasks t in childrenTasks)
+                        {
+                            t.Deleted = true;
+                            t.UpdatedBy = validUser.UserId;
+                            t.UpdatedDate = rightNow;
+                            _unitOfWork.Repository<Tasks>().Update(t);
+                            await recursiveDeleteChildrenTasks(t);
+                        }
+                        return true;
+                    }
+
+                    // Run the recursive call
+                    await recursiveDeleteChildrenTasks(operatedTask);
+                    isUpdated = true;
+                }
+
+                // If there is any update, we update the object
+                if (isUpdated)
+                {
+                    operatedTask.UpdatedBy = validUser.UserId;
+                    operatedTask.UpdatedDate = rightNow;
+                    _unitOfWork.Repository<Tasks>().Update(operatedTask);
+                    await _unitOfWork.SaveChangesAsync();
+                }
+
+                await t.CommitAsync();
+
+                return new TaskResponseModel(operatedTask);
+            }
+            catch (Exception ex)
+            {
+                await t.RollbackAsync();
+                _logger.LogError(ex, "An error occurred when using TaskService");
+                throw ex;
+            }
         }
     }
 }

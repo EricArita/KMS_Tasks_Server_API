@@ -159,7 +159,41 @@ namespace WebApi.Controllers.v1
         [HttpDelete("task/{taskId}")]
         public async Task<IActionResult> DeleteExistingTask(int taskId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                //Check validity of the token
+                var claimsManager = HttpContext.User;
+                if (!claimsManager.HasClaim(c => c.Type == "uid"))
+                {
+                    return Unauthorized(new HttpResponse<object>(false, null, "Token provided is invalid because there is no valid confidential claim"));
+                }
+                // Extract uid from token
+                long uid;
+                try
+                {
+                    uid = long.Parse(claimsManager.Claims.FirstOrDefault(c => c.Type == "uid").Value);
+                }
+                catch (Exception)
+                {
+                    return Unauthorized(new HttpResponse<object>(false, null, "Token provided is invalid because the value for the claim is invalid"));
+                }
+
+                // If passes all tests, then we submit it to the service layer
+                // Carry on with the business logic
+                TaskResponseModel participatedTask = await _taskService.SoftDeleteExistingTask(taskId, uid);
+                return Ok(new HttpResponse<TaskResponseModel>(true, participatedTask, message: "Successfully patched specified task of user"));
+            }
+            catch (Exception ex)
+            {
+                if (ex is TaskServiceException exception)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
+                    sb.AppendLine(exception.Message);
+                    return StatusCode(exception.StatusCode, new HttpResponse<object>(false, null, sb.ToString()));
+                }
+                return StatusCode(500, new HttpResponse<Exception>(false, ex, "Server encountered an exception"));
+            }
         }
     }
 }
