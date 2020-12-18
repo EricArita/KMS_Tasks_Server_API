@@ -1,9 +1,10 @@
 ﻿using System;
+using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Core.Application.Interfaces;
 using Core.Application.Models;
-using Microsoft.AspNetCore.Authentication.Facebook;
-using Microsoft.AspNetCore.Authorization;
+using Core.Application.Models.Auth;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Models;
@@ -37,14 +38,17 @@ namespace WebApi.Controllers.v1
                 HttpOnly = true,
                 Expires = DateTime.UtcNow.AddMinutes(5),
             };
-            Response.Cookies.Append("refreshToken", result.Data.RefreshToken, cookieOptions);
+            if (result.OK)
+            {
+                Response.Cookies.Append("refreshToken", result.Data.RefreshToken, cookieOptions);
+            }
             return Ok(result);
         }
 
         [HttpPost("facebook-login")]
-        public async Task<IActionResult> FacebookLogin([FromBody] string userAccessToken)
+        public async Task<IActionResult> FacebookLogin(FacebookAuthRequest model)
         {
-            var result = await _authService.HandleFacebookLoginAsync(userAccessToken);
+            var result = await _authService.HandleFacebookLoginAsync(model.UserAccessToken);
             return Ok(result);
         }
 

@@ -7,6 +7,11 @@ namespace Core.Domain.DbEntities
 {
     public class ApplicationUser : IdentityUser
     {
+        public ApplicationUser()
+        {
+            RefreshTokens = new List<RefreshToken>();
+        }
+
         public long UserId { get; set; }
         public string LoginProvider { get; set; }
         public string ProviderKey { get; set; }
