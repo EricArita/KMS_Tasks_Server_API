@@ -38,7 +38,7 @@ namespace WebApi.Controllers.v1
                 Expires = DateTime.UtcNow.AddMinutes(5),
             };
             Response.Cookies.Append("refreshToken", result.Data.RefreshToken, cookieOptions);
-            return Ok(result);
+            return Ok(result)
         }
 
         [HttpPost("facebook-login")]
