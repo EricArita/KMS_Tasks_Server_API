@@ -3,18 +3,16 @@ using Core.Application.Helper.Exceptions.Task;
 using Core.Application.Interfaces;
 using Core.Application.Models;
 using Core.Application.Models.Task;
-using Core.Domain.DbEntities;
-using Infrastructure.Persistence.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace WebApi.Controllers.v1
 {
+    [Area("task-management")]
     public class TaskController : BaseController
     {
         private ITaskService _taskService;
@@ -66,15 +64,11 @@ namespace WebApi.Controllers.v1
         }
 
         [HttpGet("tasks")]
-        public async Task<IActionResult> GetAllTasks([FromQuery] GetAllTasksModel model)
+        public async Task<IActionResult> GetAllTasks([FromQuery] GetAllTasksRequestModel model)
         {
             try
             {
                 //Check validity of the token
-                if (model.UserId != null)
-                {
-                    return BadRequest(new HttpResponse<object>(false, null, "Found illegal parameter UserId in query, we refuse to carry on with your request"));
-                }
                 var claimsManager = HttpContext.User;
                 long? uid = null;
                 try
@@ -92,9 +86,14 @@ namespace WebApi.Controllers.v1
                 }
 
                 // If passes all tests, then we submit it to the service layer
-                model.UserId = uid;
+                GetAllTasksModel serviceModel = new GetAllTasksModel()
+                {
+                    UserId = uid,
+                    CategoryType = model.CategoryType,
+                    ProjectId = model.ProjectId
+                };
                 // Carry on with the business logic
-                IEnumerable<TaskResponseModel> tasks = await _taskService.GetAllTasks(model);
+                IEnumerable<TaskResponseModel> tasks = await _taskService.GetAllTasks(serviceModel);
                 return Ok(new HttpResponse<IEnumerable<TaskResponseModel>>(true, tasks, message: "Successfully fetched tasks of user"));
             }
             catch (Exception ex)

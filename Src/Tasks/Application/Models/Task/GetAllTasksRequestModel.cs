@@ -4,11 +4,9 @@ using System.Text;
 
 namespace Core.Application.Models.Task
 {
-    public class GetAllTasksModel
+    public class GetAllTasksRequestModel
     {
-        public long? UserId { get; set; }
-
-        // Queries
+        // Queries, must provide at least one
         public long? ProjectId { get; set; }
         public byte? CategoryType { get; set; }
     }

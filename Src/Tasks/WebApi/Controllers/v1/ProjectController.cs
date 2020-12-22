@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 
 namespace WebApi.Controllers.v1
 {
+    [Area("project-management")]
     public class ProjectController : BaseController
     {
         private IProjectService _projectService;
@@ -66,15 +67,11 @@ namespace WebApi.Controllers.v1
         }
 
         [HttpGet("projects")]
-        public async Task<IActionResult> GetAllProjects([FromQuery] GetAllProjectsModel model)
+        public async Task<IActionResult> GetAllProjects()
         {
             try
             {
                 //Check validity of the token
-                if (model.UserID != null)
-                {
-                    return BadRequest(new HttpResponse<object>(false, null, "Found illegal parameter UserID in query, we refuse to carry on with your request"));
-                }
                 var claimsManager = HttpContext.User;
                 long? uid = null;
                 try
@@ -92,9 +89,12 @@ namespace WebApi.Controllers.v1
                 }
 
                 // If passes all tests, then we submit it to the service layer
-                model.UserID = uid;
+                GetAllProjectsModel serviceModel = new GetAllProjectsModel()
+                {
+                    UserID = uid,
+                };
                 // Carry on with the business logic
-                IEnumerable<ProjectResponseModel> projectParticipations = await _projectService.GetAllProjects(model);
+                IEnumerable<ProjectResponseModel> projectParticipations = await _projectService.GetAllProjects(serviceModel);
                 return Ok(new HttpResponse<IEnumerable<ProjectResponseModel>>(true, projectParticipations, message: "Successfully fetched projects of user"));
             }
             catch (Exception ex)

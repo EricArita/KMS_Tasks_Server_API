@@ -16,7 +16,7 @@ namespace Core.Application.Models.Task
         public bool? MakeParentless { get; set; }
 
         /// <summary>
-        /// Group "I haven't implement these yet"
+        /// Group "I haven't implemented these yet"
         /// </summary>
         public DateTime? ReminderSchedule { get; set; }
         public bool? Reminder { get; set; }
