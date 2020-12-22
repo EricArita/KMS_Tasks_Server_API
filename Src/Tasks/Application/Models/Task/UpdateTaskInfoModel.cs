@@ -1,6 +1,7 @@
 ﻿using Core.Domain.Constants;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace Core.Application.Models.Task
@@ -8,6 +9,7 @@ namespace Core.Application.Models.Task
     public class UpdateTaskInfoModel 
     {
         public string Name { get; set; }
+        [EnumDataType(typeof(Enums.TaskPriorityLevel))]
         public Enums.TaskPriorityLevel? PriorityId { get; set; }
         public long? ProjectId { get; set; }
         public long? ParentId { get; set; }

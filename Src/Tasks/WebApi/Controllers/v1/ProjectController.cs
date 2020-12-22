@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebApi.Controllers.v1.Utils;
 
 namespace WebApi.Controllers.v1
 {
@@ -60,7 +61,11 @@ namespace WebApi.Controllers.v1
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
                     sb.AppendLine(exception.Message);
-                    return StatusCode(exception.StatusCode, new HttpResponse<object>(false, null, sb.ToString()));
+                    uint? statusCode = ServiceExceptionsProcessor.getStatusCode(exception.Message);
+                    if(statusCode != null && statusCode.HasValue)
+                    {
+                        return StatusCode((int) statusCode.Value, new HttpResponse<object>(false, null, sb.ToString()));
+                    }              
                 }
                 return StatusCode(500, new HttpResponse<Exception>(false, ex, "Server encountered an exception"));
             }
@@ -91,7 +96,7 @@ namespace WebApi.Controllers.v1
                 // If passes all tests, then we submit it to the service layer
                 GetAllProjectsModel serviceModel = new GetAllProjectsModel()
                 {
-                    UserID = uid,
+                    UserID = uid.Value,
                 };
                 // Carry on with the business logic
                 IEnumerable<ProjectResponseModel> projectParticipations = await _projectService.GetAllProjects(serviceModel);
@@ -104,7 +109,11 @@ namespace WebApi.Controllers.v1
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
                     sb.AppendLine(exception.Message);
-                    return StatusCode(exception.StatusCode, new HttpResponse<object>(false, null, sb.ToString()));
+                    uint? statusCode = ServiceExceptionsProcessor.getStatusCode(exception.Message);
+                    if (statusCode != null && statusCode.HasValue)
+                    {
+                        return StatusCode((int)statusCode.Value, new HttpResponse<object>(false, null, sb.ToString()));
+                    }
                 }
                 return StatusCode(500, new HttpResponse<Exception>(false, ex, "Server encountered an exception"));
             }
@@ -136,7 +145,7 @@ namespace WebApi.Controllers.v1
                 GetOneProjectModel model = new GetOneProjectModel()
                 {
                     ProjectId = projectId,
-                    UserId = uid,
+                    UserId = uid.Value,
                 };
                 // Carry on with the business logic
                 ProjectResponseModel participatedProject = await _projectService.GetOneProject(model);
@@ -149,7 +158,11 @@ namespace WebApi.Controllers.v1
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
                     sb.AppendLine(exception.Message);
-                    return StatusCode(exception.StatusCode, new HttpResponse<object>(false, null, sb.ToString()));
+                    uint? statusCode = ServiceExceptionsProcessor.getStatusCode(exception.Message);
+                    if (statusCode != null && statusCode.HasValue)
+                    {
+                        return StatusCode((int)statusCode.Value, new HttpResponse<object>(false, null, sb.ToString()));
+                    }
                 }
                 return StatusCode(500, new HttpResponse<Exception>(false, ex, "Server encountered an exception"));
             }
@@ -189,7 +202,11 @@ namespace WebApi.Controllers.v1
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
                     sb.AppendLine(exception.Message);
-                    return StatusCode(exception.StatusCode, new HttpResponse<object>(false, null, sb.ToString()));
+                    uint? statusCode = ServiceExceptionsProcessor.getStatusCode(exception.Message);
+                    if (statusCode != null && statusCode.HasValue)
+                    {
+                        return StatusCode((int)statusCode.Value, new HttpResponse<object>(false, null, sb.ToString()));
+                    }
                 }
                 return StatusCode(500, new HttpResponse<Exception>(false, ex, "Server encountered an exception"));
             }
@@ -229,7 +246,11 @@ namespace WebApi.Controllers.v1
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
                     sb.AppendLine(exception.Message);
-                    return StatusCode(exception.StatusCode, new HttpResponse<object>(false, null, sb.ToString()));
+                    uint? statusCode = ServiceExceptionsProcessor.getStatusCode(exception.Message);
+                    if (statusCode != null && statusCode.HasValue)
+                    {
+                        return StatusCode((int)statusCode.Value, new HttpResponse<object>(false, null, sb.ToString()));
+                    }
                 }
                 return StatusCode(500, new HttpResponse<Exception>(false, ex, "Server encountered an exception"));
             }

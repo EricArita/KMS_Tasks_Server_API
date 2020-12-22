@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using WebApi.Controllers.v1.Utils;
 
 namespace WebApi.Controllers.v1
 {
@@ -57,7 +58,11 @@ namespace WebApi.Controllers.v1
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
                     sb.AppendLine(exception.Message);
-                    return StatusCode(exception.StatusCode, new HttpResponse<object>(false, null, sb.ToString()));
+                    uint? statusCode = ServiceExceptionsProcessor.getStatusCode(exception.Message);
+                    if (statusCode != null && statusCode.HasValue)
+                    {
+                        return StatusCode((int)statusCode.Value, new HttpResponse<object>(false, null, sb.ToString()));
+                    }
                 }
                 return StatusCode(500, new HttpResponse<Exception>(false, ex, "Server encountered an exception"));
             }
@@ -103,7 +108,11 @@ namespace WebApi.Controllers.v1
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
                     sb.AppendLine(exception.Message);
-                    return StatusCode(exception.StatusCode, new HttpResponse<object>(false, null, sb.ToString()));
+                    uint? statusCode = ServiceExceptionsProcessor.getStatusCode(exception.Message);
+                    if (statusCode != null && statusCode.HasValue)
+                    {
+                        return StatusCode((int)statusCode.Value, new HttpResponse<object>(false, null, sb.ToString()));
+                    }
                 }
                 return StatusCode(500, new HttpResponse<Exception>(false, ex, "Server encountered an exception"));
             }
@@ -112,7 +121,50 @@ namespace WebApi.Controllers.v1
         [HttpGet("task/{taskId}")]
         public async Task<IActionResult> GetAParticularTask(int taskId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                //Check validity of the token
+                var claimsManager = HttpContext.User;
+                long? uid = null;
+                try
+                {
+                    uid = GetUserId(claimsManager);
+                }
+                catch (Exception e)
+                {
+                    return Unauthorized(e.Message);
+                }
+
+                if (!uid.HasValue)
+                {
+                    return Unauthorized("Unauthorized individuals cannot access this route");
+                }
+
+                // If passes all tests, then we submit it to the service layer
+                GetOneTaskModel model = new GetOneTaskModel()
+                {
+                    TaskId = taskId,
+                    UserId = uid.Value,
+                };
+                // Carry on with the business logic
+                TaskResponseModel participatedTask = await _taskService.GetOneTask(model);
+                return Ok(new HttpResponse<TaskResponseModel>(true, participatedTask, message: "Successfully fetched specified project of user"));
+            }
+            catch (Exception ex)
+            {
+                if (ex is TaskServiceException exception)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
+                    sb.AppendLine(exception.Message);
+                    uint? statusCode = ServiceExceptionsProcessor.getStatusCode(exception.Message);
+                    if (statusCode != null && statusCode.HasValue)
+                    {
+                        return StatusCode((int)statusCode.Value, new HttpResponse<object>(false, null, sb.ToString()));
+                    }
+                }
+                return StatusCode(500, new HttpResponse<Exception>(false, ex, "Server encountered an exception"));
+            }
         }
 
         [HttpPatch("task/{taskId}")]
@@ -148,7 +200,11 @@ namespace WebApi.Controllers.v1
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
                     sb.AppendLine(exception.Message);
-                    return StatusCode(exception.StatusCode, new HttpResponse<object>(false, null, sb.ToString()));
+                    uint? statusCode = ServiceExceptionsProcessor.getStatusCode(exception.Message);
+                    if (statusCode != null && statusCode.HasValue)
+                    {
+                        return StatusCode((int)statusCode.Value, new HttpResponse<object>(false, null, sb.ToString()));
+                    }
                 }
                 return StatusCode(500, new HttpResponse<Exception>(false, ex, "Server encountered an exception"));
             }
@@ -188,7 +244,11 @@ namespace WebApi.Controllers.v1
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
                     sb.AppendLine(exception.Message);
-                    return StatusCode(exception.StatusCode, new HttpResponse<object>(false, null, sb.ToString()));
+                    uint? statusCode = ServiceExceptionsProcessor.getStatusCode(exception.Message);
+                    if (statusCode != null && statusCode.HasValue)
+                    {
+                        return StatusCode((int)statusCode.Value, new HttpResponse<object>(false, null, sb.ToString()));
+                    }
                 }
                 return StatusCode(500, new HttpResponse<Exception>(false, ex, "Server encountered an exception"));
             }

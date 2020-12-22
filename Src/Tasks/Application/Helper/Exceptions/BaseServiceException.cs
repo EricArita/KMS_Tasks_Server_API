@@ -6,11 +6,8 @@ namespace Core.Application.Helper.Exceptions
 {
     public class BaseServiceException : Exception
     {
-        public int StatusCode { get; private set; }
-
-        public BaseServiceException(int statusCode, string message) : base(message)
+        public BaseServiceException(string message) : base(message)
         {
-            StatusCode = statusCode;
         }
     }
 }
