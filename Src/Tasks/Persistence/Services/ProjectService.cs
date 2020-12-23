@@ -3,15 +3,12 @@ using Core.Application.Interfaces;
 using Core.Application.Models;
 using Core.Domain.Constants;
 using Core.Domain.DbEntities;
-using Infrastructure.Persistence.Repositories;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Text;
-using Infrastructure.Persistence.DTOs;
 using Core.Application.Models.Project;
 using Microsoft.Extensions.Logging;
 
@@ -32,8 +29,6 @@ namespace Infrastructure.Persistence.Services
 
         async Task<ProjectResponseModel> IProjectService.AddNewProject(long createdByUserId, NewProjectModel newProject)
         {
-            if (newProject.Name == null || newProject.Name.Length <= 0) throw new ProjectServiceException(400, "Cannot create new project without a name");
-
             await using var transaction = await _unitOfWork.CreateTransaction();
 
             try
@@ -42,7 +37,7 @@ namespace Infrastructure.Persistence.Services
                 ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == createdByUserId);
                 if (validUser == null)
                 {
-                    throw new ProjectServiceException(404, "Cannot locate a valid user from the claim provided");
+                    throw new ProjectServiceException(UserRelatedErrorsConstants.USER_NOT_FOUND);
                 }
 
                 // Check if its parent project is valid
@@ -53,12 +48,12 @@ namespace Infrastructure.Persistence.Services
                                  select project;
                     if (parent == null || parent.Count() < 1)
                     {
-                        throw new ProjectServiceException(404, "Cannot find a single instance of a parent project from the infos you provided");
+                        throw new ProjectServiceException(ProjectRelatedErrorsConstants.PARENT_PROJECT_NOT_FOUND);
                     }
                     if (parent.Count() > 1)
                     {
                         StringBuilder sb = new StringBuilder();
-                        sb.AppendLine("Inconsistency in database. Executing query returns more than one result: ");
+                        sb.AppendLine(InternalServerErrorsConstants.DATABASE_INTEGRITY_NOT_MAINTAINED);
                         sb.AppendLine(parent.ToList().ToString());
                         throw new Exception(sb.ToString());
                     }
@@ -101,15 +96,13 @@ namespace Infrastructure.Persistence.Services
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                _logger.LogError(ex, "An error occurred when using ProjectService");
+                _logger.LogError(ex, ErrorLoggingMessagesConstants.PROJECT_SERVICE_ERROR_LOG_MESSAGE);
                 throw ex;
             }
         }
 
         async Task<IEnumerable<ProjectResponseModel>> IProjectService.GetAllProjects(GetAllProjectsModel model)
         {
-            if (model.UserID == null) throw new ProjectServiceException(400, "Cannot find projects of this user if you don't provide a UserID");
-
             await using var transaction = await _unitOfWork.CreateTransaction();
 
             try
@@ -118,7 +111,7 @@ namespace Infrastructure.Persistence.Services
                 ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == model.UserID);
                 if (validUser == null)
                 {
-                    throw new ProjectServiceException(404, "Cannot locate a valid user from the claim provided");
+                    throw new ProjectServiceException(UserRelatedErrorsConstants.USER_NOT_FOUND);
                 }
 
                 // Query for participations in projects with the provided info => roles
@@ -128,7 +121,7 @@ namespace Infrastructure.Persistence.Services
                 // If cannot find any participation from the infos provided, return a service exception
                 if (participation == null || participation.Count() < 1)
                 {
-                    throw new ProjectServiceException(404, "Cannot find any project you participated in");
+                    throw new ProjectServiceException(ProjectParticipationRelatedErrorsConstants.PROJECT_PARTICIPATION_NOT_FOUND);
                 }
                 // Get all the projects participated, then for each of them 
                 var resultProjects = _unitOfWork.Repository<Project>().GetDbset()
@@ -153,15 +146,13 @@ namespace Infrastructure.Persistence.Services
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                _logger.LogError(ex, "An error occurred when using ProjectService");
+                _logger.LogError(ex, ErrorLoggingMessagesConstants.PROJECT_SERVICE_ERROR_LOG_MESSAGE);
                 throw ex;
             }
         }
 
         async Task<ProjectResponseModel> IProjectService.GetOneProject(GetOneProjectModel model)
         {
-            if (model.UserId == null || model.ProjectId == null) throw new ProjectServiceException(400, "Cannot find projects of this user if you don't provide a UserID");
-
             await using var transaction = await _unitOfWork.CreateTransaction();
 
             try
@@ -170,7 +161,7 @@ namespace Infrastructure.Persistence.Services
                 ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == model.UserId);
                 if (validUser == null)
                 {
-                    throw new ProjectServiceException(404, "Cannot locate a valid user from the claim provided");
+                    throw new ProjectServiceException(UserRelatedErrorsConstants.USER_NOT_FOUND);
                 }
 
                 // Query for participations in projects with the provided info => roles
@@ -180,7 +171,7 @@ namespace Infrastructure.Persistence.Services
                 // If cannot find any participation from the infos provided, return a service exception
                 if (participation == null || participation.Count() < 1)
                 {
-                    throw new ProjectServiceException(404, "Cannot find any project you participated in");
+                    throw new ProjectServiceException(ProjectParticipationRelatedErrorsConstants.PROJECT_PARTICIPATION_NOT_FOUND);
                 }
 
                 // Get the only one project participated 
@@ -189,13 +180,13 @@ namespace Infrastructure.Persistence.Services
                 // If cannot find the project from the infos provided, return a service exception
                 if (resultProject == null || resultProject.Count() < 1)
                 {
-                    throw new ProjectServiceException(404, "Cannot find a single instance of a project from the infos you provided");
+                    throw new ProjectServiceException(ProjectRelatedErrorsConstants.PROJECT_NOT_FOUND);
                 }
                 // Corrupted Db
                 if (resultProject.Count() > 1)
                 {
                     StringBuilder sb = new StringBuilder();
-                    sb.AppendLine("Inconsistency in database. Executing query returns more than one result: ");
+                    sb.AppendLine(InternalServerErrorsConstants.DATABASE_INTEGRITY_NOT_MAINTAINED);
                     sb.AppendLine(resultProject.ToList().ToString());
                     throw new Exception(sb.ToString());
                 }
@@ -219,7 +210,7 @@ namespace Infrastructure.Persistence.Services
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                _logger.LogError(ex, "An error occurred when using ProjectService");
+                _logger.LogError(ex, ErrorLoggingMessagesConstants.PROJECT_SERVICE_ERROR_LOG_MESSAGE);
                 throw ex;
             }
         }
@@ -234,7 +225,7 @@ namespace Infrastructure.Persistence.Services
                 ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == updatedByUserId);
                 if (validUser == null)
                 {
-                    throw new ProjectServiceException(404, "Cannot locate a valid user from the claim provided");
+                    throw new ProjectServiceException(UserRelatedErrorsConstants.USER_NOT_FOUND);
                 }
 
                 // Check if project is in db first
@@ -243,12 +234,12 @@ namespace Infrastructure.Persistence.Services
                              select project;
                 if (result == null || result.Count() < 1)
                 {
-                    throw new ProjectServiceException(404, "Cannot find a single instance of a project from the infos you provided");
+                    throw new ProjectServiceException(ProjectRelatedErrorsConstants.PROJECT_NOT_FOUND);
                 }
                 if (result.Count() > 1)
                 {
                     StringBuilder sb = new StringBuilder();
-                    sb.AppendLine("Inconsistency in database. Executing query returns more than one result: ");
+                    sb.AppendLine(InternalServerErrorsConstants.DATABASE_INTEGRITY_NOT_MAINTAINED);
                     sb.AppendLine(result.ToList().ToString());
                     throw new Exception(sb.ToString());
                 }
@@ -261,7 +252,7 @@ namespace Infrastructure.Persistence.Services
                                      select userProject;
                 if (getUserProject == null || getUserProject.Count() < 1)
                 {
-                    throw new ProjectServiceException(404, "Cannot find the project you are looking for");
+                    throw new ProjectServiceException(ProjectRelatedErrorsConstants.ACCESS_TO_PROJECT_IS_FORBIDDEN);
                 }
 
                 // flag to know if any field is going to be changed or not
@@ -275,12 +266,12 @@ namespace Infrastructure.Persistence.Services
                                  select project;
                     if (parent == null || parent.Count() < 1)
                     {
-                        throw new ProjectServiceException(404, "Cannot find a single instance of a project from the infos you provided");
+                        throw new ProjectServiceException(ProjectRelatedErrorsConstants.PARENT_PROJECT_NOT_FOUND);
                     }
                     if (parent.Count() > 1)
                     {
                         StringBuilder sb = new StringBuilder();
-                        sb.AppendLine("Inconsistency in database. Executing query returns more than one result: ");
+                        sb.AppendLine(InternalServerErrorsConstants.DATABASE_INTEGRITY_NOT_MAINTAINED);
                         sb.AppendLine(parent.ToList().ToString());
                         throw new Exception(sb.ToString());
                     }
@@ -289,7 +280,7 @@ namespace Infrastructure.Persistence.Services
 
                     if(newParentProject.Id == operatedProject.Id)
                     {
-                        throw new ProjectServiceException(400, "Cannot set a project to be its own parent");
+                        throw new ProjectServiceException(ProjectRelatedErrorsConstants.CANNOT_SET_PARENT_PROJECT_TOBE_ITSELF);
                     }
 
                     // Only  register change only if parentId is not sent together with removefromparent field (we ignore the change)
@@ -334,7 +325,7 @@ namespace Infrastructure.Persistence.Services
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                _logger.LogError(ex, "An error occurred when using ProjectService");
+                _logger.LogError(ex, ErrorLoggingMessagesConstants.PROJECT_SERVICE_ERROR_LOG_MESSAGE);
                 throw ex;
             }
         }
@@ -349,7 +340,7 @@ namespace Infrastructure.Persistence.Services
                 ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == deletedByUserId);
                 if (validUser == null)
                 {
-                    throw new ProjectServiceException(404, "Cannot locate a valid user from the claim provided");
+                    throw new ProjectServiceException(UserRelatedErrorsConstants.USER_NOT_FOUND);
                 }
 
                 // Check if project is in db first
@@ -358,12 +349,12 @@ namespace Infrastructure.Persistence.Services
                              select project;
                 if (result == null || result.Count() < 1)
                 {
-                    throw new ProjectServiceException(404, "Cannot find a single instance of a project from the infos you provided");
+                    throw new ProjectServiceException(ProjectRelatedErrorsConstants.PROJECT_NOT_FOUND);
                 }
                 if (result.Count() > 1)
                 {
                     StringBuilder sb = new StringBuilder();
-                    sb.AppendLine("Inconsistency in database. Executing query returns more than one result: ");
+                    sb.AppendLine(InternalServerErrorsConstants.DATABASE_INTEGRITY_NOT_MAINTAINED);
                     sb.AppendLine(result.ToList().ToString());
                     throw new Exception(sb.ToString());
                 }
@@ -376,7 +367,7 @@ namespace Infrastructure.Persistence.Services
                                      select userProject;
                 if (getUserProject == null || getUserProject.Count() < 1)
                 {
-                    throw new ProjectServiceException(404, "Cannot find the project you are looking for");
+                    throw new ProjectServiceException(ProjectRelatedErrorsConstants.ACCESS_TO_PROJECT_IS_FORBIDDEN);
                 }
 
                 // flag to know if any field is going to be changed or not
@@ -404,7 +395,7 @@ namespace Infrastructure.Persistence.Services
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                _logger.LogError(ex, "An error occurred when using ProjectService");
+                _logger.LogError(ex, ErrorLoggingMessagesConstants.PROJECT_SERVICE_ERROR_LOG_MESSAGE);
                 throw ex;
             }
         }

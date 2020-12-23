@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace Core.Application.Models.Task
 {
-    public class GetAllTasksModel
+    public class GetAllTasksRequestModel
     {
-        [Required]
-        public long? UserId { get; set; }
-
-        // Queries
+        // Queries, must provide at least one
         public long? ProjectId { get; set; }
         public byte? CategoryType { get; set; }
     }

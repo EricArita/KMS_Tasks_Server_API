@@ -1,21 +1,18 @@
-﻿using Core.Application.Helper.Exceptions;
-using Core.Application.Helper.Exceptions.Task;
+﻿using Core.Application.Helper.Exceptions.Task;
 using Core.Application.Interfaces;
 using Core.Application.Models;
 using Core.Application.Models.Task;
-using Core.Domain.Constants;
 using Core.Domain.DbEntities;
-using Infrastructure.Persistence.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using static Core.Domain.Constants.Enums;
+using Core.Domain.Constants;
 
 namespace Infrastructure.Persistence.Services
 {
@@ -34,15 +31,6 @@ namespace Infrastructure.Persistence.Services
 
         public async Task<TaskResponseModel> AddNewTask(long createdByUserId, NewTaskModel task)
         {
-            if (task.Name == null || task.Name.Length <= 0) throw new TaskServiceException(400, "Cannot create new task without a name");
-
-            if (task.ProjectId == null) throw new TaskServiceException(400, "Cannot create new task without an associated project");
-
-            if (task.PriorityId != null && ((int)task.PriorityId < 0 || (int)task.PriorityId >= Enum.GetValues(typeof(TaskPriorityLevel)).Length))
-            {
-                throw new TaskServiceException(400, "Provided priority Id for task is invalid");
-            }
-
             await using var transaction = await _unitOfWork.CreateTransaction();
 
             try
@@ -51,7 +39,7 @@ namespace Infrastructure.Persistence.Services
                 ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == createdByUserId);
                 if (validUser == null)
                 {
-                    throw new TaskServiceException(404, "Cannot locate a valid user from the claim provided");
+                    throw new TaskServiceException(UserRelatedErrorsConstants.USER_NOT_FOUND);
                 }
 
                 // Check if its associated project is valid
@@ -60,12 +48,12 @@ namespace Infrastructure.Persistence.Services
                                  select project;
                 if (parentProject == null || parentProject.Count() < 1)
                 {
-                    throw new TaskServiceException(404, "Cannot find a single instance of the parent project from the infos you provided");
+                    throw new TaskServiceException(ProjectRelatedErrorsConstants.PARENT_PROJECT_NOT_FOUND);
                 }
                 if (parentProject.Count() > 1)
                 {
                     StringBuilder sb = new StringBuilder();
-                    sb.AppendLine("Inconsistency in database. Executing query returns more than one result: ");
+                    sb.AppendLine(InternalServerErrorsConstants.DATABASE_INTEGRITY_NOT_MAINTAINED);
                     sb.AppendLine(parentProject.ToList().ToString());
                     throw new Exception(sb.ToString());
                 }
@@ -78,12 +66,12 @@ namespace Infrastructure.Persistence.Services
                                  select Task;
                     if (parentTask == null || parentTask.Count() < 1)
                     {
-                        throw new TaskServiceException(404, "Cannot find a single instance of the parent task from the infos you provided");
+                        throw new TaskServiceException(TaskRelatedErrorsConstants.PARENT_TASK_NOT_FOUND);
                     }
                     if (parentTask.Count() > 1)
                     {
                         StringBuilder sb = new StringBuilder();
-                        sb.AppendLine("Inconsistency in database. Executing query returns more than one result: ");
+                        sb.AppendLine(InternalServerErrorsConstants.DATABASE_INTEGRITY_NOT_MAINTAINED);
                         sb.AppendLine(parentTask.ToList().ToString());
                         throw new Exception(sb.ToString());
                     }
@@ -91,7 +79,7 @@ namespace Infrastructure.Persistence.Services
                     // If parent task is not in the same project =>  it's false
                     if(parentTask.ToList()[0].ProjectId != parentProject.ToList()[0].Id)
                     {
-                        throw new TaskServiceException(400, "Your parent task of this task could not be from another project");
+                        throw new TaskServiceException(TaskRelatedErrorsConstants.PARENT_TASK_OF_A_TASK_ISFROM_ANOTHER_PROJECT);
                     }
                 }
 
@@ -101,7 +89,7 @@ namespace Infrastructure.Persistence.Services
                     ApplicationUser assignedByUser = _userManager.Users.FirstOrDefault(e => e.UserId == task.AssignedBy);
                     if (assignedByUser == null)
                     {
-                        throw new TaskServiceException(404, "Cannot locate a valid user for assignedBy field from the data provided");
+                        throw new TaskServiceException(TaskRelatedErrorsConstants.ASSIGNED_BY_FIELD_INVALID);
                     }
                 }
 
@@ -111,7 +99,7 @@ namespace Infrastructure.Persistence.Services
                     ApplicationUser assignedForUser = _userManager.Users.FirstOrDefault(e => e.UserId == task.AssignedFor);
                     if (assignedForUser == null)
                     {
-                        throw new TaskServiceException(404, "Cannot locate a valid user for assignedFor field from the data provided");
+                        throw new TaskServiceException(TaskRelatedErrorsConstants.ASSIGNED_FOR_FIELD_INVALID);
                     }
                 }
 
@@ -151,15 +139,13 @@ namespace Infrastructure.Persistence.Services
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                _logger.LogError(ex, "An error occurred while using TaskService");
+                _logger.LogError(ex, ErrorLoggingMessagesConstants.TASK_SERVICE_ERROR_LOG_MESSAGE);
                 throw ex;
             }
         }
 
         public async Task<IEnumerable<TaskResponseModel>> GetAllTasks(GetAllTasksModel model)
         {
-            if (model.UserId == null) throw new TaskServiceException(400, "Cannot find tasks of this project if you don't provide a UserID for us to check if you have access rights");
-
             await using var transaction = await _unitOfWork.CreateTransaction();
 
             try
@@ -168,7 +154,7 @@ namespace Infrastructure.Persistence.Services
                 ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == model.UserId);
                 if (validUser == null)
                 {
-                    throw new TaskServiceException(404, "Cannot locate a valid user from the claim provided");
+                    throw new TaskServiceException(UserRelatedErrorsConstants.USER_NOT_FOUND);
                 }
 
                 // Query for all the tasks in projects that the user participated in and that matches the queries
@@ -211,24 +197,66 @@ namespace Infrastructure.Persistence.Services
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                _logger.LogError(ex, "An error occurred when using TaskService");
+                _logger.LogError(ex, ErrorLoggingMessagesConstants.TASK_SERVICE_ERROR_LOG_MESSAGE);
                 throw ex;
             }
         }
 
-        public async Task<TaskResponseModel> GetOneTask(long taskId)
+        public async Task<TaskResponseModel> GetOneTask(GetOneTaskModel model)
         {
-            throw new NotImplementedException();
+            await using var transaction = await _unitOfWork.CreateTransaction();
+
+            try
+            {
+                // Check if uid is valid or not
+                ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == model.UserId);
+                if (validUser == null)
+                {
+                    throw new TaskServiceException(UserRelatedErrorsConstants.USER_NOT_FOUND);
+                }
+
+                // Query for all the tasks in projects that the user participated in and that matches the queries
+                var result = from userProjects in _unitOfWork.Repository<UserProjects>().GetDbset()
+                             join tasks in _unitOfWork.Repository<Tasks>().GetDbset() on userProjects.ProjectId equals tasks.ProjectId
+                             where userProjects.UserId == validUser.UserId && tasks.Deleted == false && tasks.Id == model.TaskId
+                             select tasks;
+
+                // If cannot find the project from the infos provided, return a service exception
+                if (result == null || result.Count() < 1)
+                {
+                    throw new TaskServiceException(TaskRelatedErrorsConstants.TASK_NOT_FOUND);
+                }
+                // Corrupted Db
+                if (result.Count() > 1)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendLine(InternalServerErrorsConstants.DATABASE_INTEGRITY_NOT_MAINTAINED);
+                    sb.AppendLine(result.ToList().ToString());
+                    throw new Exception(sb.ToString());
+                }
+
+                // Finally, convert the result by selecting in the form of response (eager load everything)
+                var finalResult = result.Include(e => e.Project)
+                    .Include(e => e.Priority)
+                    .Include(e => e.Parent)
+                    .Select(e => new TaskResponseModel(e));
+
+                await _unitOfWork.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+
+                return finalResult.ToList()[0];
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                _logger.LogError(ex, ErrorLoggingMessagesConstants.TASK_SERVICE_ERROR_LOG_MESSAGE);
+                throw ex;
+            }
         }
 
         public async Task<TaskResponseModel> UpdateTaskInfo(long taskId, long updatedByUserId, UpdateTaskInfoModel model)
         {
-            // Validate if priority level is valid first (from request) 
-            if (model.PriorityId != null && ((int)model.PriorityId < 0 || (int)model.PriorityId >= Enum.GetValues(typeof(TaskPriorityLevel)).Length))
-            {
-                throw new TaskServiceException(400, "Provided priority Id for task is invalid");
-            }
-
             // Start the update transaction
             await using var transaction = await _unitOfWork.CreateTransaction();
             try
@@ -239,7 +267,7 @@ namespace Infrastructure.Persistence.Services
                 ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == updatedByUserId);
                 if (validUser == null)
                 {
-                    throw new TaskServiceException(404, "Cannot locate a valid user from the claim provided");
+                    throw new TaskServiceException(UserRelatedErrorsConstants.USER_NOT_FOUND);
                 }
 
                 // Check if task is in db first
@@ -248,12 +276,12 @@ namespace Infrastructure.Persistence.Services
                              select task;
                 if (result == null || result.Count() < 1)
                 {
-                    throw new TaskServiceException(404, "Cannot find a single instance of a task from the infos you provided");
+                    throw new TaskServiceException(TaskRelatedErrorsConstants.TASK_NOT_FOUND);
                 }
                 if (result.Count() > 1)
                 {
                     StringBuilder sb = new StringBuilder();
-                    sb.AppendLine("Inconsistency in database. Executing query returns more than one result: ");
+                    sb.AppendLine(InternalServerErrorsConstants.DATABASE_INTEGRITY_NOT_MAINTAINED);
                     sb.AppendLine(result.ToList().ToString());
                     throw new Exception(sb.ToString());
                 }
@@ -266,7 +294,7 @@ namespace Infrastructure.Persistence.Services
                              select userProjects;
                 if (userIsAssociated == null || userIsAssociated.Count() < 1)
                 {
-                    throw new TaskServiceException(404, "Cannot find the task for your operation");
+                    throw new TaskServiceException(TaskRelatedErrorsConstants.ACCESS_TO_TASK_IS_FORBIDDEN);
                 }
 
                 // flag to know if any field is going to be changed or not
@@ -277,7 +305,7 @@ namespace Infrastructure.Persistence.Services
                 {
                     if (model.ProjectId == operatedTask.ProjectId)
                     {
-                        throw new TaskServiceException(400, "Cannot set a task to belong to its current project, it already is");
+                        throw new TaskServiceException(TaskRelatedErrorsConstants.CANNOT_SET_NEW_PARENT_PROJECT_TOBE_THE_OLD_VALUE);
                     }
 
                     var parentProject = from project in _unitOfWork.Repository<Project>().GetDbset()
@@ -285,12 +313,12 @@ namespace Infrastructure.Persistence.Services
                                  select project;
                     if (parentProject == null || parentProject.Count() < 1)
                     {
-                        throw new TaskServiceException(404, "Cannot find a single instance of a project from the projectId infos you provided");
+                        throw new TaskServiceException(ProjectRelatedErrorsConstants.PARENT_PROJECT_NOT_FOUND);
                     }
                     if (parentProject.Count() > 1)
                     {
                         StringBuilder sb = new StringBuilder();
-                        sb.AppendLine("Inconsistency in database. Executing query returns more than one result: ");
+                        sb.AppendLine(InternalServerErrorsConstants.DATABASE_INTEGRITY_NOT_MAINTAINED);
                         sb.AppendLine(parentProject.ToList().ToString());
                         throw new Exception(sb.ToString());
                     }
@@ -336,12 +364,12 @@ namespace Infrastructure.Persistence.Services
                                  select task;
                     if (parentTask == null || parentTask.Count() < 1)
                     {
-                        throw new TaskServiceException(404, "Cannot find a single instance of a parent task from the infos you provided");
+                        throw new TaskServiceException(TaskRelatedErrorsConstants.PARENT_TASK_NOT_FOUND);
                     }
                     if (parentTask.Count() > 1)
                     {
                         StringBuilder sb = new StringBuilder();
-                        sb.AppendLine("Inconsistency in database. Executing query returns more than one result: ");
+                        sb.AppendLine(InternalServerErrorsConstants.DATABASE_INTEGRITY_NOT_MAINTAINED);
                         sb.AppendLine(parentTask.ToList().ToString());
                         throw new Exception(sb.ToString());
                     }
@@ -350,12 +378,12 @@ namespace Infrastructure.Persistence.Services
 
                     if (newParentTask.Id == operatedTask.Id)
                     {
-                        throw new TaskServiceException(400, "Cannot set a task to be its own parent");
+                        throw new TaskServiceException(TaskRelatedErrorsConstants.CANNOT_SET_PARENT_TASK_TOBE_ITSELF);
                     }
 
                     if (newParentTask.ProjectId != operatedTask.ProjectId)
                     {
-                        throw new TaskServiceException(400, "Cannot set parent of a task to be a task from another project");
+                        throw new TaskServiceException(TaskRelatedErrorsConstants.PARENT_TASK_OF_A_TASK_ISFROM_ANOTHER_PROJECT);
                     }
 
                     // Only  register change only if parentId is not sent together with removefromparent field (we ignore the change)
@@ -379,7 +407,7 @@ namespace Infrastructure.Persistence.Services
                     ApplicationUser assignedByUser = _userManager.Users.FirstOrDefault(e => e.UserId == model.AssignedBy);
                     if (assignedByUser == null)
                     {
-                        throw new TaskServiceException(404, "Cannot locate a valid user for assignedBy field from the data provided");
+                        throw new TaskServiceException(TaskRelatedErrorsConstants.ASSIGNED_BY_FIELD_INVALID);
                     }
                     else
                     {
@@ -394,7 +422,7 @@ namespace Infrastructure.Persistence.Services
                     ApplicationUser assignedForUser = _userManager.Users.FirstOrDefault(e => e.UserId == model.AssignedFor);
                     if (assignedForUser == null)
                     {
-                        throw new TaskServiceException(404, "Cannot locate a valid user for assignedFor field from the data provided");
+                        throw new TaskServiceException(TaskRelatedErrorsConstants.ASSIGNED_FOR_FIELD_INVALID);
                     }
                     else
                     {
@@ -439,7 +467,7 @@ namespace Infrastructure.Persistence.Services
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                _logger.LogError(ex, "An error occurred when using TaskService");
+                _logger.LogError(ex, ErrorLoggingMessagesConstants.TASK_SERVICE_ERROR_LOG_MESSAGE);
                 throw ex;
             }
         }
@@ -456,7 +484,7 @@ namespace Infrastructure.Persistence.Services
                 ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == deletedByUserId);
                 if (validUser == null)
                 {
-                    throw new TaskServiceException(404, "Cannot locate a valid user from the claim provided");
+                    throw new TaskServiceException(UserRelatedErrorsConstants.USER_NOT_FOUND);
                 }
 
                 // Check if task is in db first
@@ -465,12 +493,12 @@ namespace Infrastructure.Persistence.Services
                              select task;
                 if (result == null || result.Count() < 1)
                 {
-                    throw new TaskServiceException(404, "Cannot find a single instance of a task from the infos you provided");
+                    throw new TaskServiceException(TaskRelatedErrorsConstants.TASK_NOT_FOUND);
                 }
                 if (result.Count() > 1)
                 {
                     StringBuilder sb = new StringBuilder();
-                    sb.AppendLine("Inconsistency in database. Executing query returns more than one result: ");
+                    sb.AppendLine(InternalServerErrorsConstants.DATABASE_INTEGRITY_NOT_MAINTAINED);
                     sb.AppendLine(result.ToList().ToString());
                     throw new Exception(sb.ToString());
                 }
@@ -483,7 +511,7 @@ namespace Infrastructure.Persistence.Services
                                      select userProject;
                 if (getUserProject == null || getUserProject.Count() < 1)
                 {
-                    throw new TaskServiceException(404, "Cannot find the task you are looking for");
+                    throw new TaskServiceException(TaskRelatedErrorsConstants.ACCESS_TO_TASK_IS_FORBIDDEN);
                 }
 
                 // flag to know if any field is going to be changed or not
@@ -537,7 +565,7 @@ namespace Infrastructure.Persistence.Services
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                _logger.LogError(ex, "An error occurred when using TaskService");
+                _logger.LogError(ex, ErrorLoggingMessagesConstants.TASK_SERVICE_ERROR_LOG_MESSAGE);
                 throw ex;
             }
         }
