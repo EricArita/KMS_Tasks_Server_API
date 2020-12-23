@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Storage;
+﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Storage;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -14,5 +15,6 @@ namespace Core.Application.Interfaces
         Task<IDbContextTransaction> CreateTransaction();
         Task<int> SaveChangesAsync();
         int SaveChanges();
+        EntityEntry<T> Entry<T>(T obj) where T : class;
     }
 }

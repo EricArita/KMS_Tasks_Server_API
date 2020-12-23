@@ -9,7 +9,6 @@ using Persistence;
 using Microsoft.AspNetCore.Mvc;
 using Core.Application.Interfaces;
 using Infrastructure.Persistence.Repositories;
-using Infrastructure.Persistence.Services;
 
 namespace WebApi
 {
@@ -41,18 +40,6 @@ namespace WebApi
 
             services.AddControllers()
                     .AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
-
-            #region Swagger
-            services.AddSwaggerGen(c =>
-            {
-                c.IncludeXmlComments(string.Format(@"{0}\SwaggerDoc.xml", System.AppDomain.CurrentDomain.BaseDirectory));
-                c.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Version = "v1",
-                    Title = "TasksApiDoc",
-                });
-            });
-            #endregion
 
             #region API Versioning
             services.AddApiVersioning(config =>

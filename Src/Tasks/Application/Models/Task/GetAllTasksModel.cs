@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace Core.Application.Models
+namespace Core.Application.Models.Task
 {
-    public class GetOneProjectModel
+    public class GetAllTasksModel
     {
         [Required]
-        public long? ProjectId { get; set; }
-        [Required]
         public long? UserId { get; set; }
+
+        // Queries
+        public long? ProjectId { get; set; }
+        public byte? CategoryType { get; set; }
     }
 }

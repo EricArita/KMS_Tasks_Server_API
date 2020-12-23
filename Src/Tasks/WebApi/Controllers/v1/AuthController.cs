@@ -38,6 +38,7 @@ namespace WebApi.Controllers.v1
                 HttpOnly = true,
                 Expires = DateTime.UtcNow.AddMinutes(5),
             };
+
             if (result.OK)
             {
                 Response.Cookies.Append("refreshToken", result.Data.RefreshToken, cookieOptions);

@@ -1,37 +1,257 @@
 ﻿using Core.Application.Helper;
+using Core.Application.Helper.Exceptions.Task;
 using Core.Application.Interfaces;
 using Core.Application.Models;
-using Core.Domain.DbEntities;
-using Infrastructure.Persistence.Repositories;
+using Core.Application.Models.Task;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+using WebApi.Controllers.v1.Utils;
 
 namespace WebApi.Controllers.v1
 {
+    [Area("task-management")]
     public class TaskController : BaseController
     {
-        private IUnitOfWork unitOfWork;
-        private ITaskService taskService;
+        private ITaskService _taskService;
+        private ILogger<TaskController> _logger;
 
-        public TaskController(IUnitOfWork unitOfWork, ITaskService taskService)
+        public TaskController(ITaskService taskService, ILogger<TaskController> logger)
         {
-            this.unitOfWork = unitOfWork;
-            this.taskService = taskService;
+            _taskService = taskService;
+            _logger = logger;
         }
 
         [HttpPost("task")]
-        public IActionResult AddNewTask(NewTaskModel newTask)
+        public async Task<IActionResult> AddNewTask([FromBody] NewTaskModel newTask)
         {
-            var res = taskService.AddNewTask(newTask);
-            if (res != 0) return Ok();
-            else return BadRequest(new HttpResponse<bool>(false, message:"Some errors has occured in server!"));
+            try
+            {
+                // Check validity of the request
+                var claimsManager = HttpContext.User;
+                long? uid = null;
+                try
+                {
+                    uid = GetUserId(claimsManager);
+                }
+                catch (Exception e)
+                {
+                    return Unauthorized(e.Message);
+                }
+
+                if (!uid.HasValue)
+                {
+                    return Unauthorized("Unauthorized individuals cannot access this route");
+                }
+
+                // Carry on with the business logic
+                TaskResponseModel addedTask = await _taskService.AddNewTask(uid.Value, newTask);
+                return Ok(new HttpResponse<TaskResponseModel>(true, addedTask, message: "Successfully added task"));
+            }
+            catch (Exception ex)
+            {
+                if (ex is TaskServiceException exception)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
+                    sb.AppendLine(exception.Message);
+                    uint? statusCode = ServiceExceptionsProcessor.getStatusCode(exception.Message);
+                    if (statusCode != null && statusCode.HasValue)
+                    {
+                        return StatusCode((int)statusCode.Value, new HttpResponse<object>(false, null, sb.ToString()));
+                    }
+                }
+                return StatusCode(500, new HttpResponse<Exception>(false, ex, "Server encountered an exception"));
+            }
         }
 
-        [HttpGet("{userId}/tasks")]
-        public IActionResult GetAllTasks(int userId, byte category)
+        [HttpGet("tasks")]
+        public async Task<IActionResult> GetAllTasks([FromQuery] GetAllTasksRequestModel model)
         {
-            var listTasks = taskService.GetAllTasks(userId, category);
-            return Ok(new HttpResponse<IEnumerable<Tasks>>(true, data: listTasks));
+            try
+            {
+                //Check validity of the token
+                var claimsManager = HttpContext.User;
+                long? uid = null;
+                try
+                {
+                    uid = GetUserId(claimsManager);
+                }
+                catch (Exception e)
+                {
+                    return Unauthorized(e.Message);
+                }
+
+                if (!uid.HasValue)
+                {
+                    return Unauthorized("Unauthorized individuals cannot access this route");
+                }
+
+                // If passes all tests, then we submit it to the service layer
+                GetAllTasksModel serviceModel = new GetAllTasksModel()
+                {
+                    UserId = uid,
+                    CategoryType = model.CategoryType,
+                    ProjectId = model.ProjectId
+                };
+                // Carry on with the business logic
+                IEnumerable<TaskResponseModel> tasks = await _taskService.GetAllTasks(serviceModel);
+                return Ok(new HttpResponse<IEnumerable<TaskResponseModel>>(true, tasks, message: "Successfully fetched tasks of user"));
+            }
+            catch (Exception ex)
+            {
+                if (ex is TaskServiceException exception)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
+                    sb.AppendLine(exception.Message);
+                    uint? statusCode = ServiceExceptionsProcessor.getStatusCode(exception.Message);
+                    if (statusCode != null && statusCode.HasValue)
+                    {
+                        return StatusCode((int)statusCode.Value, new HttpResponse<object>(false, null, sb.ToString()));
+                    }
+                }
+                return StatusCode(500, new HttpResponse<Exception>(false, ex, "Server encountered an exception"));
+            }
+        }
+
+        [HttpGet("task/{taskId}")]
+        public async Task<IActionResult> GetAParticularTask(int taskId)
+        {
+            try
+            {
+                //Check validity of the token
+                var claimsManager = HttpContext.User;
+                long? uid = null;
+                try
+                {
+                    uid = GetUserId(claimsManager);
+                }
+                catch (Exception e)
+                {
+                    return Unauthorized(e.Message);
+                }
+
+                if (!uid.HasValue)
+                {
+                    return Unauthorized("Unauthorized individuals cannot access this route");
+                }
+
+                // If passes all tests, then we submit it to the service layer
+                GetOneTaskModel model = new GetOneTaskModel()
+                {
+                    TaskId = taskId,
+                    UserId = uid.Value,
+                };
+                // Carry on with the business logic
+                TaskResponseModel participatedTask = await _taskService.GetOneTask(model);
+                return Ok(new HttpResponse<TaskResponseModel>(true, participatedTask, message: "Successfully fetched specified project of user"));
+            }
+            catch (Exception ex)
+            {
+                if (ex is TaskServiceException exception)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
+                    sb.AppendLine(exception.Message);
+                    uint? statusCode = ServiceExceptionsProcessor.getStatusCode(exception.Message);
+                    if (statusCode != null && statusCode.HasValue)
+                    {
+                        return StatusCode((int)statusCode.Value, new HttpResponse<object>(false, null, sb.ToString()));
+                    }
+                }
+                return StatusCode(500, new HttpResponse<Exception>(false, ex, "Server encountered an exception"));
+            }
+        }
+
+        [HttpPatch("task/{taskId}")]
+        public async Task<IActionResult> UpdateAnExistingTask(int taskId, [FromBody] UpdateTaskInfoModel model)
+        {
+            try
+            {
+                //Check validity of the token
+                var claimsManager = HttpContext.User;
+                long? uid = null;
+                try
+                {
+                    uid = GetUserId(claimsManager);
+                } catch (Exception e)
+                {
+                    return Unauthorized(e.Message);
+                }
+
+                if(!uid.HasValue)
+                {
+                    return Unauthorized("Unauthorized individuals cannot access this route");
+                }
+
+                // If passes all tests, then we submit it to the service layer
+                // Carry on with the business logic
+                TaskResponseModel updatedTask = await _taskService.UpdateTaskInfo(taskId, uid.Value, model);
+                return Ok(new HttpResponse<TaskResponseModel>(true, updatedTask, message: "Successfully patched specified task of user"));
+            }
+            catch (Exception ex)
+            {
+                if (ex is TaskServiceException exception)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
+                    sb.AppendLine(exception.Message);
+                    uint? statusCode = ServiceExceptionsProcessor.getStatusCode(exception.Message);
+                    if (statusCode != null && statusCode.HasValue)
+                    {
+                        return StatusCode((int)statusCode.Value, new HttpResponse<object>(false, null, sb.ToString()));
+                    }
+                }
+                return StatusCode(500, new HttpResponse<Exception>(false, ex, "Server encountered an exception"));
+            }
+        }
+
+        [HttpDelete("task/{taskId}")]
+        public async Task<IActionResult> DeleteExistingTask(int taskId)
+        {
+            try
+            {
+                //Check validity of the token
+                var claimsManager = HttpContext.User;
+                long? uid = null;
+                try
+                {
+                    uid = GetUserId(claimsManager);
+                }
+                catch (Exception e)
+                {
+                    return Unauthorized(e.Message);
+                }
+
+                if (!uid.HasValue)
+                {
+                    return Unauthorized("Unauthorized individuals cannot access this route");
+                }
+
+                // If passes all tests, then we submit it to the service layer
+                // Carry on with the business logic
+                TaskResponseModel participatedTask = await _taskService.SoftDeleteExistingTask(taskId, uid.Value);
+                return Ok(new HttpResponse<TaskResponseModel>(true, participatedTask, message: "Successfully patched specified task of user"));
+            }
+            catch (Exception ex)
+            {
+                if (ex is TaskServiceException exception)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
+                    sb.AppendLine(exception.Message);
+                    uint? statusCode = ServiceExceptionsProcessor.getStatusCode(exception.Message);
+                    if (statusCode != null && statusCode.HasValue)
+                    {
+                        return StatusCode((int)statusCode.Value, new HttpResponse<object>(false, null, sb.ToString()));
+                    }
+                }
+                return StatusCode(500, new HttpResponse<Exception>(false, ex, "Server encountered an exception"));
+            }
         }
     }
 }

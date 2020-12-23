@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace Core.Application.Models
+namespace Core.Application.Models.Task
 {
-    public class GetOneProjectModel
+    public class GetOneTaskModel
     {
         [Required]
-        public long? ProjectId { get; set; }
+        public long? TaskId { get; set; }
         [Required]
         public long? UserId { get; set; }
     }

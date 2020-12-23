@@ -2,6 +2,7 @@
 using Core.Application.Models;
 using Core.Domain.DbEntities;
 using Infrastructure.Persistence.Contexts;
+using Infrastructure.Persistence.Misc;
 using Infrastructure.Persistence.Services;
 using Infrastructure.Persistence.SettingModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -10,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System;
 using System.Text;
 
@@ -30,11 +32,14 @@ namespace Persistence
             services.AddDbContext<ApplicationDbContext>(options =>
                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
+            #region Identity framework
             services.AddIdentity<ApplicationUser, IdentityRole>(options => {
                 options.Password.RequireUppercase = false;
                 options.User.AllowedUserNameCharacters = null;
             }).AddEntityFrameworkStores<ApplicationDbContext>();
+            #endregion
 
+            #region Authentication
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -59,10 +64,34 @@ namespace Persistence
                 facebookOptions.AppId = configuration["Authentication:Facebook:AppId"];
                 facebookOptions.AppSecret = configuration["Authentication:Facebook:AppSecret"];
             });
+            #endregion
 
+            #region Swagger
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "TasksApiDoc",
+                });
+                c.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Description = "`Token without Bearer prefix plz` - without `Bearer_` prefix",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header
+                });
+                c.OperationFilter<AuthorizationHeader_Param_OperationFilter>();
+            });
+            #endregion
+
+            #region Add scoped services
             services.AddScoped<IAuthentication, AuthenticationService>();
             services.AddScoped<ITaskService, TaskService>();
             services.AddScoped<IProjectService, ProjectService>();
+            #endregion
         }
     }
 }

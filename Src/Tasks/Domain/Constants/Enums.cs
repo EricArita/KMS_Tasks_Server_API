@@ -15,6 +15,7 @@ namespace Core.Domain.Constants
 
         public enum ProjectRoles : int
         {
+            None = 0,
             Owner = 1,
             PM = 2,
             Leader = 3,
@@ -40,6 +41,7 @@ namespace Core.Domain.Constants
 
         public enum TaskPriorityLevel : int
         {
+            None = 0,
             Emergency = 1,
             High = 2,
             Medium = 3,

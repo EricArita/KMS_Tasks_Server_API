@@ -17,6 +17,7 @@ namespace Infrastructure.Persistence.Repositories
     public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
     {
         internal ApplicationDbContext _dbContext;
+        internal DbSet<TEntity> _internalDbSet;
 
         public GenericRepository(ApplicationDbContext context)
         {
@@ -25,7 +26,11 @@ namespace Infrastructure.Persistence.Repositories
 
         public DbSet<TEntity> GetDbset()
         {
-            return _dbContext.Set<TEntity>();
+            if (_internalDbSet == null)
+            {
+                _internalDbSet = _dbContext.Set<TEntity>();
+            }
+            return _internalDbSet;
         }
 
         public virtual IQueryable<TEntity> Get(Expression<Func<TEntity, bool>> filter = null,
@@ -102,8 +107,8 @@ namespace Infrastructure.Persistence.Repositories
 
         public virtual async Task<TEntity> InsertAsync(TEntity entity)
         {
-            await GetDbset().AddAsync(entity);
-            return entity;
+            var newOne = await GetDbset().AddAsync(entity);
+            return newOne.Entity;
         }
     }
 }
