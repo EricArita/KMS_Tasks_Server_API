@@ -10,6 +10,8 @@ namespace Core.Domain.Constants
         public const UserRoles DefaultRole = UserRoles.Administrator;
     }
 
+    // Errors
+
     public static class UserRelatedErrorsConstants
     {
         public const string USER_NOT_FOUND = "Cannot locate a valid user from the claim provided";
@@ -38,16 +40,19 @@ namespace Core.Domain.Constants
     public static class ProjectParticipationRelatedErrorsConstants
     {
         public const string PROJECT_PARTICIPATION_NOT_FOUND = "Cannot find any project of such that you participated in";
+        
     }
 
     public static class InternalServerErrorsConstants
     {
         public const string DATABASE_INTEGRITY_NOT_MAINTAINED = "Inconsistency in database. Executing query reports so...";
+        public const string GET_ALL_PARTICIPATIONS_STRATEGY_INVALID = "You cannot provide an invalid strategy for getting all participations";
     }
 
     public static class ErrorLoggingMessagesConstants
     {
         public const string PROJECT_SERVICE_ERROR_LOG_MESSAGE = "An error occurred when using ProjectService";
         public const string TASK_SERVICE_ERROR_LOG_MESSAGE = "An error occurred when using TaskService";
+        public const string PARTICIPATION_SERVICE_ERROR_LOG_MESSAGE = "An error occured when using ParticipationService";
     }
 }

@@ -173,9 +173,9 @@ namespace Infrastructure.Persistence.Services
                 {
                     switch (model.CategoryType)
                     {
-                        case (byte)MenuSidebarOptions.Today:
+                        case MenuSidebarOptions.Today:
                             result.Where(e => e.Schedule.HasValue && e.Schedule.Value == DateTime.Today); break;
-                        case (byte)MenuSidebarOptions.Upcoming:
+                        case MenuSidebarOptions.Upcoming:
                             result.Where(e => e.Schedule.HasValue && e.Schedule.Value > DateTime.Today); break;
                         default:
                             result.Where(e => e != null); break;

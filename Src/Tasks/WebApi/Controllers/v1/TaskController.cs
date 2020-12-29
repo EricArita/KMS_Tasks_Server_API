@@ -17,12 +17,10 @@ namespace WebApi.Controllers.v1
     public class TaskController : BaseController
     {
         private ITaskService _taskService;
-        private ILogger<TaskController> _logger;
 
-        public TaskController(ITaskService taskService, ILogger<TaskController> logger)
+        public TaskController(ITaskService taskService)
         {
             _taskService = taskService;
-            _logger = logger;
         }
 
         [HttpPost("task")]
@@ -119,7 +117,7 @@ namespace WebApi.Controllers.v1
         }
 
         [HttpGet("task/{taskId}")]
-        public async Task<IActionResult> GetAParticularTask(int taskId)
+        public async Task<IActionResult> GetAParticularTask(long taskId)
         {
             try
             {
@@ -168,7 +166,7 @@ namespace WebApi.Controllers.v1
         }
 
         [HttpPatch("task/{taskId}")]
-        public async Task<IActionResult> UpdateAnExistingTask(int taskId, [FromBody] UpdateTaskInfoModel model)
+        public async Task<IActionResult> UpdateAnExistingTask(long taskId, [FromBody] UpdateTaskInfoModel model)
         {
             try
             {
@@ -211,7 +209,7 @@ namespace WebApi.Controllers.v1
         }
 
         [HttpDelete("task/{taskId}")]
-        public async Task<IActionResult> DeleteExistingTask(int taskId)
+        public async Task<IActionResult> DeleteExistingTask(long taskId)
         {
             try
             {
@@ -235,7 +233,7 @@ namespace WebApi.Controllers.v1
                 // If passes all tests, then we submit it to the service layer
                 // Carry on with the business logic
                 TaskResponseModel participatedTask = await _taskService.SoftDeleteExistingTask(taskId, uid.Value);
-                return Ok(new HttpResponse<TaskResponseModel>(true, participatedTask, message: "Successfully patched specified task of user"));
+                return Ok(new HttpResponse<TaskResponseModel>(true, participatedTask, message: "Successfully deleted specified task of user"));
             }
             catch (Exception ex)
             {

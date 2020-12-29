@@ -1,5 +1,5 @@
-﻿using Core.Domain.DbEntities;
-using Infrastructure.Persistence.DTOs;
+﻿using Core.Application.DTOs;
+using Core.Domain.DbEntities;
 using System;
 using System.Collections.Generic;
 using System.Text;

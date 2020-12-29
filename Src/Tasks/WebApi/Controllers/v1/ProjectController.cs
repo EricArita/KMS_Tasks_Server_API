@@ -120,7 +120,7 @@ namespace WebApi.Controllers.v1
         }
 
         [HttpGet("project/{projectId}")]
-        public async Task<IActionResult> GetAParticularProject(int projectId)
+        public async Task<IActionResult> GetAParticularProject(long projectId)
         {
             try
             {
@@ -169,7 +169,7 @@ namespace WebApi.Controllers.v1
         }
 
         [HttpPatch("project/{projectId}")]
-        public async Task<IActionResult> UpdateExistingProject(int projectId, [FromBody] UpdateProjectInfoModel model)
+        public async Task<IActionResult> UpdateExistingProject(long projectId, [FromBody] UpdateProjectInfoModel model)
         {
             try
             {
@@ -213,7 +213,7 @@ namespace WebApi.Controllers.v1
         }
 
         [HttpDelete("project/{projectId}")]
-        public async Task<IActionResult> DeleteExistingProject(int projectId)
+        public async Task<IActionResult> DeleteExistingProject(long projectId)
         {
             try
             {
@@ -237,7 +237,7 @@ namespace WebApi.Controllers.v1
                 // If passes all tests, then we submit it to the service layer
                 // Carry on with the business logic
                 ProjectResponseModel participatedProject = await _projectService.SoftDeleteExistingProject(projectId, uid.Value);
-                return Ok(new HttpResponse<ProjectResponseModel>(true, participatedProject, message: "Successfully patched specified project of user"));
+                return Ok(new HttpResponse<ProjectResponseModel>(true, participatedProject, message: "Successfully deleted specified project of user"));
             }
             catch (Exception ex)
             {

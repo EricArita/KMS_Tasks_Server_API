@@ -1,9 +1,7 @@
-﻿using Core.Application.Models.Project;
+﻿using Core.Application.DTOs;
+using Core.Application.Models.Project;
 using Core.Domain.DbEntities;
-using Infrastructure.Persistence.DTOs;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Core.Application.Models.Task
 {

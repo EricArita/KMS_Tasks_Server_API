@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Core.Domain.Constants;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
@@ -12,6 +13,7 @@ namespace Core.Application.Models.Task
 
         // Queries
         public long? ProjectId { get; set; }
-        public byte? CategoryType { get; set; }
+        [EnumDataType(typeof(Enums.MenuSidebarOptions))]
+        public Enums.MenuSidebarOptions? CategoryType { get; set; }
     }
 }

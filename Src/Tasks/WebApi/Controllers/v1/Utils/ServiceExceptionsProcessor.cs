@@ -32,6 +32,7 @@ namespace WebApi.Controllers.v1.Utils
                 [ProjectParticipationRelatedErrorsConstants.PROJECT_PARTICIPATION_NOT_FOUND] = 404,
 
                 [InternalServerErrorsConstants.DATABASE_INTEGRITY_NOT_MAINTAINED] = 500,
+                [InternalServerErrorsConstants.GET_ALL_PARTICIPATIONS_STRATEGY_INVALID] = 500,
             };
         }
 
