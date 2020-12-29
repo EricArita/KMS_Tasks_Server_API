@@ -58,7 +58,7 @@ namespace Infrastructure.Persistence.Services
                         break;
                     // Strategy to get all participated users of a project, and the roles of each of them in the project
                     case (int)Enums.GetAllParticipationsStrategy.GetAllParticipatedUsers_InProject:
-                        strategy = new GetAllParticipatedUsers_InProject_Strategy(_unitOfWork, _userManager);
+                        strategy = new GetAllParticipatingUsers_InProject_Strategy(_unitOfWork, _userManager);
                         break;
                     // Strategy to get all roles of a user inside a certain project
                     case (int)Enums.GetAllParticipationsStrategy.GetAllProjectRoles_OfUser_InProject:

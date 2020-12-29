@@ -15,9 +15,6 @@ using WebApi.Controllers.v1.Utils;
 namespace WebApi.Controllers.v1
 {
     [Area("task-management")]
-    [SwaggerResponse(400, "Bad Request", null)]
-    [SwaggerResponse(403, "Forbidden", null)]
-    [SwaggerResponse(404, "Not Found", null)]
     public class TaskController : BaseController
     {
         private ITaskService _taskService;

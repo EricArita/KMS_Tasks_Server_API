@@ -74,16 +74,17 @@ namespace Persistence
                     Version = "v1",
                     Title = "TasksApiDoc",
                 });
-                c.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
-                    Description = "`Token without Bearer prefix plz` - without `Bearer_` prefix",
+                    Description = "`Token without Bearer prefix plz` (type in without `Bearer_` prefix)",
                     Type = SecuritySchemeType.Http,
                     Scheme = "bearer",
                     BearerFormat = "JWT",
                     In = ParameterLocation.Header
                 });
                 c.OperationFilter<AuthorizationHeader_Param_OperationFilter>();
+                c.OperationFilter<DefaultForMostRequests_OperationFilter>();
             });
             #endregion
 

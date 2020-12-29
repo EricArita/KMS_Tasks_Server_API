@@ -20,9 +20,6 @@ using WebApi.Controllers.v1.Utils;
 namespace WebApi.Controllers.v1
 {
     [Area("project-management")]
-    [SwaggerResponse(400, "Bad Request", null)]
-    [SwaggerResponse(403, "Forbidden", null)]
-    [SwaggerResponse(404, "Not Found", null)]
     public class ProjectController : BaseController
     {
         private IProjectService _projectService;
