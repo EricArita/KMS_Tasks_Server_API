@@ -18,6 +18,6 @@ namespace Core.Application.Helper.Strategies.Participation
             _userManager = userManager;
         }
 
-        public abstract Task<IGetAllParticipations_ResponseModel> GetAllParticipations(GetAllParticipationsModel model);
+        public abstract IGetAllParticipations_ResponseModel GetAllParticipations(long queriedByUserId, GetAllParticipationsModel model);
     }
 }

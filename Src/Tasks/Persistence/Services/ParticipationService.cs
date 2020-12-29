@@ -65,10 +65,10 @@ namespace Infrastructure.Persistence.Services
                         strategy = new GetProjectRoles_OfUser_InProject_Strategy(_unitOfWork, _userManager);
                         break;
                 }
-
+                IGetAllParticipations_ResponseModel result = null;
                 if (strategy != null)
                 {
-                    IGetAllParticipations_ResponseModel result = await strategy.GetAllParticipations(model);
+                   result = strategy.GetAllParticipations(queriedByUserId, model);
                 }
                 else
                 {
@@ -79,7 +79,7 @@ namespace Infrastructure.Persistence.Services
 
                 await transaction.CommitAsync();
 
-                return null;
+                return result;
             } 
             catch (Exception ex)
             {

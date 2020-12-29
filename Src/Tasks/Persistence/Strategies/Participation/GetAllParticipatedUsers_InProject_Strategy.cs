@@ -15,7 +15,7 @@ namespace Infrastructure.Persistence.Strategies.Participation
         {
         }
 
-        public override Task<IGetAllParticipations_ResponseModel> GetAllParticipations(GetAllParticipationsModel model)
+        public override IGetAllParticipations_ResponseModel GetAllParticipations(long queriedByUserId, GetAllParticipationsModel model)
         {
             throw new NotImplementedException();
         }

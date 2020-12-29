@@ -91,6 +91,7 @@ namespace Persistence
             services.AddScoped<IAuthentication, AuthenticationService>();
             services.AddScoped<ITaskService, TaskService>();
             services.AddScoped<IProjectService, ProjectService>();
+            services.AddScoped<IParticipationService, ParticipationService>();
             #endregion
         }
     }
