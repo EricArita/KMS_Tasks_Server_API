@@ -12,6 +12,7 @@ namespace Core.Application.Models.Participation
         public long? RemoveFromProjectId { get; set; }
         [Required(ErrorMessage = "You need to provide a user Id to remove their participation from the project")]
         public long? RemoveUserId { get; set; }
-        public Enums.ProjectRoles RemoveProjectRoleId { get; set; }
+        [EnumDataType(typeof(Enums.ProjectRoles))]
+        public Enums.ProjectRoles? RemoveProjectRoleId { get; set; }
     }
 }

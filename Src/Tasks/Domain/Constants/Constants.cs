@@ -46,6 +46,11 @@ namespace Core.Domain.Constants
         public const string CANNOT_CREATE_PARTICIPATION_WITH_NONE_AS_A_ROLE = "A participation must have one valid role to be created";
         public const string CANNOT_CREATE_PARTICIPATION_WITH_OWNER_AS_A_ROLE = "Owner role can only be given to the one who created the project";
         public const string CANNOT_RECREATE_AN_EXISTING_PARTICIPATION = "The participation you want to create already exist";
+        // Delete participation errors
+        public const string THERE_IS_NO_PARTICIPATION_WITH_A_NONE_ROLE = "There are no participation with none as a role";
+        public const string PARTICIPATION_REMOVER_DONT_HAVE_THE_RIGHTS = "Remover of the participation don't have the rights to perform the action";
+        public const string CANNOT_LOCATE_AN_EXISTING_PARTICIPATION_FOR_REMOVAL = "Cannot find an existing participation from the infos you provide to remove";
+        public const string CANNOT_REMOVE_THE_OWNER_FROM_HIS_OWN_PROJECT = "Cannot remove the owner from the project, this action is forbidden";
     }
 
     public static class InternalServerErrorsConstants

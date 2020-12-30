@@ -134,8 +134,8 @@ namespace WebApi.Controllers.v1
 
                 // If passes all tests, then we submit it to the service layer
                 // Carry on with the business logic
-                ParticipationResponseModel projectParticipation = await _participationService.DeleteExistingParticipation(uid.Value, model);
-                return Ok(new HttpResponse<ParticipationResponseModel>(true, projectParticipation, message: "Successfully deleted specified participation of user"));
+                await _participationService.DeleteExistingParticipation(uid.Value, model);
+                return Ok(new HttpResponse<object>(true, null, message: "Successfully deleted specified participation(s) of user"));
             }
             catch (Exception ex)
             {

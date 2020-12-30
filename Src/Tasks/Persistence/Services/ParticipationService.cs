@@ -11,6 +11,7 @@ using System;
 using System.Threading.Tasks;
 using System.Linq;
 using Core.Application.Helper.Exceptions.Participation;
+using System.Collections.Generic;
 
 namespace Infrastructure.Persistence.Services
 {
@@ -29,12 +30,12 @@ namespace Infrastructure.Persistence.Services
 
         public async Task<ParticipationResponseModel> AddNewParticipation(long createdByUserId, NewParticipationModel newParticipation)
         {
-            if(newParticipation.RoleId <= Enums.ProjectRoles.None)
+            if (newParticipation.RoleId <= Enums.ProjectRoles.None )
             {
                 throw new ParticipationServiceException(ProjectParticipationRelatedErrorsConstants.CANNOT_CREATE_PARTICIPATION_WITH_NONE_AS_A_ROLE);
             }
 
-            if(newParticipation.RoleId == Enums.ProjectRoles.Owner)
+            if (newParticipation.RoleId == Enums.ProjectRoles.Owner)
             {
                 throw new ParticipationServiceException(ProjectParticipationRelatedErrorsConstants.CANNOT_CREATE_PARTICIPATION_WITH_OWNER_AS_A_ROLE);
             }
@@ -60,9 +61,9 @@ namespace Infrastructure.Persistence.Services
                 // In the future, we will check if the user creating the participation have the rights to create one
                 // Preferably, we want only the owner, PM or leader to have the rights
                 bool creatingUserHaveTheRights = _unitOfWork.Repository<UserProjects>().GetDbset()
-                    .Any(item => 
+                    .Any(item =>
                     // Check if the creator have the rights
-                    item.ProjectId == validProject.Id && item.UserId == createdByUserId && 
+                    item.ProjectId == validProject.Id && item.UserId == createdByUserId &&
                     item.RoleId >= Enums.ProjectRoles.Owner && item.RoleId <= Enums.ProjectRoles.Leader);
                 if (!creatingUserHaveTheRights)
                 {
@@ -72,7 +73,7 @@ namespace Infrastructure.Persistence.Services
                 // We continue to check if the new participation for the userId already exists or not
                 bool newParticipationAlreadyExists = _unitOfWork.Repository<UserProjects>().GetDbset()
                     .Any(item => item.ProjectId == validProject.Id && item.UserId == validUser.UserId && item.RoleId == newParticipation.RoleId);
-                if(newParticipationAlreadyExists)
+                if (newParticipationAlreadyExists)
                 {
                     throw new ParticipationServiceException(ProjectParticipationRelatedErrorsConstants.CANNOT_RECREATE_AN_EXISTING_PARTICIPATION);
                 }
@@ -125,7 +126,7 @@ namespace Infrastructure.Persistence.Services
 
                 GetAllParticipationStrategy strategy = null;
 
-                switch(fieldsProvided)
+                switch (fieldsProvided)
                 {
                     // Strategy to get all participated projects of a user, and his roles in each of them
                     case (int)Enums.GetAllParticipationsStrategy.GetAllParticipatedProjects_OfUser:
@@ -143,7 +144,7 @@ namespace Infrastructure.Persistence.Services
                 IGetAllParticipations_ResponseModel result = null;
                 if (strategy != null)
                 {
-                   result = strategy.GetAllParticipations(queriedByUserId, model);
+                    result = strategy.GetAllParticipations(queriedByUserId, model);
                 }
                 else
                 {
@@ -155,7 +156,7 @@ namespace Infrastructure.Persistence.Services
                 await transaction.CommitAsync();
 
                 return result;
-            } 
+            }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
@@ -164,9 +165,88 @@ namespace Infrastructure.Persistence.Services
             }
         }
 
-        public Task<ParticipationResponseModel> DeleteExistingParticipation(long deletedByUserId, DeleteParticipationModel model)
+        public async Task<object> DeleteExistingParticipation(long deletedByUserId, DeleteParticipationModel model)
         {
-            throw new NotImplementedException();
+            if (model.RemoveProjectRoleId != null && model.RemoveProjectRoleId <= Enums.ProjectRoles.None)
+            {
+                throw new ParticipationServiceException(ProjectParticipationRelatedErrorsConstants.THERE_IS_NO_PARTICIPATION_WITH_A_NONE_ROLE);
+            }
+
+            if (model.RemoveProjectRoleId != null && model.RemoveProjectRoleId == Enums.ProjectRoles.Owner)
+            {
+                throw new ParticipationServiceException(ProjectParticipationRelatedErrorsConstants.CANNOT_REMOVE_THE_OWNER_FROM_HIS_OWN_PROJECT);
+            }
+
+            await using var transaction = await _unitOfWork.CreateTransaction();
+
+            try
+            {
+                // Check if userId in model is valid or not
+                ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == model.RemoveUserId);
+                if (validUser == null)
+                {
+                    throw new ParticipationServiceException(UserRelatedErrorsConstants.USER_NOT_FOUND);
+                }
+
+                // Check if ProjectId is valid or not
+                Project validProject = _unitOfWork.Repository<Project>().GetDbset().FirstOrDefault(e => e.Id == model.RemoveFromProjectId);
+                if (validProject == null)
+                {
+                    throw new ParticipationServiceException(ProjectRelatedErrorsConstants.PROJECT_NOT_FOUND);
+                }
+
+                // Check if user have the rights to delete the participation
+                // Only Owner, PM and leader can delete a participation of a project
+                bool removingUserHaveTheRights = _unitOfWork.Repository<UserProjects>().GetDbset()
+                    .Any(item =>
+                    // Check if the creator have the rights
+                    item.ProjectId == validProject.Id && item.UserId == deletedByUserId &&
+                    item.RoleId >= Enums.ProjectRoles.Owner && item.RoleId <= Enums.ProjectRoles.Leader);
+                if (!removingUserHaveTheRights)
+                {
+                    throw new ParticipationServiceException(ProjectParticipationRelatedErrorsConstants.PARTICIPATION_REMOVER_DONT_HAVE_THE_RIGHTS);
+                }
+
+                var matchingParticipations = _unitOfWork.Repository<UserProjects>().GetDbset()
+                    .Where(item => item.ProjectId == validProject.Id && item.UserId == validUser.UserId);
+                
+                // If the user leave the removeProjectRoleId blank, we will infere that the deleting user wants to remove
+                // the user indicated by the userId in the model, we have to check if they want to remove the Owner or not
+                // Removal of the owner is not allowed
+                if (model.RemoveProjectRoleId == null)
+                {
+                    bool isTheRemovedUserOwner = matchingParticipations.Any(item => item.RoleId == Enums.ProjectRoles.Owner);
+                    if (isTheRemovedUserOwner)
+                    {
+                        throw new ParticipationServiceException(ProjectParticipationRelatedErrorsConstants.CANNOT_REMOVE_THE_OWNER_FROM_HIS_OWN_PROJECT);
+                    }
+                }
+
+                // We continue to get the participation(s) that the user want to remove
+                var existingParticipations =  matchingParticipations.Where(item => (model.RemoveProjectRoleId == null || item.RoleId == model.RemoveProjectRoleId));
+                if (existingParticipations == null || existingParticipations.Count() <= 0)
+                {
+                    throw new ParticipationServiceException(ProjectParticipationRelatedErrorsConstants.CANNOT_LOCATE_AN_EXISTING_PARTICIPATION_FOR_REMOVAL);
+                }
+
+                // If we can locate one or many participations to remove, remove
+                foreach(var participation in existingParticipations)
+                {
+                    _unitOfWork.Repository<UserProjects>().DeleteByObject(participation);
+                }
+
+                await _unitOfWork.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                _logger.LogError(ex, ErrorLoggingMessagesConstants.PARTICIPATION_SERVICE_ERROR_LOG_MESSAGE);
+                throw ex;
+            }
         }
     }
 }

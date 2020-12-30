@@ -35,6 +35,10 @@ namespace WebApi.Controllers.v1.Utils
                 [ProjectParticipationRelatedErrorsConstants.CANNOT_CREATE_PARTICIPATION_WITH_NONE_AS_A_ROLE] = 400,
                 [ProjectParticipationRelatedErrorsConstants.CANNOT_CREATE_PARTICIPATION_WITH_OWNER_AS_A_ROLE] = 400,
                 [ProjectParticipationRelatedErrorsConstants.CANNOT_RECREATE_AN_EXISTING_PARTICIPATION] = 400,
+                [ProjectParticipationRelatedErrorsConstants.CANNOT_LOCATE_AN_EXISTING_PARTICIPATION_FOR_REMOVAL] = 400,
+                [ProjectParticipationRelatedErrorsConstants.CANNOT_REMOVE_THE_OWNER_FROM_HIS_OWN_PROJECT] = 403,
+                [ProjectParticipationRelatedErrorsConstants.PARTICIPATION_REMOVER_DONT_HAVE_THE_RIGHTS] = 403,
+                [ProjectParticipationRelatedErrorsConstants.THERE_IS_NO_PARTICIPATION_WITH_A_NONE_ROLE] = 400,
 
                 [InternalServerErrorsConstants.DATABASE_INTEGRITY_NOT_MAINTAINED] = 500,
                 [InternalServerErrorsConstants.GET_ALL_PARTICIPATIONS_STRATEGY_INVALID] = 500,
