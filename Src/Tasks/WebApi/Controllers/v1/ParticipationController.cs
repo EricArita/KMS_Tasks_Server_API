@@ -17,7 +17,7 @@ namespace WebApi.Controllers.v1
     [Area("participation-management")]
     public class ParticipationController : BaseController
     {
-        private IParticipationService _participationService;
+        private readonly IParticipationService _participationService;
 
         public ParticipationController(IParticipationService participationService)
         {
@@ -57,7 +57,7 @@ namespace WebApi.Controllers.v1
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
                     sb.AppendLine(exception.Message);
-                    uint? statusCode = ServiceExceptionsProcessor.getStatusCode(exception.Message);
+                    uint? statusCode = ServiceExceptionsProcessor.GetStatusCode(exception.Message);
                     if (statusCode != null && statusCode.HasValue)
                     {
                         return StatusCode((int)statusCode.Value, new HttpResponse<object>(false, null, sb.ToString()));
@@ -100,7 +100,7 @@ namespace WebApi.Controllers.v1
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
                     sb.AppendLine(exception.Message);
-                    uint? statusCode = ServiceExceptionsProcessor.getStatusCode(exception.Message);
+                    uint? statusCode = ServiceExceptionsProcessor.GetStatusCode(exception.Message);
                     if (statusCode != null && statusCode.HasValue)
                     {
                         return StatusCode((int)statusCode.Value, new HttpResponse<object>(false, null, sb.ToString()));
@@ -144,7 +144,7 @@ namespace WebApi.Controllers.v1
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
                     sb.AppendLine(exception.Message);
-                    uint? statusCode = ServiceExceptionsProcessor.getStatusCode(exception.Message);
+                    uint? statusCode = ServiceExceptionsProcessor.GetStatusCode(exception.Message);
                     if (statusCode != null && statusCode.HasValue)
                     {
                         return StatusCode((int)statusCode.Value, new HttpResponse<object>(false, null, sb.ToString()));

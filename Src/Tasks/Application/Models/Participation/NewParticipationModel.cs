@@ -13,7 +13,7 @@ namespace Core.Application.Models.Participation
 
         [Required(ErrorMessage = "{0} needs to be provided to show project's participation belongs to which user")]
         public long? UserId { get; set; }
-
+        [Required(ErrorMessage = "{0} needs to be provided to show what role the user is participating in the project as")]
         [EnumDataType(typeof(Enums.ProjectRoles))]
         public Enums.ProjectRoles? RoleId { get; set; }
     }

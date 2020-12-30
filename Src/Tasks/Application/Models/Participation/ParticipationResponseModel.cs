@@ -11,8 +11,10 @@ namespace Core.Application.Models.Participation
         {
             if (participation == null) return;
             User = new UserDTO(participation.User);
-            List<ProjectRole> roles = new List<ProjectRole>();
-            roles.Add(participation.ProjectRole);
+            List<ProjectRole> roles = new List<ProjectRole>
+            {
+                participation.ProjectRole
+            };
             ParticipatedProject = new ProjectResponseModel(participation.Project, roles);
         }
 

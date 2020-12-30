@@ -41,7 +41,7 @@ namespace Infrastructure.Persistence.Strategies.Participation
                 throw new ParticipationServiceException(UserRelatedErrorsConstants.USER_NOT_FOUND);
             }
 
-            // queriedUserHasParticipation in queried project or not
+            // queriedUser has participation in queried project or not
             bool queriedUserHasParticipationInProject = _unitOfWork.Repository<UserProjects>().GetDbset().Any(p => p.ProjectId == validProject.Id && p.UserId == model.UserId);
             if (!queriedUserHasParticipationInProject)
             {

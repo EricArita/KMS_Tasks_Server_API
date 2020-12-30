@@ -22,7 +22,7 @@ namespace WebApi.Controllers.v1
     [Area("project-management")]
     public class ProjectController : BaseController
     {
-        private IProjectService _projectService;
+        private readonly IProjectService _projectService;
 
         public ProjectController(IProjectService projectService)
         {
@@ -62,7 +62,7 @@ namespace WebApi.Controllers.v1
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
                     sb.AppendLine(exception.Message);
-                    uint? statusCode = ServiceExceptionsProcessor.getStatusCode(exception.Message);
+                    uint? statusCode = ServiceExceptionsProcessor.GetStatusCode(exception.Message);
                     if(statusCode != null && statusCode.HasValue)
                     {
                         return StatusCode((int) statusCode.Value, new HttpResponse<object>(false, null, sb.ToString()));
@@ -110,7 +110,7 @@ namespace WebApi.Controllers.v1
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
                     sb.AppendLine(exception.Message);
-                    uint? statusCode = ServiceExceptionsProcessor.getStatusCode(exception.Message);
+                    uint? statusCode = ServiceExceptionsProcessor.GetStatusCode(exception.Message);
                     if (statusCode != null && statusCode.HasValue)
                     {
                         return StatusCode((int)statusCode.Value, new HttpResponse<object>(false, null, sb.ToString()));
@@ -159,7 +159,7 @@ namespace WebApi.Controllers.v1
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
                     sb.AppendLine(exception.Message);
-                    uint? statusCode = ServiceExceptionsProcessor.getStatusCode(exception.Message);
+                    uint? statusCode = ServiceExceptionsProcessor.GetStatusCode(exception.Message);
                     if (statusCode != null && statusCode.HasValue)
                     {
                         return StatusCode((int)statusCode.Value, new HttpResponse<object>(false, null, sb.ToString()));
@@ -203,7 +203,7 @@ namespace WebApi.Controllers.v1
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
                     sb.AppendLine(exception.Message);
-                    uint? statusCode = ServiceExceptionsProcessor.getStatusCode(exception.Message);
+                    uint? statusCode = ServiceExceptionsProcessor.GetStatusCode(exception.Message);
                     if (statusCode != null && statusCode.HasValue)
                     {
                         return StatusCode((int)statusCode.Value, new HttpResponse<object>(false, null, sb.ToString()));
@@ -247,7 +247,7 @@ namespace WebApi.Controllers.v1
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
                     sb.AppendLine(exception.Message);
-                    uint? statusCode = ServiceExceptionsProcessor.getStatusCode(exception.Message);
+                    uint? statusCode = ServiceExceptionsProcessor.GetStatusCode(exception.Message);
                     if (statusCode != null && statusCode.HasValue)
                     {
                         return StatusCode((int)statusCode.Value, new HttpResponse<object>(false, null, sb.ToString()));

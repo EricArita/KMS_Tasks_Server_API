@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
+using System.Linq;
+using Core.Application.Helper.Exceptions.Participation;
 
 namespace Infrastructure.Persistence.Services
 {
@@ -27,9 +29,82 @@ namespace Infrastructure.Persistence.Services
 
         public async Task<ParticipationResponseModel> AddNewParticipation(long createdByUserId, NewParticipationModel newParticipation)
         {
-            throw new NotImplementedException();
+            if(newParticipation.RoleId <= Enums.ProjectRoles.None)
+            {
+                throw new ParticipationServiceException(ProjectParticipationRelatedErrorsConstants.CANNOT_CREATE_PARTICIPATION_WITH_NONE_AS_A_ROLE);
+            }
+
+            if(newParticipation.RoleId == Enums.ProjectRoles.Owner)
+            {
+                throw new ParticipationServiceException(ProjectParticipationRelatedErrorsConstants.CANNOT_CREATE_PARTICIPATION_WITH_OWNER_AS_A_ROLE);
+            }
+
+            await using var transaction = await _unitOfWork.CreateTransaction();
+
+            try
+            {
+                // Check if userId in model is valid or not
+                ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == newParticipation.UserId);
+                if (validUser == null)
+                {
+                    throw new ParticipationServiceException(UserRelatedErrorsConstants.USER_NOT_FOUND);
+                }
+
+                // Check if ProjectId is valid or not
+                Project validProject = _unitOfWork.Repository<Project>().GetDbset().FirstOrDefault(e => e.Id == newParticipation.ProjectId);
+                if (validProject == null)
+                {
+                    throw new ParticipationServiceException(ProjectRelatedErrorsConstants.PROJECT_NOT_FOUND);
+                }
+
+                // In the future, we will check if the user creating the participation have the rights to create one
+                // Preferably, we want only the owner, PM or leader to have the rights
+                bool creatingUserHaveTheRights = _unitOfWork.Repository<UserProjects>().GetDbset()
+                    .Any(item => 
+                    // Check if the creator have the rights
+                    item.ProjectId == validProject.Id && item.UserId == createdByUserId && 
+                    item.RoleId >= Enums.ProjectRoles.Owner && item.RoleId <= Enums.ProjectRoles.Leader);
+                if (!creatingUserHaveTheRights)
+                {
+                    throw new ParticipationServiceException(ProjectParticipationRelatedErrorsConstants.PARTICIPATION_CREATOR_DONT_HAVE_THE_RIGHTS);
+                }
+
+                // We continue to check if the new participation for the userId already exists or not
+                bool newParticipationAlreadyExists = _unitOfWork.Repository<UserProjects>().GetDbset()
+                    .Any(item => item.ProjectId == validProject.Id && item.UserId == validUser.UserId && item.RoleId == newParticipation.RoleId);
+                if(newParticipationAlreadyExists)
+                {
+                    throw new ParticipationServiceException(ProjectParticipationRelatedErrorsConstants.CANNOT_RECREATE_AN_EXISTING_PARTICIPATION);
+                }
+
+                // If everything is fine, we insert the participation
+                UserProjects participation = new UserProjects()
+                {
+                    ProjectId = validProject.Id,
+                    UserId = validUser.UserId,
+                    RoleId = newParticipation.RoleId.Value
+                };
+
+                await _unitOfWork.Repository<UserProjects>().InsertAsync(participation);
+
+                await _unitOfWork.SaveChangesAsync();
+
+                // Eager load instance for initialization of response model
+                var entry = _unitOfWork.Entry(participation);
+                await entry.Reference(e => e.ProjectRole).LoadAsync();
+
+                await transaction.CommitAsync();
+
+                return new ParticipationResponseModel(participation);
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                _logger.LogError(ex, ErrorLoggingMessagesConstants.PARTICIPATION_SERVICE_ERROR_LOG_MESSAGE);
+                throw ex;
+            }
         }
-        
+
         public async Task<IGetAllParticipations_ResponseModel> GetAllParticipations(long queriedByUserId, GetAllParticipationsModel model)
         {
             await using var transaction = await _unitOfWork.CreateTransaction();

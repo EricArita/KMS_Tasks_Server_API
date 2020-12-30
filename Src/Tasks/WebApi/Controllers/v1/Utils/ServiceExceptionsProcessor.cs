@@ -9,7 +9,7 @@ namespace WebApi.Controllers.v1.Utils
     // This class produces the corresponding status code from a passed in string
     public static class ServiceExceptionsProcessor
     {
-        private static Dictionary<string, uint> statusCodeDictionary;
+        private static readonly Dictionary<string, uint> statusCodeDictionary;
 
         static ServiceExceptionsProcessor(){
             statusCodeDictionary = new Dictionary<string, uint>() {
@@ -31,13 +31,17 @@ namespace WebApi.Controllers.v1.Utils
 
                 [ProjectParticipationRelatedErrorsConstants.PROJECT_PARTICIPATION_NOT_FOUND] = 404,
                 [ProjectParticipationRelatedErrorsConstants.QUERIED_USER_HAS_NO_PARTICIPATIONS_IN_QUERIED_PROJECT] = 400,
+                [ProjectParticipationRelatedErrorsConstants.PARTICIPATION_CREATOR_DONT_HAVE_THE_RIGHTS] = 403,
+                [ProjectParticipationRelatedErrorsConstants.CANNOT_CREATE_PARTICIPATION_WITH_NONE_AS_A_ROLE] = 400,
+                [ProjectParticipationRelatedErrorsConstants.CANNOT_CREATE_PARTICIPATION_WITH_OWNER_AS_A_ROLE] = 400,
+                [ProjectParticipationRelatedErrorsConstants.CANNOT_RECREATE_AN_EXISTING_PARTICIPATION] = 400,
 
                 [InternalServerErrorsConstants.DATABASE_INTEGRITY_NOT_MAINTAINED] = 500,
                 [InternalServerErrorsConstants.GET_ALL_PARTICIPATIONS_STRATEGY_INVALID] = 500,
             };
         }
 
-        public static uint? getStatusCode(string input)
+        public static uint? GetStatusCode(string input)
         {
             if (input == null) return null;
             uint? result = statusCodeDictionary[input];
