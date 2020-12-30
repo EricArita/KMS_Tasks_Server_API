@@ -40,6 +40,7 @@ namespace Core.Domain.Constants
     public static class ProjectParticipationRelatedErrorsConstants
     {
         public const string PROJECT_PARTICIPATION_NOT_FOUND = "Cannot find any project of such that you participated in";
+        public const string QUERIED_USER_HAS_NO_PARTICIPATIONS_IN_QUERIED_PROJECT = "Queried user has no participation in queried project";
     }
 
     public static class InternalServerErrorsConstants

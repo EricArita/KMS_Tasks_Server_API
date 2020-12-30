@@ -30,6 +30,7 @@ namespace WebApi.Controllers.v1.Utils
                 [TaskRelatedErrorsConstants.TASK_NOT_FOUND] = 404,
 
                 [ProjectParticipationRelatedErrorsConstants.PROJECT_PARTICIPATION_NOT_FOUND] = 404,
+                [ProjectParticipationRelatedErrorsConstants.QUERIED_USER_HAS_NO_PARTICIPATIONS_IN_QUERIED_PROJECT] = 400,
 
                 [InternalServerErrorsConstants.DATABASE_INTEGRITY_NOT_MAINTAINED] = 500,
                 [InternalServerErrorsConstants.GET_ALL_PARTICIPATIONS_STRATEGY_INVALID] = 500,

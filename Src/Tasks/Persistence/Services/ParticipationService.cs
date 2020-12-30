@@ -15,10 +15,10 @@ namespace Infrastructure.Persistence.Services
     public class ParticipationService : IParticipationService
     {
         protected readonly IUnitOfWork _unitOfWork;
-        protected ILogger<TaskService> _logger;
+        protected ILogger<ParticipationService> _logger;
         protected readonly UserManager<ApplicationUser> _userManager;
 
-        public ParticipationService(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, ILogger<TaskService> logger)
+        public ParticipationService(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, ILogger<ParticipationService> logger)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
