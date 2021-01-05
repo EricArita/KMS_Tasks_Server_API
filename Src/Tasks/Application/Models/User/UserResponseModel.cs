@@ -10,6 +10,7 @@ namespace Core.Application.Models.User
     {
         public UserResponseModel(ApplicationUser user) : base(user)
         {
+
         }
     }
 }

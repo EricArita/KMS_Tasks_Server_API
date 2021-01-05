@@ -4,6 +4,10 @@ using Core.Domain.DbEntities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
+using System.Linq;
+using System;
+using Core.Domain.Constants;
+using Core.Application.Helper.Exceptions.User;
 
 namespace Infrastructure.Persistence.Services
 {
@@ -20,14 +24,111 @@ namespace Infrastructure.Persistence.Services
             _userManager = userManager;
         }
 
-        public Task<UserResponseModel> GetUserInfoById(long UserId)
+        public async Task<UserResponseModel> GetUserInfoById(long UserId)
         {
-            throw new System.NotImplementedException();
+            await using var transaction = await _unitOfWork.CreateTransaction();
+
+            try
+            {
+                var validUser = _userManager.Users.FirstOrDefault(user => user.UserId == UserId);
+                if (validUser == null)
+                {
+                    throw new UserServiceException(UserRelatedErrorsConstants.USER_NOT_FOUND);
+                }
+
+                await transaction.CommitAsync();
+
+                return new UserResponseModel(validUser);
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                _logger.LogError(ex, ErrorLoggingMessagesConstants.USER_SERVICE_ERROR_LOG_MESSAGE);
+                throw ex;
+            }
         }
 
-        public Task<UserResponseModel> UpdateUserInfo(long updatedByUserId, UpdateUserInfoModel model)
+        public async Task<UserResponseModel> UpdateUserInfo(long updatedByUserId, UpdateUserInfoModel model)
         {
-            throw new System.NotImplementedException();
+            await using var transaction = await _unitOfWork.CreateTransaction();
+
+            try
+            {
+                var validUser = _userManager.Users.FirstOrDefault(user => user.UserId == updatedByUserId);
+                if(validUser == null)
+                {
+                    throw new UserServiceException(UserRelatedErrorsConstants.USER_NOT_FOUND);
+                }
+
+                bool isUpdated = false;
+                if(model.FirstName != null)
+                {
+                    validUser.FirstName = model.FirstName;
+                    isUpdated = true;
+                }
+
+                if(model.LastName != null)
+                {
+                    validUser.LastName = model.LastName;
+                    isUpdated = true;
+                }
+
+                if(model.MidName != null)
+                {
+                    validUser.MidName = model.MidName;
+                    isUpdated = true;
+                }
+
+                if(model.Phone != null)
+                {
+                    validUser.PhoneNumber = model.Phone;
+                    isUpdated = true;
+                }
+
+                if(model.AvatarUrl != null)
+                {
+                    validUser.AvatarUrl = model.AvatarUrl;
+                    isUpdated = true;
+                }
+
+                if(model.Address != null)
+                {
+                    validUser.Address = model.Address;
+                    isUpdated = true;
+                }
+
+                if(model.NewPassword != null)
+                {
+                    if(model.CurrentPassword == null)
+                    {
+                        throw new UserServiceException(UserRelatedErrorsConstants.MISSING_CURRENT_PASSWORD_WHEN_CHANGING_PASSWORD);
+                    }
+                    var res = (await _userManager.ChangePasswordAsync(validUser, model.CurrentPassword, model.NewPassword));
+                    if(!res.Succeeded)
+                    {
+                        throw new UserServiceException(UserRelatedErrorsConstants.PASSWORD_CHANGE_ERROR, res.Errors.ToList());
+                    }
+                    isUpdated = true;
+                }
+
+                DateTime rightNow = DateTime.UtcNow;
+
+                if (isUpdated)
+                {
+                    validUser.UpdatedDate = rightNow;
+                    await _userManager.UpdateAsync(validUser);
+                    await _unitOfWork.SaveChangesAsync();
+                }
+
+                await transaction.CommitAsync();
+
+                return new UserResponseModel(validUser);
+            } catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                _logger.LogError(ex, ErrorLoggingMessagesConstants.USER_SERVICE_ERROR_LOG_MESSAGE);
+                throw ex;
+            }
         }
     }
 }

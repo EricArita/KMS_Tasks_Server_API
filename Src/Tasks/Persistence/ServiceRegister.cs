@@ -93,6 +93,7 @@ namespace Persistence
             services.AddScoped<ITaskService, TaskService>();
             services.AddScoped<IProjectService, ProjectService>();
             services.AddScoped<IParticipationService, ParticipationService>();
+            services.AddScoped<IUserService, UserService>();
             #endregion
         }
     }

@@ -10,6 +10,6 @@ namespace Core.Application.Interfaces
     {
         public Task<UserResponseModel> GetUserInfoById(long UserId);
 
-        public Task<UserResponseModel> UpdateUserInfo(long updatedByUserId, UpdateUserInfoModel model)
+        public Task<UserResponseModel> UpdateUserInfo(long updatedByUserId, UpdateUserInfoModel model);
     }
 }

@@ -15,6 +15,8 @@ namespace Core.Domain.Constants
     public static class UserRelatedErrorsConstants
     {
         public const string USER_NOT_FOUND = "Cannot locate a valid user from the claim provided";
+        public const string MISSING_CURRENT_PASSWORD_WHEN_CHANGING_PASSWORD = "You need to provide your current password to change your password";
+        public const string PASSWORD_CHANGE_ERROR = "Errors happened when trying to modify the password";
     }
 
     public static class ProjectRelatedErrorsConstants
@@ -64,5 +66,6 @@ namespace Core.Domain.Constants
         public const string PROJECT_SERVICE_ERROR_LOG_MESSAGE = "An error occurred while using ProjectService";
         public const string TASK_SERVICE_ERROR_LOG_MESSAGE = "An error occurred while using TaskService";
         public const string PARTICIPATION_SERVICE_ERROR_LOG_MESSAGE = "An error occured while using ParticipationService";
+        public const string USER_SERVICE_ERROR_LOG_MESSAGE = "An error occurred while using UserService";
     }
 }

@@ -14,6 +14,8 @@ namespace WebApi.Controllers.v1.Utils
         static ServiceExceptionsProcessor(){
             statusCodeDictionary = new Dictionary<string, uint>() {
                 [UserRelatedErrorsConstants.USER_NOT_FOUND] = 404,
+                [UserRelatedErrorsConstants.PASSWORD_CHANGE_ERROR] = 400,
+                [UserRelatedErrorsConstants.MISSING_CURRENT_PASSWORD_WHEN_CHANGING_PASSWORD] = 400,
 
                 [ProjectRelatedErrorsConstants.ACCESS_TO_PROJECT_IS_FORBIDDEN] = 403,
                 [ProjectRelatedErrorsConstants.CANNOT_SET_PARENT_PROJECT_TOBE_ITSELF] = 400,
