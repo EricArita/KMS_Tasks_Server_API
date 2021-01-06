@@ -4,7 +4,6 @@ using MB.Core.Application.Interfaces;
 using MB.Core.Application.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MB.WebApi.Models;
 
 namespace MB.WebApi.Controllers.v1
 {

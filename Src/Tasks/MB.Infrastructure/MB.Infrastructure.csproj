@@ -32,4 +32,9 @@
     <PackageReference Include="System.Linq" Version="4.3.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MB.Core.Application\MB.Core.Application.csproj" />
+    <ProjectReference Include="..\MB.Core.Domain\MB.Core.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
