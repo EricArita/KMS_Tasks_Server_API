@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Core.Application.Helper.Exceptions.Task
+namespace MB.Core.Application.Helper.Exceptions.Task
 {
     public class TaskServiceException : BaseServiceException
     {

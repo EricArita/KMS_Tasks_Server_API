@@ -1,17 +1,17 @@
-﻿using Core.Application.Helper;
-using Core.Application.Helper.Exceptions.Task;
-using Core.Application.Interfaces;
-using Core.Application.Models;
-using Core.Application.Models.Task;
+﻿using MB.Core.Application.Helper;
+using MB.Core.Application.Helper.Exceptions.Task;
+using MB.Core.Application.Interfaces;
+using MB.Core.Application.Models;
+using MB.Core.Application.Models.Task;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using WebApi.Controllers.v1.Utils;
+using MB.WebApi.Controllers.v1.Utils;
 
-namespace WebApi.Controllers.v1
+namespace MB.WebApi.Controllers.v1
 {
     [Area("task-management")]
     public class TaskController : BaseController

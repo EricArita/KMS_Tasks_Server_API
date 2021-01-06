@@ -1,9 +1,9 @@
-﻿using Core.Application.Helper;
-using Core.Application.Interfaces;
-using Core.Application.Models;
-using Core.Domain.Constants;
-using Core.Domain.DbEntities;
-using Infrastructure.Persistence.SettingModels;
+﻿using MB.Core.Application.Helper;
+using MB.Core.Application.Interfaces;
+using MB.Core.Application.Models;
+using MB.Core.Domain.Constants;
+using MB.Core.Domain.DbEntities;
+using MB.Infrastructure.SettingModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -18,7 +18,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Infrastructure.Persistence.Services
+namespace MB.Infrastructure.Services
 {
     public class AuthenticationService : JWTAuthenticationBase, IAuthentication
     {

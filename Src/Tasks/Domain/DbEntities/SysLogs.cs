@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Core.Domain.DbEntities
+namespace MB.Core.Domain.DbEntities
 {
     public partial class SysLogs
     {

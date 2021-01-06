@@ -1,6 +1,5 @@
-﻿using Core.Application.Models;
-using Core.Domain.Constants;
-using Core.Domain.DbEntities;
+﻿using MB.Core.Domain.Constants;
+using MB.Core.Domain.DbEntities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +7,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Infrastructure.Persistence.Contexts
+namespace MB.Infrastructure.Contexts
 {
     public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {

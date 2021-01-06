@@ -1,22 +1,16 @@
-﻿using Core.Application.Helper;
-using Core.Application.Helper.Exceptions.Project;
-using Core.Application.Interfaces;
-using Core.Application.Models;
-using Core.Application.Models.Project;
-using Core.Domain.DbEntities;
-using Infrastructure.Persistence.Services;
-using Microsoft.AspNetCore.Identity;
+﻿using MB.Core.Application.Helper;
+using MB.Core.Application.Helper.Exceptions.Project;
+using MB.Core.Application.Interfaces;
+using MB.Core.Application.Models;
+using MB.Core.Application.Models.Project;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using NLog;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WebApi.Controllers.v1.Utils;
+using MB.WebApi.Controllers.v1.Utils;
 
-namespace WebApi.Controllers.v1
+namespace MB.WebApi.Controllers.v1
 {
     [Area("project-management")]
     public class ProjectController : BaseController

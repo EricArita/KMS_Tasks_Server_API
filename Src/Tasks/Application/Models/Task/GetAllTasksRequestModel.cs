@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Core.Application.Models.Task
+namespace MB.Core.Application.Models.Task
 {
     public class GetAllTasksRequestModel
     {

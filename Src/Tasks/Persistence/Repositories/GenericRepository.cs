@@ -1,18 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Data;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using Core.Application.Interfaces;
-using NLog;
-using Infrastructure.Persistence.Services;
-using Infrastructure.Persistence.Contexts;
-using Core.Domain.DbEntities;
+using MB.Core.Application.Interfaces;
+using MB.Infrastructure.Contexts;
 using System.Threading.Tasks;
-using System.Text;
 
-namespace Infrastructure.Persistence.Repositories
+namespace MB.Infrastructure.Repositories
 {
     public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
     {

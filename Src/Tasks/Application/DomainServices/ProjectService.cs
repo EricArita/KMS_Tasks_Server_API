@@ -1,18 +1,18 @@
-﻿using Core.Application.Helper.Exceptions.Project;
-using Core.Application.Interfaces;
-using Core.Application.Models;
-using Core.Domain.Constants;
-using Core.Domain.DbEntities;
+﻿using MB.Core.Application.Helper.Exceptions.Project;
+using MB.Core.Application.Interfaces;
+using MB.Core.Application.Models;
+using MB.Core.Domain.Constants;
+using MB.Core.Domain.DbEntities;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Text;
-using Core.Application.Models.Project;
+using MB.Core.Application.Models.Project;
 using Microsoft.Extensions.Logging;
 
-namespace Infrastructure.Persistence.Services
+namespace MB.Core.Application.DomainServices
 {
     public class ProjectService : IProjectService
     {

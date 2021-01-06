@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Core.Application.Models
+namespace MB.Core.Application.Models
 {
     public class FacebookAppAccessTokenResponse
     {

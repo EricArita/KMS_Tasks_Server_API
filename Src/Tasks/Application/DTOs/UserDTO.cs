@@ -1,9 +1,7 @@
-﻿using Core.Domain.DbEntities;
+﻿using MB.Core.Domain.DbEntities;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Infrastructure.Persistence.DTOs
+namespace MB.Core.Domain.DTOs
 {
     public class UserDTO
     {

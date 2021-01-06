@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 
-namespace Core.Domain.DbEntities
+namespace MB.Core.Domain.DbEntities
 {
     [Owned]
     public class RefreshToken

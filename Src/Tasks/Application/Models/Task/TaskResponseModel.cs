@@ -1,11 +1,11 @@
-﻿using Core.Application.Models.Project;
-using Core.Domain.DbEntities;
-using Infrastructure.Persistence.DTOs;
+﻿using MB.Core.Application.Models.Project;
+using MB.Core.Domain.DbEntities;
+using MB.Core.Domain.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Core.Application.Models.Task
+namespace MB.Core.Application.Models.Task
 {
     public class TaskResponseModel
     {

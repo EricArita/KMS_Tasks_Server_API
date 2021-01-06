@@ -1,6 +1,6 @@
-using static Core.Domain.Constants.Enums;
+using static MB.Core.Domain.Constants.Enums;
 
-namespace Core.Domain.Constants
+namespace MB.Core.Domain.Constants
 {
     public static class DefaultUserConstants
     {

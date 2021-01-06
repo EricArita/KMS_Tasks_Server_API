@@ -1,15 +1,12 @@
 ﻿using System;
-using System.IO;
-using System.Net.Http;
 using System.Threading.Tasks;
-using Core.Application.Interfaces;
-using Core.Application.Models;
-using Core.Application.Models.Auth;
+using MB.Core.Application.Interfaces;
+using MB.Core.Application.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using WebApi.Models;
+using MB.WebApi.Models;
 
-namespace WebApi.Controllers.v1
+namespace MB.WebApi.Controllers.v1
 {
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]

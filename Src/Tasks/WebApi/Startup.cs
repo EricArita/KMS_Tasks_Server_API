@@ -3,14 +3,13 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
-using Application;
-using Persistence;
 using Microsoft.AspNetCore.Mvc;
-using Core.Application.Interfaces;
-using Infrastructure.Persistence.Repositories;
+using MB.Core.Application.Interfaces;
+using MB.Infrastructure.Repositories;
+using MB.Infrastructure;
+using MB.Core.Application;
 
-namespace WebApi
+namespace MB.WebApi
 {
     public class Startup
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace Core.Application.Interfaces
+namespace MB.Core.Application.Interfaces
 {
     public interface IGenericRepository<TEntity> where TEntity : class
     {

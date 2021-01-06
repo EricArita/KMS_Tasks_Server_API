@@ -1,5 +1,5 @@
-﻿using Core.Application.Interfaces;
-using Infrastructure.Persistence.Contexts;
+﻿using MB.Core.Application.Interfaces;
+using MB.Infrastructure.Contexts;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage;
 using System;
@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Infrastructure.Persistence.Repositories
+namespace MB.Infrastructure.Repositories
 {
     public class UnitOfWork : IUnitOfWork, IDisposable
     {

@@ -1,8 +1,8 @@
-﻿using Core.Application.Helper.Exceptions.Task;
-using Core.Application.Interfaces;
-using Core.Application.Models;
-using Core.Application.Models.Task;
-using Core.Domain.DbEntities;
+﻿using MB.Core.Application.Helper.Exceptions.Task;
+using MB.Core.Application.Interfaces;
+using MB.Core.Application.Models;
+using MB.Core.Application.Models.Task;
+using MB.Core.Domain.DbEntities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -11,10 +11,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Core.Domain.Constants.Enums;
-using Core.Domain.Constants;
+using static MB.Core.Domain.Constants.Enums;
+using MB.Core.Domain.Constants;
 
-namespace Infrastructure.Persistence.Services
+namespace MB.Core.Application.DomainServices
 {
     public class TaskService : ITaskService
     {

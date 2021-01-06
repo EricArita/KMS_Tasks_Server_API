@@ -1,4 +1,4 @@
-﻿namespace Core.Application.Models.Auth
+﻿namespace MB.Core.Application.Models
 {
     public class FacebookAuthRequest
     {

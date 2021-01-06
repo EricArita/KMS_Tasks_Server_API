@@ -1,8 +1,8 @@
-﻿using Core.Domain.Constants;
+﻿using MB.Core.Domain.Constants;
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Core.Application.Models
+namespace MB.Core.Application.Models
 {
     public class NewTaskModel
     {

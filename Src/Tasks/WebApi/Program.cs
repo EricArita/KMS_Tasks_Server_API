@@ -1,18 +1,16 @@
 using System;
 using System.Threading.Tasks;
-using Core.Application.Models;
-using Core.Domain.DbEntities;
-using Infrastructure.Persistence.Contexts;
-using Infrastructure.Persistence.Services;
+using MB.Core.Domain.DbEntities;
+using MB.Infrastructure.Contexts;
+using MB.Infrastructure.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using NLog.Config;
 using NLog.Web;
 
-namespace WebApi
+namespace MB.WebApi
 {
     public class Program
     {

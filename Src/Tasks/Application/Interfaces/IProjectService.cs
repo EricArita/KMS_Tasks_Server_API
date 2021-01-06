@@ -1,12 +1,9 @@
-﻿using Core.Application.Models;
-using Core.Application.Models.Project;
-using Core.Domain.DbEntities;
-using System;
+﻿using MB.Core.Application.Models;
+using MB.Core.Application.Models.Project;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace Core.Application.Interfaces
+namespace MB.Core.Application.Interfaces
 {
     public interface IProjectService
     {

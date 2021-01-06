@@ -1,7 +1,7 @@
 ﻿using NLog;
 using NLog.Web;
 
-namespace Infrastructure.Persistence.Services {
+namespace MB.Infrastructure.Services {
     public static class NLoggerService
     {
         private static Logger instance = null;

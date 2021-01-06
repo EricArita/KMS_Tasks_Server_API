@@ -1,10 +1,10 @@
-﻿using Core.Application.Helper;
-using Core.Application.Models;
-using Core.Domain.DbEntities;
+﻿using MB.Core.Application.Helper;
+using MB.Core.Application.Models;
+using MB.Core.Domain.DbEntities;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
 
-namespace Core.Application.Interfaces
+namespace MB.Core.Application.Interfaces
 {
     public interface IAuthentication
     {

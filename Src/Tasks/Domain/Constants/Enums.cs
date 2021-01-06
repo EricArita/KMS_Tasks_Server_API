@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Core.Domain.Constants
+namespace MB.Core.Domain.Constants
 {
     public class Enums
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Infrastructure.Persistence.SettingModels
+namespace MB.Infrastructure.SettingModels
 {
     public class JWT
     {

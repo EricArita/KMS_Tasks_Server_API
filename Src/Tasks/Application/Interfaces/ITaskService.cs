@@ -1,9 +1,9 @@
-﻿using Core.Application.Models;
-using Core.Application.Models.Task;
+﻿using MB.Core.Application.Models;
+using MB.Core.Application.Models.Task;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Core.Application.Interfaces
+namespace MB.Core.Application.Interfaces
 {
     public interface ITaskService
     {

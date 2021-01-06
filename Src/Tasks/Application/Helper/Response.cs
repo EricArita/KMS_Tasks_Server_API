@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 
-namespace Core.Application.Helper
+namespace MB.Core.Application.Helper
 {
     public class HttpResponse<T> { 
         public HttpResponse() {

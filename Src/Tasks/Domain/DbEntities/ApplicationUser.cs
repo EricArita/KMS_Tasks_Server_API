@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Core.Domain.DbEntities
+namespace MB.Core.Domain.DbEntities
 {
     public class ApplicationUser : IdentityUser
     {

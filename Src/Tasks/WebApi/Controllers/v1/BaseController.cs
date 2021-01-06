@@ -5,7 +5,7 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 
-namespace WebApi.Controllers.v1
+namespace MB.WebApi.Controllers.v1
 {
 
     [ApiVersion("1.0")]

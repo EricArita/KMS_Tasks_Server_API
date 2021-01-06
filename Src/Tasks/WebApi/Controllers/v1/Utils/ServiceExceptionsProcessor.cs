@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Core.Domain.Constants;
+﻿using System.Collections.Generic;
+using MB.Core.Domain.Constants;
 
-namespace WebApi.Controllers.v1.Utils
+namespace MB.WebApi.Controllers.v1.Utils
 {
     // This class produces the corresponding status code from a passed in string
     public static class ServiceExceptionsProcessor

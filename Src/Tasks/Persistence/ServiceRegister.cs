@@ -1,10 +1,11 @@
-﻿using Core.Application.Interfaces;
-using Core.Application.Models;
-using Core.Domain.DbEntities;
-using Infrastructure.Persistence.Contexts;
-using Infrastructure.Persistence.Misc;
-using Infrastructure.Persistence.Services;
-using Infrastructure.Persistence.SettingModels;
+﻿using MB.Core.Application.DomainServices;
+using MB.Core.Application.Interfaces;
+using MB.Core.Application.Models;
+using MB.Core.Domain.DbEntities;
+using MB.Infrastructure.Contexts;
+using MB.Infrastructure.Misc;
+using MB.Infrastructure.Services;
+using MB.Infrastructure.SettingModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +16,7 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.Text;
 
-namespace Persistence
+namespace MB.Infrastructure
 {
     public static class ServiceRegister
     {

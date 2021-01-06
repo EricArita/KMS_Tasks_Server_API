@@ -1,6 +1,6 @@
-﻿using Core.Domain.Constants;
+﻿using MB.Core.Domain.Constants;
 
-namespace Core.Domain.DbEntities
+namespace MB.Core.Domain.DbEntities
 {
     public partial class UserProjects
     {

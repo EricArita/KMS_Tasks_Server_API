@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Application
+namespace MB.Core.Application
 {
     public static class ServiceRegister
     {
