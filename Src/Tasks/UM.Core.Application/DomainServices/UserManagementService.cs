@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using UM.Core.Application.Helper;
 using UM.Core.Application.Interfaces;
@@ -7,7 +9,7 @@ using UM.Core.Application.Models;
 using UM.Core.Domain.Constants;
 using UM.Core.Domain.DbEntities;
 
-namespace UM.Infrastructure.Services
+namespace UM.Core.Application.DomainServices
 {
     public class UserManagementService : IUserManagement
 
@@ -62,14 +64,24 @@ namespace UM.Infrastructure.Services
 
             return res;
         }
-    
-        public async Task<HttpResponse<ApplicationUser>> GetUserByEmail(string email)
+
+        public async Task<HttpResponse<ApplicationUser>> GetUserByUsername(string userName)
         {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user != null) 
+            var user = await _userManager.FindByNameAsync(userName) ?? await _userManager.FindByEmailAsync(userName);
+            if (user != null)
                 return new HttpResponse<ApplicationUser>(true, user, "success");
 
-            return new HttpResponse<ApplicationUser>(false, null, $"Does not exist any user with this {email}");
+            return new HttpResponse<ApplicationUser>(false, null, $"Does not exist any user with this username {userName}");
+        }
+
+        public async Task<IList<string>> GetUserRoleAsync(ApplicationUser user)
+        {
+            return await _userManager.GetRolesAsync(user);
+        }
+
+        public async Task<IList<Claim>> GetUserClaimAsync(ApplicationUser user)
+        {
+            return await _userManager.GetClaimsAsync(user);
         }
     }
 }

@@ -6,12 +6,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using UM.Core.Application;
+using UM.Core.Application.DomainServices;
 using UM.Core.Application.Interfaces;
 using UM.Core.Domain.DbEntities;
 using UM.Infrastructure;
 using UM.Infrastructure.Contexts;
-using UM.Infrastructure.Repositories;
-using UM.Infrastructure.Services;
 
 namespace UM.WebApi
 {
