@@ -5,11 +5,11 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 
-namespace MB.WebApi.Controllers.v1
+namespace UM.WebApi.Controllers.v1
 {
 
     [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/[area]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
     public class BaseController : ControllerBase

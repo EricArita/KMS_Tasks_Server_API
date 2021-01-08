@@ -32,7 +32,7 @@ namespace AuthServer.Controllers.v1
             return Ok(result);
         }
 
-        [HttpPost("refresh-token")]
+        [HttpGet("refresh-token")]
         public async Task<IActionResult> RefreshToken()
         {
             var refreshToken = Request.Cookies["refreshToken"];

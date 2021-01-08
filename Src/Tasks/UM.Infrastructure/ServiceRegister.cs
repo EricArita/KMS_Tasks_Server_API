@@ -6,6 +6,7 @@ using UM.Infrastructure.Repositories;
 using UM.Core.Application.Interfaces;
 using Microsoft.OpenApi.Models;
 using UM.Infrastructure.Misc;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace UM.Infrastructure
 {
@@ -20,7 +21,12 @@ namespace UM.Infrastructure
         {
             services.AddDbContext<UserManagementDbContext>(options =>
                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(typeof(UserManagementDbContext).Assembly.FullName)));
-           
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            });
+
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddSwaggerGen(c =>

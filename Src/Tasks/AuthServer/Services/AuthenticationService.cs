@@ -34,7 +34,7 @@ namespace AuthServer.Services
             //var user = await _userManager.FindByNameAsync(userName) ?? await _userManager.FindByEmailAsync(userName);
 
             var apiCaller = new HttpClient();
-            var responseString = await apiCaller.GetStringAsync($"http://localhost:5005/api/v1/User/getuser/{userName}");
+            var responseString = await apiCaller.GetStringAsync($"https://localhost:5005/api/v1/User/getuser/{userName}");
             var user = JsonConvert.DeserializeObject<HttpResponse<ApplicationUser>>(responseString).Data;
 
             if (user == null)
@@ -94,11 +94,11 @@ namespace AuthServer.Services
             var json = JsonConvert.SerializeObject(user);
             var data = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var result = await client.PostAsync("http://localhost:5005/api/v1/User/get-user-claim/", data);
+            var result = await client.PostAsync("https://localhost:5005/api/v1/User/get-user-claim/", data);
             string jsonResult = await result.Content.ReadAsStringAsync();
             var userClaims = JsonConvert.DeserializeObject<List<Claim>>(jsonResult);
 
-            result = await client.PostAsync("http://localhost:5005/api/v1/User/get-user-role/", data);
+            result = await client.PostAsync("https://localhost:5005/api/v1/User/get-user-role/", data);
             jsonResult = await result.Content.ReadAsStringAsync();
             var roles = JsonConvert.DeserializeObject<List<string>>(jsonResult);
 
@@ -153,7 +153,7 @@ namespace AuthServer.Services
             var json = JsonConvert.SerializeObject(user);
             var data = new StringContent(json, Encoding.UTF8, "application/json");
             
-            var result = await client.PostAsync("http://localhost:5005/api/v1/User/get-user-role/", data);
+            var result = await client.PostAsync("https://localhost:5005/api/v1/User/get-user-role/", data);
             string jsonResult = await result.Content.ReadAsStringAsync();
 
             var listRoles = JsonConvert.DeserializeObject<List<string>>(jsonResult);
