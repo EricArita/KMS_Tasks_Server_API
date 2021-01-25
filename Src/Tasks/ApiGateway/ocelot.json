@@ -1,6 +1,5 @@
 {
   "Routes": [
-    // Auth APIs
     {
       "DownstreamPathTemplate": "/api/v1/Auth/login",
       "DownstreamScheme": "https",
@@ -26,7 +25,6 @@
       "UpstreamHttpMethod": [ "GET" ]
     },
 
-    // Project APIs
     {
       "DownstreamPathTemplate": "/api/v1/project-management/project",
       "DownstreamScheme": "https",
@@ -72,8 +70,6 @@
       "UpstreamHttpMethod": [ "GET", "PATCH", "DELETE" ]
     },
 
-    // Task APIs
-    // POST a task
     {
       "DownstreamPathTemplate": "/api/v1/task-management/task",
       "DownstreamScheme": "https",
@@ -90,7 +86,7 @@
         "AllowedScopes": []
       }
     },
-    // GET all tasks
+   
     {
       "DownstreamPathTemplate": "/api/v1/task-management/tasks",
       "DownstreamScheme": "https",
@@ -107,7 +103,7 @@
         "AllowedScopes": []
       }
     },
-    // GET, PATCH, DELETE a certain task
+    
     {
       "DownstreamPathTemplate": "/api/v1/task-management/task/{taskId}",
       "DownstreamScheme": "https",
@@ -121,8 +117,7 @@
       "UpstreamHttpMethod": [ "GET", "PATCH", "DELETE" ]
     },
 
-    // User APIs
-      // GET user profile
+    
     {
       "DownstreamPathTemplate": "/api/v1/user-management/profile",
       "DownstreamScheme": "https",
@@ -136,7 +131,7 @@
       "UpstreamHttpMethod": [ "GET", "PATCH" ]
     },
 
-    // Participation APIs
+    
     {
       "DownstreamPathTemplate": "/api/v1/participation-management/participation",
       "DownstreamScheme": "https",
