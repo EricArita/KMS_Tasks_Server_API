@@ -46,7 +46,8 @@ namespace ApiGateway
 
             services.AddControllers();
 
-            services.AddOcelot();
+            services.AddSwaggerForOcelot(Configuration);
+            services.AddOcelot(Configuration);         
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -66,6 +67,10 @@ namespace ApiGateway
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+
+            app.UseSwaggerForOcelotUI((opt) => {
+                opt.PathToSwaggerGenerator = "/swagger/docs";
             });
 
             app.UseOcelot();

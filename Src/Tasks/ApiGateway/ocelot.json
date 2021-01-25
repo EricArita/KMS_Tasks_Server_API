@@ -10,7 +10,8 @@
         }
       ],
       "UpstreamPathTemplate": "/gateway/v1/Auth/login",
-      "UpstreamHttpMethod": [ "POST" ]
+      "UpstreamHttpMethod": [ "POST" ],
+      "SwaggerKey": "auth"
     },
     {
       "DownstreamPathTemplate": "/api/v1/Auth/refresh-token",
@@ -22,7 +23,8 @@
         }
       ],
       "UpstreamPathTemplate": "/gateway/v1/Auth/refresh-token",
-      "UpstreamHttpMethod": [ "GET" ]
+      "UpstreamHttpMethod": [ "GET" ],
+      "SwaggerKey": "auth"
     },
 
     {
@@ -39,7 +41,8 @@
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "HCMUS_1712169",
         "AllowedScopes": []
-      }
+      },
+      "SwaggerKey": "main-business"
     },
     {
       "DownstreamPathTemplate": "/api/v1/project-management/projects",
@@ -55,7 +58,8 @@
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "HCMUS_1712169",
         "AllowedScopes": []
-      }
+      },
+      "SwaggerKey": "main-business"
     },
     {
       "DownstreamPathTemplate": "/api/v1/project-management/project/{projectId}",
@@ -66,8 +70,13 @@
           "Port": 5003
         }
       ],
-      "UpstreamPathTemplate": "/api/v1/project-management/project/{projectId}",
-      "UpstreamHttpMethod": [ "GET", "PATCH", "DELETE" ]
+      "UpstreamPathTemplate": "/gateway/v1/project-management/project/{projectId}",
+      "UpstreamHttpMethod": [ "GET", "PATCH", "DELETE" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "HCMUS_1712169",
+        "AllowedScopes": []
+      },
+      "SwaggerKey": "main-business"
     },
 
     {
@@ -84,9 +93,10 @@
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "HCMUS_1712169",
         "AllowedScopes": []
-      }
+      },
+      "SwaggerKey": "main-business"
     },
-   
+
     {
       "DownstreamPathTemplate": "/api/v1/task-management/tasks",
       "DownstreamScheme": "https",
@@ -101,9 +111,10 @@
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "HCMUS_1712169",
         "AllowedScopes": []
-      }
+      },
+      "SwaggerKey": "main-business"
     },
-    
+
     {
       "DownstreamPathTemplate": "/api/v1/task-management/task/{taskId}",
       "DownstreamScheme": "https",
@@ -114,10 +125,15 @@
         }
       ],
       "UpstreamPathTemplate": "/gateway/v1/task-management/task/{taskId}",
-      "UpstreamHttpMethod": [ "GET", "PATCH", "DELETE" ]
+      "UpstreamHttpMethod": [ "GET", "PATCH", "DELETE" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "HCMUS_1712169",
+        "AllowedScopes": []
+      },
+      "SwaggerKey": "main-business"
     },
 
-    
+
     {
       "DownstreamPathTemplate": "/api/v1/user-management/profile",
       "DownstreamScheme": "https",
@@ -128,10 +144,15 @@
         }
       ],
       "UpstreamPathTemplate": "/gateway/v1/user-management/profile",
-      "UpstreamHttpMethod": [ "GET", "PATCH" ]
+      "UpstreamHttpMethod": [ "GET", "PATCH" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "HCMUS_1712169",
+        "AllowedScopes": []
+      },
+      "SwaggerKey": "main-business"
     },
 
-    
+
     {
       "DownstreamPathTemplate": "/api/v1/participation-management/participation",
       "DownstreamScheme": "https",
@@ -142,7 +163,12 @@
         }
       ],
       "UpstreamPathTemplate": "/gateway/v1/participation-management/participation",
-      "UpstreamHttpMethod": [ "POST", "DELETE" ]
+      "UpstreamHttpMethod": [ "POST", "DELETE" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "HCMUS_1712169",
+        "AllowedScopes": []
+      },
+      "SwaggerKey": "main-business"
     },
     {
       "DownstreamPathTemplate": "/api/v1/participation-management/participations",
@@ -154,7 +180,34 @@
         }
       ],
       "UpstreamPathTemplate": "/gateway/v1/participation-management/participations",
-      "UpstreamHttpMethod": [ "GET" ]
+      "UpstreamHttpMethod": [ "GET" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "HCMUS_1712169",
+        "AllowedScopes": []
+      },
+      "SwaggerKey": "main-business"
+    }
+  ],
+  "SwaggerEndpoints": [
+    {
+      "Key": "auth",
+      "Config": [
+        {
+          "Name": "Auth API",
+          "Version": "v1",
+          "Url": "http://localhost:5001/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "main-business",
+      "Config": [
+        {
+          "Name": "Main business APIs",
+          "Version": "v1",
+          "Url": "http://localhost:5003/swagger/v1/swagger.json"
+        }
+      ]
     }
   ]
 }

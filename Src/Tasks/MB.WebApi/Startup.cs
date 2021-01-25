@@ -80,7 +80,7 @@ namespace MB.WebApi
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "TasksApiDoc");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "MainBusinessDoc");
             });
             #endregion
         }

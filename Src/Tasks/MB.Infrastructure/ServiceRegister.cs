@@ -72,7 +72,7 @@ namespace MB.Infrastructure
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Version = "v1",
-                    Title = "TasksApiDoc",
+                    Title = "MainBusinessDoc",
                 });
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
