@@ -1,17 +1,16 @@
-﻿using Core.Application.Helper.Exceptions.Participation;
-using Core.Application.Helper.Strategies.Participation;
-using Core.Application.Interfaces;
-using Core.Application.Models.Participation;
-using Core.Application.Models.Participation.GETSpecificResponses;
-using Core.Application.Models.Project;
-using Core.Domain.Constants;
-using Core.Domain.DbEntities;
+﻿using MB.Core.Application.Helper.Exceptions.Participation;
+using MB.Core.Application.Helper.Strategies.Participation;
+using MB.Core.Application.Models.Participation;
+using MB.Core.Application.Models.Participation.GETSpecificResponses;
+using MB.Core.Application.Interfaces;
+using MB.Core.Application.Models.Project;
+using MB.Core.Domain.Constants;
+using MB.Core.Domain.DbEntities;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
-namespace Infrastructure.Persistence.Strategies.Participation
+namespace MB.Core.Application.Strategies.Participation
 {
     public class GetAllParticipatedProjects_OfUser_Strategy : GetAllParticipationStrategy
     {

@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using MB.Core.Domain.DbEntities;
 using MB.Infrastructure.Contexts;
-using MB.Infrastructure.Services;
+using MB.Infrastructure.Services.ThirdParty;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,7 +1,7 @@
 ﻿using MB.Core.Domain.DbEntities;
 using System;
 
-namespace MB.Core.Domain.DTOs
+namespace MB.Core.Application.DTOs
 {
     public class UserDTO
     {

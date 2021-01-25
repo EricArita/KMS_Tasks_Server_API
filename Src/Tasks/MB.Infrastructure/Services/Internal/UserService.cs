@@ -1,15 +1,15 @@
-﻿using Core.Application.Interfaces;
-using Core.Application.Models.User;
-using Core.Domain.DbEntities;
+﻿using MB.Core.Application.Interfaces;
+using MB.Core.Application.Models.User;
+using MB.Core.Domain.DbEntities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using System.Linq;
 using System;
-using Core.Domain.Constants;
-using Core.Application.Helper.Exceptions.User;
+using MB.Core.Domain.Constants;
+using MB.Core.Application.Helper.Exceptions.User;
 
-namespace Infrastructure.Persistence.Services
+namespace MB.Infrastructure.Services.Internal
 {
     public class UserService : IUserService
     {

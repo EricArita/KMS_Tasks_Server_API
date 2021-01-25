@@ -1,7 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace MB.Core.Application
 {
@@ -14,6 +11,7 @@ namespace MB.Core.Application
         /// <param name="services"></param>
         public static void AddApplicationServices(this IServiceCollection services)
         {
+            
         }
     }
 }

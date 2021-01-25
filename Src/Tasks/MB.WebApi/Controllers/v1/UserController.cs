@@ -1,17 +1,20 @@
-﻿using Core.Application.Helper;
-using Core.Application.Helper.Exceptions.User;
-using Core.Application.Interfaces;
-using Core.Application.Models.User;
+﻿using MB.Core.Application.Helper;
+using MB.Core.Application.Helper.Exceptions.User;
+using MB.Core.Application.Interfaces;
+using MB.Core.Application.Models.User;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Text;
 using System.Threading.Tasks;
-using WebApi.Controllers.v1.Utils;
+using MB.WebApi.Controllers.v1.Utils;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
-namespace WebApi.Controllers.v1
+namespace MB.WebApi.Controllers.v1
 {
     [Area("user-management")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UserController : BaseController
     {
         private readonly IUserService _userService;

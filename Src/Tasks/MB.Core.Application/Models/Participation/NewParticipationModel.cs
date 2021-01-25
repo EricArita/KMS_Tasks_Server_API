@@ -1,10 +1,10 @@
-﻿using Core.Domain.Constants;
+﻿using MB.Core.Domain.Constants;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace Core.Application.Models.Participation
+namespace MB.Core.Application.Models.Participation
 {
     public class NewParticipationModel
     {

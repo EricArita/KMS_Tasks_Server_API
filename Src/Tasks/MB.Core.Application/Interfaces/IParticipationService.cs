@@ -1,8 +1,8 @@
-﻿using Core.Application.Models.Participation;
-using Core.Application.Models.Participation.GETSpecificResponses;
+﻿using MB.Core.Application.Models.Participation;
+using MB.Core.Application.Models.Participation.GETSpecificResponses;
 using System.Threading.Tasks;
 
-namespace Core.Application.Interfaces
+namespace MB.Core.Application.Interfaces
 {
     public interface IParticipationService
     {

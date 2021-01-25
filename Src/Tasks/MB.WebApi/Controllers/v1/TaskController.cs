@@ -4,17 +4,18 @@ using MB.Core.Application.Interfaces;
 using MB.Core.Application.Models;
 using MB.Core.Application.Models.Task;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Swashbuckle.AspNetCore.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using MB.WebApi.Controllers.v1.Utils;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace MB.WebApi.Controllers.v1
 {
     [Area("task-management")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class TaskController : BaseController
     {
         private readonly ITaskService _taskService;

@@ -1,6 +1,6 @@
 ﻿using MB.Core.Application.Models.Project;
 using MB.Core.Domain.DbEntities;
-using MB.Core.Domain.DTOs;
+using MB.Core.Application.DTOs;
 using System;
 
 namespace MB.Core.Application.Models.Task

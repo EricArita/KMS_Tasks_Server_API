@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Core.Application.Helper.Exceptions.User
+namespace MB.Core.Application.Helper.Exceptions.User
 {
     public class UserServiceException : BaseServiceException
     {

@@ -1,9 +1,9 @@
-﻿using Core.Application.DTOs;
-using Core.Application.Models.Project;
-using Core.Domain.DbEntities;
+﻿using MB.Core.Application.DTOs;
+using MB.Core.Application.Models.Project;
+using MB.Core.Domain.DbEntities;
 using System.Collections.Generic;
 
-namespace Core.Application.Models.Participation
+namespace MB.Core.Application.Models.Participation
 {
     public class ParticipationResponseModel
     {

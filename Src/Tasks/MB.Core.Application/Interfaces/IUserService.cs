@@ -1,10 +1,10 @@
-﻿using Core.Application.Models.User;
+﻿using MB.Core.Application.Models.User;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Core.Application.Interfaces
+namespace MB.Core.Application.Interfaces
 {
     public interface IUserService
     {

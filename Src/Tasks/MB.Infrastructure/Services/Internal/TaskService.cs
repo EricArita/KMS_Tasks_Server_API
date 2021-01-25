@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 using static MB.Core.Domain.Constants.Enums;
 using MB.Core.Domain.Constants;
 
-namespace MB.Core.Application.DomainServices
+namespace MB.Infrastructure.Services.Internal
 {
     public class TaskService : ITaskService
     {

@@ -1,10 +1,10 @@
-﻿using Core.Application.DTOs;
-using Core.Domain.DbEntities;
+﻿using MB.Core.Application.DTOs;
+using MB.Core.Domain.DbEntities;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Core.Application.Models.User
+namespace MB.Core.Application.Models.User
 {
     public class UserResponseModel : UserDTO
     {

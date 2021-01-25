@@ -4,18 +4,18 @@ using MB.Core.Application.Interfaces;
 using MB.Core.Application.Models;
 using MB.Core.Application.Models.Project;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using NLog;
-using Swashbuckle.AspNetCore.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using MB.WebApi.Controllers.v1.Utils;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace MB.WebApi.Controllers.v1
 {
     [Area("project-management")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ProjectController : BaseController
     {
         private readonly IProjectService _projectService;

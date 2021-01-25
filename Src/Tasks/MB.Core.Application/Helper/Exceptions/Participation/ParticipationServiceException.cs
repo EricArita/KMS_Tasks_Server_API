@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Core.Application.Helper.Exceptions.Participation
+namespace MB.Core.Application.Helper.Exceptions.Participation
 {
     public class ParticipationServiceException : BaseServiceException
     {

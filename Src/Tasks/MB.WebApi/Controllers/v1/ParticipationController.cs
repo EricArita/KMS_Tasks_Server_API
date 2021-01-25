@@ -1,20 +1,21 @@
-﻿using Core.Application.Helper;
-using Core.Application.Helper.Exceptions.Participation;
-using Core.Application.Interfaces;
-using Core.Application.Models.Participation;
-using Core.Application.Models.Participation.GETSpecificResponses;
+﻿using MB.Core.Application.Helper;
+using MB.Core.Application.Helper.Exceptions.Participation;
+using MB.Core.Application.Interfaces;
+using MB.Core.Application.Models.Participation;
+using MB.Core.Application.Models.Participation.GETSpecificResponses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WebApi.Controllers.v1.Utils;
+using MB.WebApi.Controllers.v1.Utils;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
-namespace WebApi.Controllers.v1
+namespace MB.WebApi.Controllers.v1
 {
     [Area("participation-management")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ParticipationController : BaseController
     {
         private readonly IParticipationService _participationService;

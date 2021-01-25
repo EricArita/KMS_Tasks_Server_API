@@ -1,8 +1,8 @@
-﻿using Core.Application.Models.Participation.RelatedClasses;
-using Core.Application.Models.Project;
+﻿using MB.Core.Application.Models.Participation.RelatedClasses;
+using MB.Core.Application.Models.Project;
 using System.Collections.Generic;
 
-namespace Core.Application.Models.Participation.GETSpecificResponses
+namespace MB.Core.Application.Models.Participation.GETSpecificResponses
 {
     public class GetAllParticipatingUsers_InProject_ResponseModel : IGetAllParticipations_ResponseModel
     {

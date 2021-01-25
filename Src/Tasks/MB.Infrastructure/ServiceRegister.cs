@@ -1,10 +1,9 @@
-﻿using MB.Core.Application.DomainServices;
-using MB.Core.Application.Interfaces;
+﻿using MB.Core.Application.Interfaces;
 using MB.Core.Application.Models;
 using MB.Core.Domain.DbEntities;
 using MB.Infrastructure.Contexts;
 using MB.Infrastructure.Misc;
-using MB.Infrastructure.Services;
+using MB.Infrastructure.Services.Internal;
 using MB.Infrastructure.SettingModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;

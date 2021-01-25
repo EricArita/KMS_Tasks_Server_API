@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace Core.Application.Models.Utils
+namespace MB.Core.Application.Models.Utils
 {
     [AttributeUsage(AttributeTargets.Class)]
     public class AtLeastOneFieldRequired : ValidationAttribute

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace Core.Application.Models.User
+namespace MB.Core.Application.Models.User
 {
     public class UpdateUserInfoModel
     {

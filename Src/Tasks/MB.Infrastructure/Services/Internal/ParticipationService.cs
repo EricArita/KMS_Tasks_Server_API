@@ -1,19 +1,18 @@
-﻿using Core.Application.Helper.Strategies.Participation;
-using Core.Application.Interfaces;
-using Core.Application.Models.Participation;
-using Core.Application.Models.Participation.GETSpecificResponses;
-using Core.Domain.Constants;
-using Core.Domain.DbEntities;
-using Infrastructure.Persistence.Strategies.Participation;
+﻿using MB.Core.Application.Helper.Strategies.Participation;
+using MB.Core.Application.Interfaces;
+using MB.Core.Application.Models.Participation;
+using MB.Core.Application.Models.Participation.GETSpecificResponses;
+using MB.Core.Domain.Constants;
+using MB.Core.Domain.DbEntities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 using System.Linq;
-using Core.Application.Helper.Exceptions.Participation;
-using System.Collections.Generic;
+using MB.Core.Application.Helper.Exceptions.Participation;
+using MB.Core.Application.Strategies.Participation;
 
-namespace Infrastructure.Persistence.Services
+namespace MB.Infrastructure.Services.Internal
 {
     public class ParticipationService : IParticipationService
     {

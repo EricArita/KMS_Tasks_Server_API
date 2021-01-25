@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Infrastructure.Persistence.Misc
+namespace MB.Infrastructure.Misc
 {
     public class DefaultForMostRequests_OperationFilter : IOperationFilter
     {
