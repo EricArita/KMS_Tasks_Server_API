@@ -12,7 +12,7 @@ using System.Text;
 using MB.Core.Application.Models.Project;
 using Microsoft.Extensions.Logging;
 
-namespace MB.Core.Application.DomainServices
+namespace MB.Infrastructure.Services.Internal
 {
     public class ProjectService : IProjectService
     {

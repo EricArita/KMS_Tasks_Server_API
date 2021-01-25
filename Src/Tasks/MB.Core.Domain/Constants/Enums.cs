@@ -48,5 +48,13 @@ namespace MB.Core.Domain.Constants
             Low = 4,
             Anytime = 5
         }
+
+        public enum GetAllParticipationsStrategy : int
+        {
+            None = 0,
+            GetAllParticipatedProjects_OfUser = 1,
+            GetAllParticipatedUsers_InProject = 2,
+            GetAllProjectRoles_OfUser_InProject = 3
+        }
     }
 }

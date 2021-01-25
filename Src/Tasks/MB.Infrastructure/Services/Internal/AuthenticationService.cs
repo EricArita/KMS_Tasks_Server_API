@@ -18,7 +18,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MB.Infrastructure.Services
+namespace MB.Infrastructure.Services.Internal
 {
     public class AuthenticationService : JWTAuthenticationBase, IAuthentication
     {

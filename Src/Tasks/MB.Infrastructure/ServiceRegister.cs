@@ -1,10 +1,9 @@
-﻿using MB.Core.Application.DomainServices;
-using MB.Core.Application.Interfaces;
+﻿using MB.Core.Application.Interfaces;
 using MB.Core.Application.Models;
 using MB.Core.Domain.DbEntities;
 using MB.Infrastructure.Contexts;
 using MB.Infrastructure.Misc;
-using MB.Infrastructure.Services;
+using MB.Infrastructure.Services.Internal;
 using MB.Infrastructure.SettingModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -75,16 +74,17 @@ namespace MB.Infrastructure
                     Version = "v1",
                     Title = "TasksApiDoc",
                 });
-                c.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
-                    Description = "`Token without Bearer prefix plz` - without `Bearer_` prefix",
+                    Description = "`Token without Bearer prefix plz` (type in without `Bearer_` prefix)",
                     Type = SecuritySchemeType.Http,
                     Scheme = "bearer",
                     BearerFormat = "JWT",
                     In = ParameterLocation.Header
                 });
                 c.OperationFilter<AuthorizationHeader_Param_OperationFilter>();
+                c.OperationFilter<DefaultForMostRequests_OperationFilter>();
             });
             #endregion
 
@@ -92,6 +92,8 @@ namespace MB.Infrastructure
             services.AddScoped<IAuthentication, AuthenticationService>();
             services.AddScoped<ITaskService, TaskService>();
             services.AddScoped<IProjectService, ProjectService>();
+            services.AddScoped<IParticipationService, ParticipationService>();
+            services.AddScoped<IUserService, UserService>();
             #endregion
         }
     }

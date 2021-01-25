@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 using static MB.Core.Domain.Constants.Enums;
 using MB.Core.Domain.Constants;
 
-namespace MB.Core.Application.DomainServices
+namespace MB.Infrastructure.Services.Internal
 {
     public class TaskService : ITaskService
     {
@@ -173,9 +173,9 @@ namespace MB.Core.Application.DomainServices
                 {
                     switch (model.CategoryType)
                     {
-                        case (byte)MenuSidebarOptions.Today:
+                        case MenuSidebarOptions.Today:
                             result.Where(e => e.Schedule.HasValue && e.Schedule.Value == DateTime.Today); break;
-                        case (byte)MenuSidebarOptions.Upcoming:
+                        case MenuSidebarOptions.Upcoming:
                             result.Where(e => e.Schedule.HasValue && e.Schedule.Value > DateTime.Today); break;
                         default:
                             result.Where(e => e != null); break;

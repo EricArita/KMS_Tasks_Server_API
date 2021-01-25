@@ -9,13 +9,16 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using MB.WebApi.Controllers.v1.Utils;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace MB.WebApi.Controllers.v1
 {
     [Area("project-management")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ProjectController : BaseController
     {
-        private IProjectService _projectService;
+        private readonly IProjectService _projectService;
 
         public ProjectController(IProjectService projectService)
         {
@@ -55,7 +58,7 @@ namespace MB.WebApi.Controllers.v1
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
                     sb.AppendLine(exception.Message);
-                    uint? statusCode = ServiceExceptionsProcessor.getStatusCode(exception.Message);
+                    uint? statusCode = ServiceExceptionsProcessor.GetStatusCode(exception.Message);
                     if(statusCode != null && statusCode.HasValue)
                     {
                         return StatusCode((int) statusCode.Value, new HttpResponse<object>(false, null, sb.ToString()));
@@ -103,7 +106,7 @@ namespace MB.WebApi.Controllers.v1
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
                     sb.AppendLine(exception.Message);
-                    uint? statusCode = ServiceExceptionsProcessor.getStatusCode(exception.Message);
+                    uint? statusCode = ServiceExceptionsProcessor.GetStatusCode(exception.Message);
                     if (statusCode != null && statusCode.HasValue)
                     {
                         return StatusCode((int)statusCode.Value, new HttpResponse<object>(false, null, sb.ToString()));
@@ -114,7 +117,7 @@ namespace MB.WebApi.Controllers.v1
         }
 
         [HttpGet("project/{projectId}")]
-        public async Task<IActionResult> GetAParticularProject(int projectId)
+        public async Task<IActionResult> GetAParticularProject(long projectId)
         {
             try
             {
@@ -152,7 +155,7 @@ namespace MB.WebApi.Controllers.v1
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
                     sb.AppendLine(exception.Message);
-                    uint? statusCode = ServiceExceptionsProcessor.getStatusCode(exception.Message);
+                    uint? statusCode = ServiceExceptionsProcessor.GetStatusCode(exception.Message);
                     if (statusCode != null && statusCode.HasValue)
                     {
                         return StatusCode((int)statusCode.Value, new HttpResponse<object>(false, null, sb.ToString()));
@@ -163,7 +166,7 @@ namespace MB.WebApi.Controllers.v1
         }
 
         [HttpPatch("project/{projectId}")]
-        public async Task<IActionResult> UpdateExistingProject(int projectId, [FromBody] UpdateProjectInfoModel model)
+        public async Task<IActionResult> UpdateExistingProject(long projectId, [FromBody] UpdateProjectInfoModel model)
         {
             try
             {
@@ -196,7 +199,7 @@ namespace MB.WebApi.Controllers.v1
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
                     sb.AppendLine(exception.Message);
-                    uint? statusCode = ServiceExceptionsProcessor.getStatusCode(exception.Message);
+                    uint? statusCode = ServiceExceptionsProcessor.GetStatusCode(exception.Message);
                     if (statusCode != null && statusCode.HasValue)
                     {
                         return StatusCode((int)statusCode.Value, new HttpResponse<object>(false, null, sb.ToString()));
@@ -207,7 +210,7 @@ namespace MB.WebApi.Controllers.v1
         }
 
         [HttpDelete("project/{projectId}")]
-        public async Task<IActionResult> DeleteExistingProject(int projectId)
+        public async Task<IActionResult> DeleteExistingProject(long projectId)
         {
             try
             {
@@ -231,7 +234,7 @@ namespace MB.WebApi.Controllers.v1
                 // If passes all tests, then we submit it to the service layer
                 // Carry on with the business logic
                 ProjectResponseModel participatedProject = await _projectService.SoftDeleteExistingProject(projectId, uid.Value);
-                return Ok(new HttpResponse<ProjectResponseModel>(true, participatedProject, message: "Successfully patched specified project of user"));
+                return Ok(new HttpResponse<ProjectResponseModel>(true, participatedProject, message: "Successfully deleted specified project of user"));
             }
             catch (Exception ex)
             {
@@ -240,7 +243,7 @@ namespace MB.WebApi.Controllers.v1
                     StringBuilder sb = new StringBuilder();
                     sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
                     sb.AppendLine(exception.Message);
-                    uint? statusCode = ServiceExceptionsProcessor.getStatusCode(exception.Message);
+                    uint? statusCode = ServiceExceptionsProcessor.GetStatusCode(exception.Message);
                     if (statusCode != null && statusCode.HasValue)
                     {
                         return StatusCode((int)statusCode.Value, new HttpResponse<object>(false, null, sb.ToString()));
