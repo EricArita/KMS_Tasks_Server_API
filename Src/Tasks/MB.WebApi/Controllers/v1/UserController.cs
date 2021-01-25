@@ -68,7 +68,7 @@ namespace MB.WebApi.Controllers.v1
             }
         }
 
-        [HttpPatch("user")]
+        [HttpPatch("profile")]
         public async Task<IActionResult> UpdateExistingUser(UpdateUserInfoModel model)
         {
             try

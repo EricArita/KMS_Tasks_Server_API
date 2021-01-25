@@ -24,6 +24,7 @@
       "UpstreamPathTemplate": "/gateway/v1/Auth/refresh-token",
       "UpstreamHttpMethod": [ "GET" ]
     },
+
     {
       "DownstreamPathTemplate": "/api/v1/project-management/project",
       "DownstreamScheme": "https",
@@ -34,7 +35,7 @@
         }
       ],
       "UpstreamPathTemplate": "/gateway/v1/project-management/project",
-      "UpstreamHttpMethod": [ "POST", "PUT" ],
+      "UpstreamHttpMethod": [ "POST" ],
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "HCMUS_1712169",
         "AllowedScopes": []
@@ -55,6 +56,105 @@
         "AuthenticationProviderKey": "HCMUS_1712169",
         "AllowedScopes": []
       }
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/project-management/project/{projectId}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5003
+        }
+      ],
+      "UpstreamPathTemplate": "/api/v1/project-management/project/{projectId}",
+      "UpstreamHttpMethod": [ "GET", "PATCH", "DELETE" ]
+    },
+
+    {
+      "DownstreamPathTemplate": "/api/v1/task-management/task",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5003
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/v1/task-management/task",
+      "UpstreamHttpMethod": [ "POST" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "HCMUS_1712169",
+        "AllowedScopes": []
+      }
+    },
+   
+    {
+      "DownstreamPathTemplate": "/api/v1/task-management/tasks",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5003
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/v1/task-management/tasks",
+      "UpstreamHttpMethod": [ "GET" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "HCMUS_1712169",
+        "AllowedScopes": []
+      }
+    },
+    
+    {
+      "DownstreamPathTemplate": "/api/v1/task-management/task/{taskId}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5003
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/v1/task-management/task/{taskId}",
+      "UpstreamHttpMethod": [ "GET", "PATCH", "DELETE" ]
+    },
+
+    
+    {
+      "DownstreamPathTemplate": "/api/v1/user-management/profile",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5003
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/v1/user-management/profile",
+      "UpstreamHttpMethod": [ "GET", "PATCH" ]
+    },
+
+    
+    {
+      "DownstreamPathTemplate": "/api/v1/participation-management/participation",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5003
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/v1/participation-management/participation",
+      "UpstreamHttpMethod": [ "POST", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/participation-management/participations",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5003
+        }
+      ],
+      "UpstreamPathTemplate": "/gateway/v1/participation-management/participations",
+      "UpstreamHttpMethod": [ "GET" ]
     }
   ]
 }
