@@ -3,6 +3,7 @@ using MB.Core.Application.Models;
 using MB.Core.Domain.DbEntities;
 using MB.Infrastructure.Contexts;
 using MB.Infrastructure.Misc;
+using MB.Infrastructure.Repositories;
 using MB.Infrastructure.Services.Internal;
 using MB.Infrastructure.SettingModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -31,6 +32,10 @@ namespace MB.Infrastructure
 
             services.AddDbContext<ApplicationDbContext>(options =>
                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+
+            #region Unit of work
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            #endregion
 
             #region Identity framework
             services.AddIdentity<ApplicationUser, IdentityRole>(options => {
@@ -87,6 +92,8 @@ namespace MB.Infrastructure
                 c.OperationFilter<DefaultForMostRequests_OperationFilter>();
             });
             #endregion
+
+            services.AddSwaggerGenNewtonsoftSupport();
 
             #region Add scoped services
             services.AddScoped<IAuthentication, AuthenticationService>();

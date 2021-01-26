@@ -1,191 +1,43 @@
 {
   "Routes": [
     {
-      "DownstreamPathTemplate": "/api/v1/Auth/login",
-      "DownstreamScheme": "https",
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 5001
+          "Port": 5000
         }
       ],
-      "UpstreamPathTemplate": "/gateway/v1/Auth/login",
-      "UpstreamHttpMethod": [ "POST" ],
+      "UpstreamPathTemplate": "/authenticator/{everything}",
+      "UpstreamHttpMethod": [ "Post", "Get", "Patch", "Delete", "Put" ],
       "SwaggerKey": "auth"
     },
     {
-      "DownstreamPathTemplate": "/api/v1/Auth/refresh-token",
-      "DownstreamScheme": "https",
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 5001
+          "Port": 5002
         }
       ],
-      "UpstreamPathTemplate": "/gateway/v1/Auth/refresh-token",
-      "UpstreamHttpMethod": [ "GET" ],
-      "SwaggerKey": "auth"
-    },
-
-    {
-      "DownstreamPathTemplate": "/api/v1/project-management/project",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5003
-        }
-      ],
-      "UpstreamPathTemplate": "/gateway/v1/project-management/project",
-      "UpstreamHttpMethod": [ "POST" ],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "HCMUS_1712169",
-        "AllowedScopes": []
-      },
+      "UpstreamPathTemplate": "/main-business/{everything}",
+      "UpstreamHttpMethod": [ "Post", "Get", "Patch", "Delete", "Put" ],
       "SwaggerKey": "main-business"
     },
     {
-      "DownstreamPathTemplate": "/api/v1/project-management/projects",
-      "DownstreamScheme": "https",
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 5003
+          "Port": 5004
         }
       ],
-      "UpstreamPathTemplate": "/gateway/v1/project-management/projects",
-      "UpstreamHttpMethod": [ "GET" ],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "HCMUS_1712169",
-        "AllowedScopes": []
-      },
-      "SwaggerKey": "main-business"
-    },
-    {
-      "DownstreamPathTemplate": "/api/v1/project-management/project/{projectId}",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5003
-        }
-      ],
-      "UpstreamPathTemplate": "/gateway/v1/project-management/project/{projectId}",
-      "UpstreamHttpMethod": [ "GET", "PATCH", "DELETE" ],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "HCMUS_1712169",
-        "AllowedScopes": []
-      },
-      "SwaggerKey": "main-business"
-    },
-
-    {
-      "DownstreamPathTemplate": "/api/v1/task-management/task",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5003
-        }
-      ],
-      "UpstreamPathTemplate": "/gateway/v1/task-management/task",
-      "UpstreamHttpMethod": [ "POST" ],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "HCMUS_1712169",
-        "AllowedScopes": []
-      },
-      "SwaggerKey": "main-business"
-    },
-
-    {
-      "DownstreamPathTemplate": "/api/v1/task-management/tasks",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5003
-        }
-      ],
-      "UpstreamPathTemplate": "/gateway/v1/task-management/tasks",
-      "UpstreamHttpMethod": [ "GET" ],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "HCMUS_1712169",
-        "AllowedScopes": []
-      },
-      "SwaggerKey": "main-business"
-    },
-
-    {
-      "DownstreamPathTemplate": "/api/v1/task-management/task/{taskId}",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5003
-        }
-      ],
-      "UpstreamPathTemplate": "/gateway/v1/task-management/task/{taskId}",
-      "UpstreamHttpMethod": [ "GET", "PATCH", "DELETE" ],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "HCMUS_1712169",
-        "AllowedScopes": []
-      },
-      "SwaggerKey": "main-business"
-    },
-
-
-    {
-      "DownstreamPathTemplate": "/api/v1/user-management/profile",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5003
-        }
-      ],
-      "UpstreamPathTemplate": "/gateway/v1/user-management/profile",
-      "UpstreamHttpMethod": [ "GET", "PATCH" ],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "HCMUS_1712169",
-        "AllowedScopes": []
-      },
-      "SwaggerKey": "main-business"
-    },
-
-
-    {
-      "DownstreamPathTemplate": "/api/v1/participation-management/participation",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5003
-        }
-      ],
-      "UpstreamPathTemplate": "/gateway/v1/participation-management/participation",
-      "UpstreamHttpMethod": [ "POST", "DELETE" ],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "HCMUS_1712169",
-        "AllowedScopes": []
-      },
-      "SwaggerKey": "main-business"
-    },
-    {
-      "DownstreamPathTemplate": "/api/v1/participation-management/participations",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5003
-        }
-      ],
-      "UpstreamPathTemplate": "/gateway/v1/participation-management/participations",
-      "UpstreamHttpMethod": [ "GET" ],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "HCMUS_1712169",
-        "AllowedScopes": []
-      },
-      "SwaggerKey": "main-business"
+      "UpstreamPathTemplate": "/user-management/{everything}",
+      "UpstreamHttpMethod": [ "Post", "Get", "Patch", "Delete", "Put" ],
+      "SwaggerKey": "user-management"
     }
   ],
   "SwaggerEndpoints": [
@@ -195,7 +47,7 @@
         {
           "Name": "Auth API",
           "Version": "v1",
-          "Url": "http://localhost:5001/swagger/v1/swagger.json"
+          "Url": "http://localhost:5000/swagger/v1/swagger.json"
         }
       ]
     },
@@ -203,9 +55,19 @@
       "Key": "main-business",
       "Config": [
         {
-          "Name": "Main business APIs",
+          "Name": "Main business API",
           "Version": "v1",
-          "Url": "http://localhost:5003/swagger/v1/swagger.json"
+          "Url": "http://localhost:5002/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "user-management",
+      "Config": [
+        {
+          "Name": "User management API",
+          "Version": "v1",
+          "Url": "http://localhost:5004/swagger/v1/swagger.json"
         }
       ]
     }
