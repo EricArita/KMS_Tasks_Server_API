@@ -58,6 +58,8 @@ namespace ApiGateway
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseHttpsRedirection();
+
             app.UseSwaggerForOcelotUI();
 
             app.UseRouting();
