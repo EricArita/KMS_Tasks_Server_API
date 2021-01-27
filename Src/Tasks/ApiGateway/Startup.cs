@@ -43,10 +43,11 @@ namespace ApiGateway
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Authentication:JWT:Key"]))
                 };
             });
-
-            services.AddControllers();
-
+      
             services.AddOcelot();
+            services.AddSwaggerForOcelot(Configuration);
+
+            services.AddControllers().SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_3_0);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -59,16 +60,17 @@ namespace ApiGateway
 
             app.UseHttpsRedirection();
 
+            app.UseSwaggerForOcelotUI();
+
             app.UseRouting();
 
-            app.UseAuthorization();
+            //app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
-
-            app.UseOcelot();
+            app.UseOcelot().Wait();           
         }
     }
 }

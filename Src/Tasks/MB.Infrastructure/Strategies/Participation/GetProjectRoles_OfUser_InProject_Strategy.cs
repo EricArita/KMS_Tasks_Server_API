@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MB.Core.Application.Strategies.Participation
+namespace MB.Infrastructure.Strategies.Participation
 {
     public class GetProjectRoles_OfUser_InProject_Strategy : GetAllParticipationStrategy
     {

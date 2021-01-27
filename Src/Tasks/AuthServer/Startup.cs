@@ -54,8 +54,6 @@ namespace AuthServer
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
-
             app.UseRouting();
 
             app.UseAuthorization();
@@ -70,8 +68,9 @@ namespace AuthServer
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "TasksApiDoc");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "AuthApiDoc");
             });
+
         }
     }
 }

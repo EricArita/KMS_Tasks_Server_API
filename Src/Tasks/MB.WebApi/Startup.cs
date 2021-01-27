@@ -4,8 +4,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using MB.Core.Application.Interfaces;
-using MB.Infrastructure.Repositories;
 using MB.Infrastructure;
 using MB.Core.Application;
 
@@ -31,14 +29,7 @@ namespace MB.WebApi
 
             services.AddPersistenceServices(Configuration);
 
-            #region Dependency Injection on UnitOfWork
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
-            #endregion
-
             services.AddOptions();
-
-            services.AddControllers()
-                    .AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
             #region API Versioning
             services.AddApiVersioning(config =>
@@ -48,6 +39,9 @@ namespace MB.WebApi
                 config.ReportApiVersions = true; // Advertise the API versions supported for the particular endpoint
             });
             #endregion
+
+            services.AddControllers()
+                    .AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -59,8 +53,6 @@ namespace MB.WebApi
             }
 
             app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-
-            app.UseHttpsRedirection();
 
             app.UseAuthentication();
 
@@ -80,7 +72,7 @@ namespace MB.WebApi
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "TasksApiDoc");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "MainBusinessDoc");
             });
             #endregion
         }

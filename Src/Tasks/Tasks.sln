@@ -9,6 +9,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiGateway", "ApiGateway\ApiGateway.csproj", "{7B5F7C81-85E1-4CC9-8C34-A2B299416728}"
+	ProjectSection(ProjectDependencies) = postProject
+		{86AC8932-6CFF-4BF9-BDF4-AAFCE0EC6D82} = {86AC8932-6CFF-4BF9-BDF4-AAFCE0EC6D82}
+		{C219A24C-CC41-4D5A-BAC2-CA0AF5885523} = {C219A24C-CC41-4D5A-BAC2-CA0AF5885523}
+		{34FAE7A4-3422-487A-A0BD-D55F88E500B3} = {34FAE7A4-3422-487A-A0BD-D55F88E500B3}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Microservices", "Microservices", "{44D08CF0-B3C3-4CEF-9FEB-5D239E25EBB6}"
 EndProject
@@ -32,9 +37,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MB.Infrastructure", "MB.Inf
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MB.WebApi", "MB.WebApi\MB.WebApi.csproj", "{C219A24C-CC41-4D5A-BAC2-CA0AF5885523}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UM.Core.Domain", "UM.Core.Domain\UM.Core.Domain.csproj", "{9B87B2E1-BA15-4695-8C77-42115BE95120}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UM.Core.Domain", "UM.Core.Domain\UM.Core.Domain.csproj", "{9B87B2E1-BA15-4695-8C77-42115BE95120}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UM.Core.Application", "UM.Core.Application\UM.Core.Application.csproj", "{37F1FC8C-2C7A-48E8-8861-43860628259B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UM.Core.Application", "UM.Core.Application\UM.Core.Application.csproj", "{37F1FC8C-2C7A-48E8-8861-43860628259B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

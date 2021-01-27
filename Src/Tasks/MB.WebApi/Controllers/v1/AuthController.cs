@@ -7,10 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MB.WebApi.Controllers.v1
 {
-    [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/[controller]")]
-    [ApiController]
-    public class AuthController : ControllerBase
+    [Area("authentication")]
+    public class AuthController : BaseController
     {
         private readonly IAuthentication _authService;
         public AuthController(IAuthentication authService)

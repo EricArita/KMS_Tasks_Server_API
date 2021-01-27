@@ -10,7 +10,7 @@ using System;
 using System.Threading.Tasks;
 using System.Linq;
 using MB.Core.Application.Helper.Exceptions.Participation;
-using MB.Core.Application.Strategies.Participation;
+using MB.Infrastructure.Strategies.Participation;
 
 namespace MB.Infrastructure.Services.Internal
 {
