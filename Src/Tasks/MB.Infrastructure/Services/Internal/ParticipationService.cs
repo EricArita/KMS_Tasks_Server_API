@@ -51,7 +51,7 @@ namespace MB.Infrastructure.Services.Internal
                 }
 
                 // Check if ProjectId is valid or not
-                Project validProject = _unitOfWork.Repository<Project>().GetDbset().FirstOrDefault(e => e.Id == newParticipation.ProjectId);
+                Project validProject = _unitOfWork.Repository<Project>().GetDbset().FirstOrDefault(e => e.Id == newParticipation.ProjectId && e.Deleted == false);
                 if (validProject == null)
                 {
                     throw new ParticipationServiceException(ProjectRelatedErrorsConstants.PROJECT_NOT_FOUND);
@@ -188,7 +188,7 @@ namespace MB.Infrastructure.Services.Internal
                 }
 
                 // Check if ProjectId is valid or not
-                Project validProject = _unitOfWork.Repository<Project>().GetDbset().FirstOrDefault(e => e.Id == model.RemoveFromProjectId);
+                Project validProject = _unitOfWork.Repository<Project>().GetDbset().FirstOrDefault(e => e.Id == model.RemoveFromProjectId && e.Deleted == false);
                 if (validProject == null)
                 {
                     throw new ParticipationServiceException(ProjectRelatedErrorsConstants.PROJECT_NOT_FOUND);
@@ -238,7 +238,7 @@ namespace MB.Infrastructure.Services.Internal
 
                 await transaction.CommitAsync();
 
-                return null;
+                return true;
             }
             catch (Exception ex)
             {

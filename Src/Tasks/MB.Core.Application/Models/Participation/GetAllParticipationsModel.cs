@@ -1,8 +1,4 @@
 ﻿using MB.Core.Application.Models.Utils;
-using MB.Core.Domain.Constants;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace MB.Core.Application.Models.Participation
 {
