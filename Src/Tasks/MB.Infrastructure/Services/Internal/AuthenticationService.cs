@@ -166,7 +166,7 @@ namespace MB.Infrastructure.Services.Internal
             var authResponseModel = new AuthResponseModel();
             var res = new HttpResponse<AuthResponseModel>();
 
-            if (!String.IsNullOrEmpty(token))
+            if (!string.IsNullOrEmpty(token))
             {
                 var user = _userManager.Users.SingleOrDefault(u => u.RefreshTokens.Any(t => t.Token == token));
                 if (user != null)

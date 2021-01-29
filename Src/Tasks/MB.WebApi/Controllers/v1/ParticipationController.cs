@@ -69,7 +69,7 @@ namespace MB.WebApi.Controllers.v1
         }
 
         [HttpGet("participations")]
-        public async Task<IActionResult> GetAllProjects([FromQuery] GetAllParticipationsModel model)
+        public async Task<IActionResult> GetAllParticipations([FromQuery] GetAllParticipationsModel model)
         {
             try
             {
