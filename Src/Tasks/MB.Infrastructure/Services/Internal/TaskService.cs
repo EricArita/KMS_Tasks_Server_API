@@ -128,9 +128,12 @@ namespace MB.Infrastructure.Services.Internal
 
                 // Eager load instance for initialization of response model
                 var entry = _unitOfWork.Entry(newTask);
-                await entry.Reference(e => e.Project).LoadAsync();
-                await entry.Reference(e => e.Priority).LoadAsync();
-                await entry.Reference(e => e.Parent).LoadAsync();
+                if (entry != null)
+                {
+                    await entry.Reference(e => e.Project).LoadAsync();
+                    await entry.Reference(e => e.Priority).LoadAsync();
+                    await entry.Reference(e => e.Parent).LoadAsync();
+                }
 
                 await transaction.CommitAsync();
 
@@ -456,9 +459,12 @@ namespace MB.Infrastructure.Services.Internal
 
                 // Eager load instance for initialization of response model
                 var entry = _unitOfWork.Entry(operatedTask);
-                await entry.Reference(e => e.Project).LoadAsync();
-                await entry.Reference(e => e.Priority).LoadAsync();
-                await entry.Reference(e => e.Parent).LoadAsync();
+                if (entry != null)
+                {
+                    await entry.Reference(e => e.Project).LoadAsync();
+                    await entry.Reference(e => e.Priority).LoadAsync();
+                    await entry.Reference(e => e.Parent).LoadAsync();
+                }
 
                 await transaction.CommitAsync();
 

@@ -29,7 +29,7 @@ namespace MB.Infrastructure.Services.Internal
 
         public async Task<ParticipationResponseModel> AddNewParticipation(long createdByUserId, NewParticipationModel newParticipation)
         {
-            if (newParticipation.RoleId <= Enums.ProjectRoles.None )
+            if (newParticipation.RoleId <= Enums.ProjectRoles.None)
             {
                 throw new ParticipationServiceException(ProjectParticipationRelatedErrorsConstants.CANNOT_CREATE_PARTICIPATION_WITH_NONE_AS_A_ROLE);
             }
@@ -91,7 +91,10 @@ namespace MB.Infrastructure.Services.Internal
 
                 // Eager load instance for initialization of response model
                 var entry = _unitOfWork.Entry(participation);
-                await entry.Reference(e => e.ProjectRole).LoadAsync();
+                if (entry != null)
+                {
+                    await entry.Reference(e => e.ProjectRole).LoadAsync();
+                }
 
                 await transaction.CommitAsync();
 
