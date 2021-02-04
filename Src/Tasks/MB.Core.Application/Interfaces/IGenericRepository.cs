@@ -6,7 +6,12 @@ using System.Threading.Tasks;
 
 namespace MB.Core.Application.Interfaces
 {
-    public interface IGenericRepository<TEntity> where TEntity : class
+    public interface IRepository
+    {
+
+    }
+
+    public interface IGenericRepository<TEntity> : IRepository where TEntity : class
     {
         DbSet<TEntity> GetDbset();
         IQueryable<TEntity> Get(Expression<Func<TEntity, bool>> filter = null,

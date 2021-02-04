@@ -86,7 +86,10 @@ namespace MB.Infrastructure.Services.Internal
 
                 List<ProjectRole> roles = new List<ProjectRole>();
                 var entry = _unitOfWork.Entry(relationToUser);
-                await entry.Reference(e => e.ProjectRole).LoadAsync();
+                if (entry != null)
+                {
+                    await entry.Reference(e => e.ProjectRole).LoadAsync();
+                }
                 roles.Add(relationToUser.ProjectRole);
 
                 await transaction.CommitAsync();

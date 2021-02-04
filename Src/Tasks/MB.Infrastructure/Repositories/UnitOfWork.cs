@@ -13,15 +13,15 @@ namespace MB.Infrastructure.Repositories
     {
         private bool disposed = false;
         private ApplicationDbContext _dbContext;
-        private Dictionary<string, dynamic> repositoriesPrototypes;
+        private Dictionary<string, IRepository> repositoriesPrototypes;
 
         public UnitOfWork(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
-            repositoriesPrototypes = new Dictionary<string, dynamic>();
+            repositoriesPrototypes = new Dictionary<string, IRepository>();
         }
 
-        public IGenericRepository<T> Repository<T>() where T : class
+        public virtual IGenericRepository<T> Repository<T>() where T : class
         {
             var repoType = typeof(T).Name;
 
@@ -34,7 +34,7 @@ namespace MB.Infrastructure.Repositories
         }
 
 
-        public async Task<int> SaveChangesAsync()
+        public virtual async Task<int> SaveChangesAsync()
         {
             try
             {
@@ -44,7 +44,7 @@ namespace MB.Infrastructure.Repositories
             catch (Exception e)
             {
                 StringBuilder myString = new StringBuilder("EF Core received an error:");
-                myString.Append(e);
+                myString.Append(e.ToString());
                 //foreach (var eve in e.EntityValidationErrors)
                 //{
                 //    myString.AppendLine($"Entity of type \"{eve.Entry.Entity.GetType().Name}\" in state \"{eve.Entry.State}\" has the following validation errors:");
@@ -58,7 +58,7 @@ namespace MB.Infrastructure.Repositories
             return 0;
         }
         
-        public int SaveChanges()
+        public virtual int SaveChanges()
         {
             try
             {
@@ -94,18 +94,18 @@ namespace MB.Infrastructure.Repositories
             this.disposed = true;
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
-        public async Task<IDbContextTransaction> CreateTransaction()
+        public virtual async Task<IDbContextTransaction> CreateTransaction()
         {
             return await _dbContext.Database.BeginTransactionAsync();
         }
 
-        public EntityEntry<T> Entry<T>(T obj) where T : class
+        public virtual EntityEntry<T> Entry<T>(T obj) where T : class
         {
             return _dbContext.Entry(obj);
         }
