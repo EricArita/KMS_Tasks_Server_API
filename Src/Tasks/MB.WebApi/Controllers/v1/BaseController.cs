@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using MB.Core.Domain.DbEntities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
@@ -13,7 +15,10 @@ namespace MB.WebApi.Controllers.v1
     [ApiController]
     public class BaseController : ControllerBase
     {
-        protected BaseController() { }
+        protected readonly UserManager<ApplicationUser> _userManager;
+        protected BaseController(UserManager<ApplicationUser> userManager) {
+            _userManager = userManager;
+        }
         protected long? GetUserId(ClaimsPrincipal claimsManager)
         {
             if (claimsManager == null) return null;
@@ -21,6 +26,7 @@ namespace MB.WebApi.Controllers.v1
             {
                 throw new Exception("Token provided is invalid because there is no valid confidential claim");
             }
+            
             // Extract uid from token
             long uid;
             try
@@ -31,6 +37,13 @@ namespace MB.WebApi.Controllers.v1
             {
                 throw new Exception("Token provided is invalid because the value for the claim is invalid");
             }
+
+            // Check uid valid
+            if (!_userManager.Users.Any(user => user.UserId == uid))
+            {
+                throw new Exception("Token provided is invalid because the value for the claim is invalid");
+            }
+
             return uid;
         }
     }

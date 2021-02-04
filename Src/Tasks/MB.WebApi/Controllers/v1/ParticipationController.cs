@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using MB.WebApi.Controllers.v1.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using MB.Core.Domain.DbEntities;
 
 namespace MB.WebApi.Controllers.v1
 {
@@ -20,7 +22,7 @@ namespace MB.WebApi.Controllers.v1
     {
         private readonly IParticipationService _participationService;
 
-        public ParticipationController(IParticipationService participationService)
+        public ParticipationController(IParticipationService participationService, UserManager<ApplicationUser> userManager): base(userManager)
         {
             _participationService = participationService; 
         }

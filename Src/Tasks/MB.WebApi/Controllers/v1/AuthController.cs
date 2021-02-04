@@ -2,7 +2,9 @@
 using System.Threading.Tasks;
 using MB.Core.Application.Interfaces;
 using MB.Core.Application.Models;
+using MB.Core.Domain.DbEntities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MB.WebApi.Controllers.v1
@@ -11,7 +13,7 @@ namespace MB.WebApi.Controllers.v1
     public class AuthController : BaseController
     {
         private readonly IAuthentication _authService;
-        public AuthController(IAuthentication authService)
+        public AuthController(IAuthentication authService, UserManager<ApplicationUser> userManager) : base(userManager)
         {
             _authService = authService;
         }
