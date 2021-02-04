@@ -17,7 +17,7 @@ using static MB.Core.Domain.Constants.Enums;
 
 namespace MB.Tests.ParticipationController
 {
-    public class AddNewParticipation
+    public class DeleteExistingParticipation
     {
         private readonly ITestOutputHelper _testOutputHelper;
 
@@ -29,7 +29,7 @@ namespace MB.Tests.ParticipationController
 
         private readonly Func<object, long, Task> testFunc;
 
-        public AddNewParticipation(ITestOutputHelper helper, ApplicationDbContext context, UserManager<ApplicationUser> userManager, ILogger<Infrastructure.Services.Internal.ParticipationService> logger)
+        public DeleteExistingParticipation(ITestOutputHelper helper, ApplicationDbContext context, UserManager<ApplicationUser> userManager, ILogger<Infrastructure.Services.Internal.ParticipationService> logger)
         {
             _testOutputHelper = helper;
             dbContext = context;
@@ -39,18 +39,18 @@ namespace MB.Tests.ParticipationController
             testFunc = async (uid, statusCode) =>
             {
                 // Prepare data
-                var fake_participation_to_add = new NewParticipationModel()
+                var fake_participation_to_delete = new DeleteParticipationModel()
                 {
-                    ProjectId = 1,
-                    UserId = 1,
-                    RoleId = ProjectRoles.BA
+                    RemoveFromProjectId = 1,
+                    RemoveUserId = 2,
+                    RemoveProjectRoleId = ProjectRoles.PM
                 };
                 var fakeUserClaims = new
                 {
                     uid = uid,
                 };
                 var participationServiceMock = new Mock<IParticipationService>();
-                participationServiceMock.Setup(service => service.AddNewParticipation(It.IsAny<long>(), It.IsAny<NewParticipationModel>())).ReturnsAsync(new ParticipationResponseModel(null));
+                participationServiceMock.Setup(service => service.DeleteExistingParticipation(It.IsAny<long>(), It.IsAny<DeleteParticipationModel>())).ReturnsAsync(new ParticipationResponseModel(null));
                 var participationController = new WebApi.Controllers.v1.ParticipationController(participationServiceMock.Object, _userManager);
 
                 // Mock up a case to bypass authen success
@@ -67,8 +67,8 @@ namespace MB.Tests.ParticipationController
                 controllerContext.HttpContext = httpContextMock.Object;
                 participationController.ControllerContext = controllerContext;
                 // call add participation
-                var add_participation_result = await participationController.AddNewParticipation(fake_participation_to_add);
-                var final_result = add_participation_result as ObjectResult;
+                var delete_participation_result = await participationController.DeleteExistingParticipation(fake_participation_to_delete);
+                var final_result = delete_participation_result as ObjectResult;
 
                 // Given the uid, Assert final have to return status code
                 Assert.True(final_result != null);
@@ -100,11 +100,11 @@ namespace MB.Tests.ParticipationController
             Func<Task> test = async () =>
             {
                 // Prepare data, this time the data has a wrong userid to mess with service layer
-                var fake_participation_to_add = new NewParticipationModel()
+                var fake_participation_to_delete = new DeleteParticipationModel()
                 {
-                    ProjectId = 1,
-                    UserId = 10,
-                    RoleId = ProjectRoles.BA
+                    RemoveFromProjectId = 1,
+                    RemoveUserId = 10,
+                    RemoveProjectRoleId = ProjectRoles.PM
                 };
                 // this time uid is a valid one
                 var fakeUserClaims = new
@@ -145,17 +145,17 @@ namespace MB.Tests.ParticipationController
 
                 controllerContext.HttpContext = httpContextMock.Object;
                 participationController.ControllerContext = controllerContext;
-                IActionResult add_participation_result = null;
-                // call add participation
+                IActionResult delete_participation_result = null;
+                // call delete participation
                 try
                 {
-                    add_participation_result = await participationController.AddNewParticipation(fake_participation_to_add);            
+                    delete_participation_result = await participationController.DeleteExistingParticipation(fake_participation_to_delete);
                 }
                 catch (Exception e)
                 {
-                    _testOutputHelper.WriteLine(e.ToString());               
+                    _testOutputHelper.WriteLine(e.ToString());
                 }
-                var final_result = add_participation_result as ObjectResult;             
+                var final_result = delete_participation_result as ObjectResult;
 
                 // Given uid is incorrect but of the type int, Assert final have to return things other than 401 and 200
                 Assert.True(final_result != null);
