@@ -1,15 +1,17 @@
 ﻿using MB.Core.Application.Interfaces;
 using MB.Core.Application.Models.Participation;
+using MB.Core.Application.Models.Participation.GETSpecificResponses;
 using MB.Core.Domain.DbEntities;
 using MB.Infrastructure.Contexts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System;
+using System.Collections.Generic;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -17,7 +19,7 @@ using static MB.Core.Domain.Constants.Enums;
 
 namespace MB.Tests.ParticipationController
 {
-    public class AddNewParticipation
+    public class GetParticipations
     {
         private readonly ITestOutputHelper _testOutputHelper;
 
@@ -29,7 +31,7 @@ namespace MB.Tests.ParticipationController
 
         private readonly Func<object, long, Task> testFunc;
 
-        public AddNewParticipation(ITestOutputHelper helper, ApplicationDbContext context, UserManager<ApplicationUser> userManager, ILogger<Infrastructure.Services.Internal.ParticipationService> logger)
+        public GetParticipations(ITestOutputHelper helper, ApplicationDbContext context, UserManager<ApplicationUser> userManager, ILogger<Infrastructure.Services.Internal.ParticipationService> logger)
         {
             _testOutputHelper = helper;
             dbContext = context;
@@ -39,18 +41,17 @@ namespace MB.Tests.ParticipationController
             testFunc = async (uid, statusCode) =>
             {
                 // Prepare data
-                var fake_participation_to_add = new NewParticipationModel()
+                var fake_participation_to_get = new GetAllParticipationsModel()
                 {
-                    ProjectId = 1,
+                    ProjectId = null,
                     UserId = 1,
-                    RoleId = ProjectRoles.BA
                 };
                 var fakeUserClaims = new
                 {
                     uid = uid,
                 };
                 var participationServiceMock = new Mock<IParticipationService>();
-                participationServiceMock.Setup(service => service.AddNewParticipation(It.IsAny<long>(), It.IsAny<NewParticipationModel>())).ReturnsAsync(new ParticipationResponseModel(null));
+                participationServiceMock.Setup(service => service.GetAllParticipations(It.IsAny<long>(), It.IsAny<GetAllParticipationsModel>())).ReturnsAsync(new GetAllParticipatedProjects_OfUser_ResponseModel(null, null));
                 var participationController = new WebApi.Controllers.v1.ParticipationController(participationServiceMock.Object, _userManager);
 
                 // Mock up a case to bypass authen success
@@ -67,8 +68,8 @@ namespace MB.Tests.ParticipationController
                 controllerContext.HttpContext = httpContextMock.Object;
                 participationController.ControllerContext = controllerContext;
                 // call add participation
-                var add_participation_result = await participationController.AddNewParticipation(fake_participation_to_add);
-                var final_result = add_participation_result as ObjectResult;
+                var get_participations_result = await participationController.GetAllParticipations(fake_participation_to_get);
+                var final_result = get_participations_result as ObjectResult;
 
                 // Given the uid, Assert final have to return status code
                 Assert.True(final_result != null);
@@ -100,32 +101,34 @@ namespace MB.Tests.ParticipationController
             Func<Task> test = async () =>
             {
                 // Prepare data, this time the data has a wrong userid to mess with service layer
-                var fake_participation_to_add = new NewParticipationModel()
+                var fake_participation_to_get = new GetAllParticipationsModel()
                 {
-                    ProjectId = 1,
+                    ProjectId = null,
                     UserId = 10,
-                    RoleId = ProjectRoles.BA
                 };
                 // this time uid is a valid one
                 var fakeUserClaims = new
                 {
                     uid = 1,
                 };
+
                 //Prepare mocks
                 var userProjectRepo = new Mock<IGenericRepository<UserProjects>>();
                 var projectRepo = new Mock<IGenericRepository<Project>>();
+                var projectRolesRepo = new Mock<IGenericRepository<ProjectRole>>();
                 var unitOfWorkMock = new Mock<IUnitOfWork>();
                 var transaction = await dbContext.Database.BeginTransactionAsync();
 
                 //Set up repos
                 userProjectRepo.Setup(repo => repo.GetDbset()).Returns(dbContext.UserProjects);
                 projectRepo.Setup(repo => repo.GetDbset()).Returns(dbContext.Project);
+                projectRolesRepo.Setup(repo => repo.GetDbset()).Returns(dbContext.ProjectRoles);
                 // Set up unit of work with repos
                 unitOfWorkMock.Setup(u => u.Repository<UserProjects>()).Returns(userProjectRepo.Object);
                 unitOfWorkMock.Setup(u => u.Repository<Project>()).Returns(projectRepo.Object);
+                unitOfWorkMock.Setup(u => u.Repository<ProjectRole>()).Returns(projectRolesRepo.Object);
                 unitOfWorkMock.Setup(u => u.SaveChangesAsync()).ReturnsAsync(1);
                 unitOfWorkMock.Setup(u => u.CreateTransaction()).ReturnsAsync(transaction);
-                unitOfWorkMock.Setup(u => u.Entry(It.IsAny<UserProjects>())).Returns<EntityEntry<UserProjects>>(null);
 
                 // Create controller with mocked service
                 var participationService = new Infrastructure.Services.Internal.ParticipationService(unitOfWorkMock.Object, _userManager, (ILogger<Infrastructure.Services.Internal.ParticipationService>)_logger);
@@ -145,17 +148,17 @@ namespace MB.Tests.ParticipationController
 
                 controllerContext.HttpContext = httpContextMock.Object;
                 participationController.ControllerContext = controllerContext;
-                IActionResult add_participation_result = null;
-                // call add participation
+                IActionResult get_participations_result = null;
+                // call delete participation
                 try
                 {
-                    add_participation_result = await participationController.AddNewParticipation(fake_participation_to_add);            
+                    get_participations_result = await participationController.GetAllParticipations(fake_participation_to_get);
                 }
                 catch (Exception e)
                 {
-                    _testOutputHelper.WriteLine(e.ToString());               
+                    _testOutputHelper.WriteLine(e.ToString());
                 }
-                var final_result = add_participation_result as ObjectResult;             
+                var final_result = get_participations_result as ObjectResult;
 
                 // Given uid is incorrect but of the type int, Assert final have to return things other than 401 and 200
                 Assert.True(final_result != null);
