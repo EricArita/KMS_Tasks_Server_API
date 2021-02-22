@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
+using MB.Core.Application.Helper;
 using MB.Core.Application.Interfaces;
 using MB.Core.Application.Models;
 using MB.Core.Domain.DbEntities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -38,8 +41,11 @@ namespace MB.WebApi.Controllers.v1
             if (result.OK)
             {
                 Response.Cookies.Append("refreshToken", result.Data.RefreshToken, cookieOptions);
-            }
-            return Ok(result);
+                return Ok(result);
+            } else
+            {
+                return BadRequest(result);
+            }          
         }
 
         [HttpPost("facebook-login")]
@@ -54,7 +60,20 @@ namespace MB.WebApi.Controllers.v1
         {
             var refreshToken = Request.Cookies["refreshToken"];
             var response = await _authService.RefreshTokenAsync(refreshToken);
-            return Ok(response);
+            if (response.OK)
+            {
+                return Ok(response);
+            } else
+            {
+                return BadRequest(response);
+            }
+        }
+
+        [HttpPost("check-token-valid")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public IActionResult CheckToken()
+        {
+            return Ok(new HttpResponse<string>(true, null, "Your token is valid", null));
         }
     }
 }

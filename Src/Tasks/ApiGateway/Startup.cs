@@ -58,13 +58,11 @@ namespace ApiGateway
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
             app.UseSwaggerForOcelotUI();
 
             app.UseRouting();
-
-            //app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
