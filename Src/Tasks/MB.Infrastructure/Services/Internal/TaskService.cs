@@ -137,7 +137,7 @@ namespace MB.Infrastructure.Services.Internal
 
                 await transaction.CommitAsync();
 
-                return new TaskResponseModel(newTask);
+                return new TaskResponseModel(newTask, null);
             }
             catch (Exception ex)
             {
@@ -189,13 +189,27 @@ namespace MB.Infrastructure.Services.Internal
                 var finalResult = result.Include(e => e.Project)
                     .Include(e => e.Priority)
                     .Include(e => e.Parent)
-                    .Select(e => new TaskResponseModel(e));
+                    .Select(e => e);
+
+                List<TaskResponseModel> output = new List<TaskResponseModel>();
+                foreach (var task in finalResult)
+                {
+                    var entry = _unitOfWork.Entry(task);
+                    await entry.Collection(e => e.Children).LoadAsync();
+                    List<TaskResponseModel> children = new List<TaskResponseModel>();
+                    foreach (var child in task.Children)
+                    {
+                        children.Add(new TaskResponseModel(child, null));
+                    }
+
+                    output.Add(new TaskResponseModel(task, children));
+                }
 
                 await _unitOfWork.SaveChangesAsync();
 
                 await transaction.CommitAsync();
 
-                return finalResult.ToList();
+                return output;
             }
             catch (Exception ex)
             {
@@ -242,13 +256,26 @@ namespace MB.Infrastructure.Services.Internal
                 var finalResult = result.Include(e => e.Project)
                     .Include(e => e.Priority)
                     .Include(e => e.Parent)
-                    .Select(e => new TaskResponseModel(e));
+                    .Select(e => e);
+                List<TaskResponseModel> output = new List<TaskResponseModel>();
+                foreach (var task in finalResult)
+                {
+                    var entry = _unitOfWork.Entry(task);
+                    await entry.Collection(e => e.Children).LoadAsync();
+                    List<TaskResponseModel> children = new List<TaskResponseModel>();
+                    foreach (var child in task.Children)
+                    {
+                        children.Add(new TaskResponseModel(child, null));
+                    }
+
+                    output.Add(new TaskResponseModel(task, children));
+                }
 
                 await _unitOfWork.SaveChangesAsync();
 
                 await transaction.CommitAsync();
 
-                return finalResult.ToList()[0];
+                return output[0];
             }
             catch (Exception ex)
             {
@@ -464,11 +491,18 @@ namespace MB.Infrastructure.Services.Internal
                     await entry.Reference(e => e.Project).LoadAsync();
                     await entry.Reference(e => e.Priority).LoadAsync();
                     await entry.Reference(e => e.Parent).LoadAsync();
+                    await entry.Collection(e => e.Children).LoadAsync();    
+                }
+
+                List<TaskResponseModel> children = new List<TaskResponseModel>();
+                foreach (var child in operatedTask.Children)
+                {
+                    children.Add(new TaskResponseModel(child, null));
                 }
 
                 await transaction.CommitAsync();
 
-                return new TaskResponseModel(operatedTask);
+                return new TaskResponseModel(operatedTask, children);
             }
             catch (Exception ex)
             {
@@ -564,9 +598,25 @@ namespace MB.Infrastructure.Services.Internal
                     await _unitOfWork.SaveChangesAsync();
                 }
 
+                // Eager load instance for initialization of response model
+                var entry = _unitOfWork.Entry(operatedTask);
+                if (entry != null)
+                {
+                    await entry.Reference(e => e.Project).LoadAsync();
+                    await entry.Reference(e => e.Priority).LoadAsync();
+                    await entry.Reference(e => e.Parent).LoadAsync();
+                    await entry.Collection(e => e.Children).LoadAsync();
+                }
+
+                List<TaskResponseModel> children = new List<TaskResponseModel>();
+                foreach (var child in operatedTask.Children)
+                {
+                    children.Add(new TaskResponseModel(child, null));
+                }
+
                 await transaction.CommitAsync();
 
-                return new TaskResponseModel(operatedTask);
+                return new TaskResponseModel(operatedTask, children);
             }
             catch (Exception ex)
             {

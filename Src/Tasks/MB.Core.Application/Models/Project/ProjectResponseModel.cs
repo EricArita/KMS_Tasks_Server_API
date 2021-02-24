@@ -2,12 +2,13 @@
 using MB.Core.Application.DTOs;
 using System;
 using System.Collections.Generic;
+using MB.Core.Application.Models.Task;
 
 namespace MB.Core.Application.Models.Project
 {
     public class ProjectResponseModel
     {
-        public ProjectResponseModel(Domain.DbEntities.Project project, IEnumerable<ProjectRole> roles)
+        public ProjectResponseModel(Domain.DbEntities.Project project, IEnumerable<ProjectRole> roles, IEnumerable<ProjectResponseModel> children, IEnumerable<TaskResponseModel> childrenTasks)
         {
             if (project == null) return;
             Id = project.Id;
@@ -22,8 +23,17 @@ namespace MB.Core.Application.Models.Project
                 ProjectRoles = roles;
             }
             IsDeleted = project.Deleted;
-            if (project.Parent == null) return;
-            Parent = new ProjectResponseModel(project.Parent, null);
+            if (project.Parent != null) {
+                Parent = new ProjectResponseModel(project.Parent, null, null, null);
+            }
+            if (project.Children != null)
+            {
+                Children = children;
+            }
+            if (project.ChildrenTasks != null)
+            {
+                ChildrenTasks = childrenTasks;
+            }
         }
 
         public long Id { get; set; }
@@ -36,5 +46,7 @@ namespace MB.Core.Application.Models.Project
         public bool IsDeleted { get; set; }
         public ProjectResponseModel Parent { get; set; }
         public IEnumerable<ProjectRole> ProjectRoles { get; set; }
+        public IEnumerable<ProjectResponseModel> Children { get; set; }
+        public IEnumerable<TaskResponseModel> ChildrenTasks { get; set; }
     }
 }

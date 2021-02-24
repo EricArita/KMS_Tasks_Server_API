@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using MB.Core.Application.Models.Project;
 using Microsoft.Extensions.Logging;
+using MB.Core.Application.Models.Task;
 
 namespace MB.Infrastructure.Services.Internal
 {
@@ -94,7 +95,7 @@ namespace MB.Infrastructure.Services.Internal
 
                 await transaction.CommitAsync();
 
-                return new ProjectResponseModel(addedProject, roles);
+                return new ProjectResponseModel(addedProject, roles, null, null);
             }
             catch (Exception ex)
             {
@@ -134,10 +135,24 @@ namespace MB.Infrastructure.Services.Internal
                 var projectRoles = _unitOfWork.Repository<ProjectRole>().GetDbset();
                 foreach(var project in resultProjects)
                 {
+                    var entry = _unitOfWork.Entry(project);
+                    await entry.Collection(e => e.Children).LoadAsync();
+                    await entry.Collection(e => e.ChildrenTasks).LoadAsync();
+                    List<ProjectResponseModel> childrenProjects = new List<ProjectResponseModel>();
+                    foreach (var child in project.Children)
+                    {
+                        childrenProjects.Add(new ProjectResponseModel(child, null, null, null));
+                    }
+                    List<TaskResponseModel> childrenTasks = new List<TaskResponseModel>();
+                    foreach (var child in project.ChildrenTasks)
+                    {
+                        childrenTasks.Add(new TaskResponseModel(child, null));
+                    }
+
                     // get the roles for this project
                     var roles = projectRoles.Where(role => participation.Where(p => p.ProjectId == project.Id)
                                 .Any(p => p.RoleId == role.Id));
-                    result.Add(new ProjectResponseModel(project, roles));
+                    result.Add(new ProjectResponseModel(project, roles, childrenProjects, childrenTasks));
                 }
 
                 await _unitOfWork.SaveChangesAsync();
@@ -198,10 +213,24 @@ namespace MB.Infrastructure.Services.Internal
                 var projectRoles = _unitOfWork.Repository<ProjectRole>().GetDbset();
                 foreach(var project in resultProject)
                 {
+                    var entry = _unitOfWork.Entry(project);
+                    await entry.Collection(e => e.Children).LoadAsync();
+                    await entry.Collection(e => e.ChildrenTasks).LoadAsync();
+                    List<ProjectResponseModel> childrenProjects = new List<ProjectResponseModel>();
+                    foreach (var child in project.Children)
+                    {
+                        childrenProjects.Add(new ProjectResponseModel(child, null, null, null));
+                    }
+                    List<TaskResponseModel> childrenTasks = new List<TaskResponseModel>();
+                    foreach (var child in project.ChildrenTasks)
+                    {
+                        childrenTasks.Add(new TaskResponseModel(child, null));
+                    }
+                    
                     // get the roles for this project
                     var roles = projectRoles.Where(role => participation.Where(p => p.ProjectId == project.Id)
                                 .Any(p => p.RoleId == role.Id));
-                    result.Add(new ProjectResponseModel(project, roles));
+                    result.Add(new ProjectResponseModel(project, roles, childrenProjects, childrenTasks));
                 }
 
                 await _unitOfWork.SaveChangesAsync();
@@ -319,11 +348,25 @@ namespace MB.Infrastructure.Services.Internal
                     operatedProject.UpdatedDate = DateTime.UtcNow;
                     _unitOfWork.Repository<Project>().Update(operatedProject);
                     await _unitOfWork.SaveChangesAsync();
-                }       
+                }
+
+                var entry = _unitOfWork.Entry(operatedProject);
+                await entry.Collection(e => e.Children).LoadAsync();
+                await entry.Collection(e => e.ChildrenTasks).LoadAsync();
+                List<ProjectResponseModel> childrenProjects = new List<ProjectResponseModel>();
+                foreach (var child in operatedProject.Children)
+                {
+                    childrenProjects.Add(new ProjectResponseModel(child, null, null, null));
+                }
+                List<TaskResponseModel> childrenTasks = new List<TaskResponseModel>();
+                foreach (var child in operatedProject.ChildrenTasks)
+                {
+                    childrenTasks.Add(new TaskResponseModel(child, null));
+                }
 
                 await transaction.CommitAsync();
 
-                return new ProjectResponseModel(operatedProject, getUserProject.Select(e => e.ProjectRole).ToList());
+                return new ProjectResponseModel(operatedProject, getUserProject.Select(e => e.ProjectRole).ToList(), childrenProjects, childrenTasks);
             }
             catch (Exception ex)
             {
@@ -339,6 +382,8 @@ namespace MB.Infrastructure.Services.Internal
             await using var transaction = await _unitOfWork.CreateTransaction();
             try
             {
+                DateTime rightNow = DateTime.UtcNow;
+
                 // Check if uid is valid or not
                 ApplicationUser validUser = _userManager.Users.FirstOrDefault(e => e.UserId == deletedByUserId);
                 if (validUser == null)
@@ -379,6 +424,30 @@ namespace MB.Infrastructure.Services.Internal
                 if (!operatedProject.Deleted)
                 {
                     operatedProject.Deleted = true;
+                    // Define recursive call to set delete state of children of a task
+                    var projectsDbSet = _unitOfWork.Repository<Project>().GetDbset();
+                    async Task<bool> recursiveDeleteChildrenProjects(Project project)
+                    {
+                        if (project == null) return false;
+                        // Find all tasks that have this task as parent
+                        var query = projectsDbSet.Where(t => t.ParentId == project.Id);
+                        if (query == null || query.Count() < 1) return true;
+                        // Stop query and get results
+                        var childrenProjects = query.ToList();
+                        // For each of them change the project they belong to, to this new parent project
+                        foreach (Project p in childrenProjects)
+                        {
+                            p.Deleted = true;
+                            p.UpdatedBy = validUser.UserId;
+                            p.UpdatedDate = rightNow;
+                            _unitOfWork.Repository<Project>().Update(p);
+                            await recursiveDeleteChildrenProjects(p);
+                        }
+                        return true;
+                    }
+
+                    // Run the recursive call
+                    await recursiveDeleteChildrenProjects(operatedProject);
                     isUpdated = true;
                 }
 
@@ -391,9 +460,23 @@ namespace MB.Infrastructure.Services.Internal
                     await _unitOfWork.SaveChangesAsync();
                 }
 
+                var entry = _unitOfWork.Entry(operatedProject);
+                await entry.Collection(e => e.Children).LoadAsync();
+                await entry.Collection(e => e.ChildrenTasks).LoadAsync();
+                List<ProjectResponseModel> childrenProjects = new List<ProjectResponseModel>();
+                foreach (var child in operatedProject.Children)
+                {
+                    childrenProjects.Add(new ProjectResponseModel(child, null, null, null));
+                }
+                List<TaskResponseModel> childrenTasks = new List<TaskResponseModel>();
+                foreach (var child in operatedProject.ChildrenTasks)
+                {
+                    childrenTasks.Add(new TaskResponseModel(child, null));
+                }
+
                 await transaction.CommitAsync();
 
-                return new ProjectResponseModel(operatedProject, getUserProject.Select(e => e.ProjectRole).ToList());
+                return new ProjectResponseModel(operatedProject, getUserProject.Select(e => e.ProjectRole).ToList(), childrenProjects, childrenTasks);
             }
             catch (Exception ex)
             {

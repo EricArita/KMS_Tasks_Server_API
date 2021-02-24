@@ -2,12 +2,13 @@
 using MB.Core.Domain.DbEntities;
 using MB.Core.Application.DTOs;
 using System;
+using System.Collections.Generic;
 
 namespace MB.Core.Application.Models.Task
 {
     public class TaskResponseModel
     {
-        public TaskResponseModel(Tasks coreTask)
+        public TaskResponseModel(Tasks coreTask, IEnumerable<TaskResponseModel> children)
         {
             if (coreTask == null) return;
             Id = coreTask.Id;
@@ -20,7 +21,7 @@ namespace MB.Core.Application.Models.Task
             UpdatedDate = coreTask.UpdatedDate;
             if (coreTask.Project != null)
             {
-                Project = new ProjectResponseModel(coreTask.Project, null);
+                Project = new ProjectResponseModel(coreTask.Project, null, null, null);
             }
             ReminderSchedule = coreTask.ReminderSchedule;
             Reminder = coreTask.Reminder;
@@ -42,7 +43,11 @@ namespace MB.Core.Application.Models.Task
             }
             if (coreTask.Parent != null)
             {
-                Parent = new TaskResponseModel(coreTask.Parent);
+                Parent = new TaskResponseModel(coreTask.Parent, null);
+            }
+            if (coreTask.Children != null)
+            {
+                Children = children;
             }
         }
         public long Id { get; set; }
@@ -55,12 +60,12 @@ namespace MB.Core.Application.Models.Task
         public DateTime? UpdatedDate { get; set; }
         public ProjectResponseModel Project { get; set; }
         public TaskResponseModel Parent { get; set; }
+        public IEnumerable<TaskResponseModel> Children { get; set; }
         public DateTime? ReminderSchedule { get; set; }
         public bool Reminder { get; set; }
         public UserDTO AssignedBy { get; set; }
         public UserDTO AssignedFor { get; set; }
         public UserDTO CreatedBy { get; set; }
         public UserDTO UpdatedBy { get; set; }
-
     }
 }

@@ -24,6 +24,7 @@ namespace MB.Core.Domain.DbEntities
         public long? UpdatedBy { get; set; }
 
         public virtual Tasks Parent { get; set; }
+        public virtual IEnumerable<Tasks> Children { get; set; }
         public virtual PriorityLevel Priority { get; set; }
         public virtual Project Project { get; set; }
         public virtual ApplicationUser AssignedByUser { get; set; }

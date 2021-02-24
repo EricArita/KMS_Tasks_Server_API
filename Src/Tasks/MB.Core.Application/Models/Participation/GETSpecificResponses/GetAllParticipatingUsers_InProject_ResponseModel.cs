@@ -9,7 +9,7 @@ namespace MB.Core.Application.Models.Participation.GETSpecificResponses
         public GetAllParticipatingUsers_InProject_ResponseModel(Domain.DbEntities.Project project, IEnumerable<UserMappedToProjectRoles> mappedRecords)
         {
             if (project == null || mappedRecords == null) return;
-            Project = new ProjectResponseModel(project, null);
+            Project = new ProjectResponseModel(project, null, null, null);
             Users = mappedRecords;
         }
 
