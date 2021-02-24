@@ -104,7 +104,7 @@ namespace MB.Infrastructure.Contexts
                     .HasMaxLength(100);
                 
                 entity.HasOne(d => d.Parent)
-                    .WithMany()
+                    .WithMany(d => d.Children)
                     .HasForeignKey(d => d.ParentId)
                     .HasConstraintName("FK_Project_HaveParentProject");
 
@@ -142,7 +142,7 @@ namespace MB.Infrastructure.Contexts
                 entity.Property(t => t.PriorityId).HasConversion<int>();
 
                 entity.HasOne(d => d.Parent)
-                    .WithMany()
+                    .WithMany(d => d.Children)
                     .HasForeignKey(d => d.ParentId)
                     .HasConstraintName("FK_Tasks_HaveParentTasks");
 
@@ -152,7 +152,7 @@ namespace MB.Infrastructure.Contexts
                     .HasConstraintName("FK_Tasks_PriorityLevel");
 
                 entity.HasOne(d => d.Project)
-                    .WithMany()
+                    .WithMany(d => d.ChildrenTasks)
                     .HasForeignKey(d => d.ProjectId)
                     .HasConstraintName("FK_Tasks_Project");
 

@@ -11,6 +11,8 @@
     <Compile Remove="Migrations\20201215063328_UpdatedBy field for Tasks.Designer.cs" />
     <Compile Remove="Migrations\20201215070149_UpdatedBy for Task.cs" />
     <Compile Remove="Migrations\20201215070149_UpdatedBy for Task.Designer.cs" />
+    <Compile Remove="Migrations\20210224042155_AddIEnumerableFields.cs" />
+    <Compile Remove="Migrations\20210224042155_AddIEnumerableFields.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

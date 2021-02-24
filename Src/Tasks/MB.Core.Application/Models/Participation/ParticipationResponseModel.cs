@@ -15,7 +15,7 @@ namespace MB.Core.Application.Models.Participation
             {
                 participation.ProjectRole
             };
-            ParticipatedProject = new ProjectResponseModel(participation.Project, roles);
+            ParticipatedProject = new ProjectResponseModel(participation.Project, roles, null, null);
         }
 
         public UserDTO User { get; set; }

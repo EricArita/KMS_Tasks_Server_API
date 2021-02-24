@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace MB.Core.Domain.DbEntities
 {
@@ -17,5 +18,8 @@ namespace MB.Core.Domain.DbEntities
         public virtual Project Parent { get; set; }
         public virtual ApplicationUser CreatedByUser { get; set; }
         public virtual ApplicationUser UpdatedByUser { get; set; }
+
+        public virtual IEnumerable<Project> Children { get; set; }
+        public virtual IEnumerable<Tasks> ChildrenTasks { get; set; }
     }
 }

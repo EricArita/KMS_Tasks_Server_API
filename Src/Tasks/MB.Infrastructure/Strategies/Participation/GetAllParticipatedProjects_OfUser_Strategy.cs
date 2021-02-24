@@ -70,7 +70,7 @@ namespace MB.Infrastructure.Strategies.Participation
             {
                 // get the roles for this project
                 var roles = projectRoles.Where(role => resultingParticipations.Any(p => p.ProjectId == project.Id && p.RoleId == role.Id));
-                actualFormattedResult.Add(new ProjectResponseModel(project, roles));
+                actualFormattedResult.Add(new ProjectResponseModel(project, roles, null, null));
             };
 
             GetAllParticipatedProjects_OfUser_ResponseModel response = new GetAllParticipatedProjects_OfUser_ResponseModel(validUser, actualFormattedResult);

@@ -10,7 +10,7 @@ namespace MB.Core.Application.Models.Participation.GETSpecificResponses
         public GetAllProjectRoles_OfUser_InProject_ResponseModel(Domain.DbEntities.Project project, ApplicationUser user, IEnumerable<ProjectRole> roles)
         {
             if (project == null || user == null || roles == null) return;
-            Project = new ProjectResponseModel(project, roles);
+            Project = new ProjectResponseModel(project, roles, null, null);
             User = new UserDTO(user);
         }
 
