@@ -105,7 +105,7 @@ namespace MB.Infrastructure.Services.Internal
             }
         }
 
-        async Task<IEnumerable<ProjectResponseModel>> IProjectService.GetAllProjects(GetAllProjectsModel model)
+        async Task<GetAllProjectsResponseModel> IProjectService.GetAllProjects(GetAllProjectsModel model)
         {
             await using var transaction = await _unitOfWork.CreateTransaction();
 
@@ -128,9 +128,32 @@ namespace MB.Infrastructure.Services.Internal
                     throw new ProjectServiceException(ProjectParticipationRelatedErrorsConstants.PROJECT_PARTICIPATION_NOT_FOUND);
                 }
                 // Get all the projects participated, then for each of them 
-                var resultProjects = _unitOfWork.Repository<Project>().GetDbset()
-                    .Where(project => participation.Any(p => p.ProjectId == project.Id && project.Deleted == false)).ToList();
+                var projects = _unitOfWork.Repository<Project>().GetDbset()
+                    .Where(project => participation.Any(p => p.ProjectId == project.Id && project.Deleted == false));
 
+                // filter result projects through even more queries
+                if(model.ProjectName != null)
+                {
+                    projects = projects.Where(project => project.Name.ToLower().Contains(model.ProjectName.ToLower()));
+                }
+
+                var resultTotalPages = 1;
+                // run through paging queries if provided
+                if(model.ItemPerPage.HasValue && model.PageNumber.HasValue)
+                {
+                    resultTotalPages = Math.Max(resultTotalPages, (int)Math.Ceiling((double)projects.Count() / model.ItemPerPage.Value));
+                    if(model.PageNumber.Value > resultTotalPages)
+                    {
+                        var exceptionToBeThrown = new ProjectServiceException(ProjectRelatedErrorsConstants.PAGE_NUMBER_REQUESTED_IS_FALSE);
+                        exceptionToBeThrown.AddExtraData("newMaxPage", resultTotalPages);
+                        throw exceptionToBeThrown;
+                    }
+                    projects = projects.Skip((model.PageNumber.Value - 1) * model.ItemPerPage.Value).Take(model.ItemPerPage.Value);
+                }
+
+                var resultProjects = projects.ToList();        
+                
+                // make a list
                 List<ProjectResponseModel> result = new List<ProjectResponseModel>();
                 var projectRoles = _unitOfWork.Repository<ProjectRole>().GetDbset();
                 foreach(var project in resultProjects)
@@ -155,11 +178,14 @@ namespace MB.Infrastructure.Services.Internal
                     result.Add(new ProjectResponseModel(project, roles, childrenProjects, childrenTasks));
                 }
 
+                // make response
+                GetAllProjectsResponseModel responseModel = new GetAllProjectsResponseModel(result, resultTotalPages);
+
                 await _unitOfWork.SaveChangesAsync();
 
                 await transaction.CommitAsync();
 
-                return result;
+                return responseModel;
             }
             catch (Exception ex)
             {
@@ -211,7 +237,7 @@ namespace MB.Infrastructure.Services.Internal
 
                 List<ProjectResponseModel> result = new List<ProjectResponseModel>();
                 var projectRoles = _unitOfWork.Repository<ProjectRole>().GetDbset();
-                foreach(var project in resultProject)
+                foreach(var project in resultProject.ToList())
                 {
                     var entry = _unitOfWork.Entry(project);
                     await entry.Collection(e => e.Children).LoadAsync();

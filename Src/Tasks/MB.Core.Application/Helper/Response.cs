@@ -11,17 +11,17 @@ namespace MB.Core.Application.Helper
             Data = default(T);
         }
 
-        public HttpResponse(bool ok, T data = default(T), string message = "", List<IdentityError> errors = null)
+        public HttpResponse(bool ok, T data = default(T), string message = "", IEnumerable<object> errors = null)
         {
-            this.Data = data;
-            this.OK = ok;
-            this.Message = message;
-            this.Errors = errors;
+            Data = data;
+            OK = ok;
+            Message = message;
+            Errors = errors;
         }
 
         public T Data { get; set; }
         public bool OK { get; set; }
-        public List<IdentityError> Errors { get; set; }
+        public IEnumerable<object> Errors { get; set; }
         public string Message { get; set; }
     }
 }
