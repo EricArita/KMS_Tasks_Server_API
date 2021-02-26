@@ -25,6 +25,7 @@ namespace MB.Core.Domain.Constants
         public const string PROJECT_NOT_FOUND = "Cannot find a single instance of a project from the infos you provided";
         public const string CANNOT_SET_PARENT_PROJECT_TOBE_ITSELF = "Cannot set a project to be its own parent";
         public const string ACCESS_TO_PROJECT_IS_FORBIDDEN = "You shan't modify this project";
+        public const string PAGE_NUMBER_REQUESTED_IS_FALSE = "The page number provided on query is invalid";
     }
 
     public static class TaskRelatedErrorsConstants

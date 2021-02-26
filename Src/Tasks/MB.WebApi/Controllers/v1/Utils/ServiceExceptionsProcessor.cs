@@ -18,6 +18,7 @@ namespace MB.WebApi.Controllers.v1.Utils
                 [ProjectRelatedErrorsConstants.CANNOT_SET_PARENT_PROJECT_TOBE_ITSELF] = 400,
                 [ProjectRelatedErrorsConstants.PARENT_PROJECT_NOT_FOUND] = 404,
                 [ProjectRelatedErrorsConstants.PROJECT_NOT_FOUND] = 404,
+                [ProjectRelatedErrorsConstants.PAGE_NUMBER_REQUESTED_IS_FALSE] = 400,
 
                 [TaskRelatedErrorsConstants.ACCESS_TO_TASK_IS_FORBIDDEN] = 403,
                 [TaskRelatedErrorsConstants.ASSIGNED_BY_FIELD_INVALID] = 404,

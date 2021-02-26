@@ -71,7 +71,7 @@ namespace MB.WebApi.Controllers.v1
         }
 
         [HttpGet("projects")]
-        public async Task<IActionResult> GetAllProjects()
+        public async Task<IActionResult> GetAllProjects([FromQuery] GetAllProjectsRequestModel model)
         {
             try
             {
@@ -96,10 +96,13 @@ namespace MB.WebApi.Controllers.v1
                 GetAllProjectsModel serviceModel = new GetAllProjectsModel()
                 {
                     UserID = uid.Value,
+                    ProjectName = model.ProjectName,
+                    ItemPerPage = model.ItemPerPage,
+                    PageNumber = model.PageNumber
                 };
                 // Carry on with the business logic
-                IEnumerable<ProjectResponseModel> projectParticipations = await _projectService.GetAllProjects(serviceModel);
-                return Ok(new HttpResponse<IEnumerable<ProjectResponseModel>>(true, projectParticipations, message: "Successfully fetched projects of user"));
+                GetAllProjectsResponseModel projectParticipations = await _projectService.GetAllProjects(serviceModel);
+                return Ok(new HttpResponse<GetAllProjectsResponseModel>(true, projectParticipations, message: "Successfully fetched projects of user"));
             }
             catch (Exception ex)
             {
@@ -111,7 +114,7 @@ namespace MB.WebApi.Controllers.v1
                     uint? statusCode = ServiceExceptionsProcessor.GetStatusCode(exception.Message);
                     if (statusCode != null && statusCode.HasValue)
                     {
-                        return StatusCode((int)statusCode.Value, new HttpResponse<object>(false, null, sb.ToString()));
+                        return StatusCode((int)statusCode.Value, new HttpResponse<Dictionary<string, object>>(false, exception.ExtraData, sb.ToString()));
                     }
                 }
                 return StatusCode(500, new HttpResponse<Exception>(false, ex, "Server encountered an exception"));

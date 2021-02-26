@@ -169,7 +169,7 @@ namespace MB.Infrastructure.Services.Internal
                 // Run original statement through additional queries
                 if(model.ProjectId != null)
                 {
-                    result.Where(e => e.ProjectId == model.ProjectId);
+                    result = result.Where(e => e.ProjectId == model.ProjectId);
                 }
 
                 if(model.CategoryType != null)
@@ -177,11 +177,11 @@ namespace MB.Infrastructure.Services.Internal
                     switch (model.CategoryType)
                     {
                         case MenuSidebarOptions.Today:
-                            result.Where(e => e.Schedule.HasValue && e.Schedule.Value == DateTime.Today); break;
+                            result = result.Where(e => e.Schedule.HasValue && e.Schedule.Value == DateTime.Today); break;
                         case MenuSidebarOptions.Upcoming:
-                            result.Where(e => e.Schedule.HasValue && e.Schedule.Value > DateTime.Today); break;
+                            result = result.Where(e => e.Schedule.HasValue && e.Schedule.Value > DateTime.Today); break;
                         default:
-                            result.Where(e => e != null); break;
+                            result = result.Where(e => e != null); break;
                     }
                 }
 
@@ -189,7 +189,7 @@ namespace MB.Infrastructure.Services.Internal
                 var finalResult = result.Include(e => e.Project)
                     .Include(e => e.Priority)
                     .Include(e => e.Parent)
-                    .Select(e => e);
+                    .Select(e => e).ToList();
 
                 List<TaskResponseModel> output = new List<TaskResponseModel>();
                 foreach (var task in finalResult)
@@ -256,7 +256,7 @@ namespace MB.Infrastructure.Services.Internal
                 var finalResult = result.Include(e => e.Project)
                     .Include(e => e.Priority)
                     .Include(e => e.Parent)
-                    .Select(e => e);
+                    .Select(e => e).ToList();
                 List<TaskResponseModel> output = new List<TaskResponseModel>();
                 foreach (var task in finalResult)
                 {
