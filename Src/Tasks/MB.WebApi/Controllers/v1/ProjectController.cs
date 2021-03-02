@@ -62,7 +62,7 @@ namespace MB.WebApi.Controllers.v1
                     UserID = uid.Value
                 };
                 var resulting = await _projectService.GetAllProjects(fetchAllProjects);
-                await _hubContext.Clients.Group($"User{uid.Value}Group").SendAsync("new-project-added", new { projects =  resulting.Projects});
+                await _hubContext.Clients.Group($"User{uid.Value}Group").SendAsync("projects-list-changed", new { projects =  resulting.Projects});
 
                 return Ok(new HttpResponse<ProjectResponseModel>(true, addedProject, message: "Successfully added project"));
             }
@@ -208,6 +208,14 @@ namespace MB.WebApi.Controllers.v1
                 // If passes all tests, then we submit it to the service layer
                 // Carry on with the business logic
                 ProjectResponseModel participatedProject = await _projectService.UpdateProjectInfo(projectId, uid.Value, model);
+
+                GetAllProjectsModel fetchAllProjects = new GetAllProjectsModel()
+                {
+                    UserID = uid.Value
+                };
+                var resulting = await _projectService.GetAllProjects(fetchAllProjects);
+                await _hubContext.Clients.Group($"User{uid.Value}Group").SendAsync("projects-list-changed", new { projects = resulting.Projects });
+
                 return Ok(new HttpResponse<ProjectResponseModel>(true, participatedProject, message: "Successfully patched specified project of user"));
             }
             catch (Exception ex)
