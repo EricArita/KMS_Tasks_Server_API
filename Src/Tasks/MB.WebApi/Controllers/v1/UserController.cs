@@ -12,6 +12,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using MB.Core.Domain.DbEntities;
+using Microsoft.AspNetCore.SignalR;
+using MB.WebApi.Hubs.v1;
+using MB.Core.Application.Interfaces.Misc;
 
 namespace MB.WebApi.Controllers.v1
 {

@@ -38,6 +38,30 @@
       "UpstreamPathTemplate": "/user-management/{everything}",
       "UpstreamHttpMethod": [ "Post", "Get", "Patch", "Delete", "Put" ],
       "SwaggerKey": "user-management"
+    },
+    {
+      "DownstreamPathTemplate": "/signalR/{catchAll}",
+      "DownstreamScheme": "ws",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamPathTemplate": "/signalR/{catchAll}",
+      "UpstreamHttpMethod": [ "Post", "Get", "Patch", "Delete", "Put" ]
+    },
+    {
+      "DownstreamPathTemplate": "/signalR",
+      "DownstreamScheme": "ws",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamPathTemplate": "/signalR",
+      "UpstreamHttpMethod": [ "Post", "Get", "Patch", "Delete", "Put" ]
     }
   ],
   "SwaggerEndpoints": [

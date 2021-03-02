@@ -54,7 +54,7 @@ namespace MB.Infrastructure.Strategies.Participation
             foreach (var user in resultingUsers)
             {
                 // get the roles for this user in this project
-                var roles = projectRoles.Where(role => queryForNeededParticipations.Any(p => p.UserId == user.UserId && p.RoleId == role.Id));
+                var roles = projectRoles.Where(role => queryForNeededParticipations.Any(p => p.UserId == user.UserId && p.RoleId == role.Id)).ToList();
                 actualFormattedResult.Add(new UserMappedToProjectRoles(user, roles));
             };
 

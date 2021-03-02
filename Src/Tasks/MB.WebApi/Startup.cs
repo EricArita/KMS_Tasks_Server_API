@@ -6,6 +6,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using MB.Infrastructure;
 using MB.Core.Application;
+using MB.WebApi.Hubs.v1;
+using MB.WebApi.Utils;
+using MB.Core.Application.Interfaces.Misc;
 
 namespace MB.WebApi
 {
@@ -28,6 +31,8 @@ namespace MB.WebApi
             services.AddApplicationServices();
 
             services.AddPersistenceServices(Configuration);
+
+            services.AddSingleton<IConnectionManager, ConnectionManager>();
 
             services.AddOptions();
 
@@ -52,7 +57,7 @@ namespace MB.WebApi
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            app.UseCors(builder => builder.WithOrigins(new string[] { "http://localhost:8080", "http://localhost:4000", "http://localhost:5002" }).AllowAnyMethod().AllowAnyHeader().AllowCredentials());
 
             app.UseAuthentication();
 
@@ -63,6 +68,7 @@ namespace MB.WebApi
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<GlobalHub>("/signalR");
             });
 
             #region Swagger

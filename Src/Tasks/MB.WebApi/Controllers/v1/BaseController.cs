@@ -1,8 +1,9 @@
-﻿using MB.Core.Domain.DbEntities;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
+﻿using MB.Core.Application.Interfaces.Misc;
+using MB.Core.Domain.DbEntities;
+using MB.WebApi.Hubs.v1;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Linq;
 using System.Security.Claims;
@@ -16,9 +17,11 @@ namespace MB.WebApi.Controllers.v1
     public class BaseController : ControllerBase
     {
         protected readonly UserManager<ApplicationUser> _userManager;
+
         protected BaseController(UserManager<ApplicationUser> userManager) {
             _userManager = userManager;
         }
+
         protected long? GetUserId(ClaimsPrincipal claimsManager)
         {
             if (claimsManager == null) return null;

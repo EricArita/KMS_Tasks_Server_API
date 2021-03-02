@@ -69,7 +69,7 @@ namespace MB.Infrastructure.Strategies.Participation
             foreach (var project in resultingProjects)
             {
                 // get the roles for this project
-                var roles = projectRoles.Where(role => resultingParticipations.Any(p => p.ProjectId == project.Id && p.RoleId == role.Id));
+                var roles = projectRoles.Where(role => resultingParticipations.Any(p => p.ProjectId == project.Id && p.RoleId == role.Id)).ToList();
                 actualFormattedResult.Add(new ProjectResponseModel(project, roles, null, null));
             };
 

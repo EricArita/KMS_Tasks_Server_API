@@ -246,6 +246,7 @@ namespace MB.Infrastructure.Services.Internal
             authResponse.Email = user.Email;
             authResponse.UserName = user.UserName;
             authResponse.Avatar = user.AvatarUrl;
+            authResponse.uid = user.UserId;
             authResponse.Roles = listRoles;
             authResponse.Token = new JwtSecurityTokenHandler().WriteToken(await jwtSecurityTokenTask);
 

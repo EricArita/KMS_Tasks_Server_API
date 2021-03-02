@@ -102,6 +102,13 @@ namespace MB.Infrastructure
             services.AddScoped<IParticipationService, ParticipationService>();
             services.AddScoped<IUserService, UserService>();
             #endregion
+
+            #region add signalr
+            services.AddSignalR(o =>
+            {
+                o.EnableDetailedErrors = true;
+            });
+            #endregion
         }
     }
 }
