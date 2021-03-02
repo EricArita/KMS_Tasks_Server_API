@@ -13,6 +13,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using MB.Core.Domain.DbEntities;
+using MB.WebApi.Hubs.v1;
+using Microsoft.AspNetCore.SignalR;
+using MB.Core.Application.Interfaces.Misc;
 
 namespace MB.WebApi.Controllers.v1
 {
@@ -21,10 +24,12 @@ namespace MB.WebApi.Controllers.v1
     public class ProjectController : BaseController
     {
         private readonly IProjectService _projectService;
+        private readonly IHubContext<GlobalHub> _hubContext;
 
-        public ProjectController(IProjectService projectService, UserManager<ApplicationUser> userManager) : base(userManager)
+        public ProjectController(IProjectService projectService, UserManager<ApplicationUser> userManager, IHubContext<GlobalHub> hubContext) : base(userManager)
         {
             _projectService = projectService;
+            _hubContext = hubContext;
         }
 
         [HttpPost("project")]
@@ -51,6 +56,14 @@ namespace MB.WebApi.Controllers.v1
 
                 // Carry on with the business logic
                 ProjectResponseModel addedProject = await _projectService.AddNewProject(uid.Value, newProject);
+
+                GetAllProjectsModel fetchAllProjects = new GetAllProjectsModel()
+                {
+                    UserID = uid.Value
+                };
+                var resulting = await _projectService.GetAllProjects(fetchAllProjects);
+                await _hubContext.Clients.Group($"User{uid.Value}Group").SendAsync("projects-list-changed", new { projects =  resulting.Projects});
+
                 return Ok(new HttpResponse<ProjectResponseModel>(true, addedProject, message: "Successfully added project"));
             }
             catch (Exception ex)
@@ -195,6 +208,14 @@ namespace MB.WebApi.Controllers.v1
                 // If passes all tests, then we submit it to the service layer
                 // Carry on with the business logic
                 ProjectResponseModel participatedProject = await _projectService.UpdateProjectInfo(projectId, uid.Value, model);
+
+                GetAllProjectsModel fetchAllProjects = new GetAllProjectsModel()
+                {
+                    UserID = uid.Value
+                };
+                var resulting = await _projectService.GetAllProjects(fetchAllProjects);
+                await _hubContext.Clients.Group($"User{uid.Value}Group").SendAsync("projects-list-changed", new { projects = resulting.Projects });
+
                 return Ok(new HttpResponse<ProjectResponseModel>(true, participatedProject, message: "Successfully patched specified project of user"));
             }
             catch (Exception ex)

@@ -24,6 +24,8 @@ namespace ApiGateway
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -58,7 +60,7 @@ namespace ApiGateway
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            app.UseCors(builder => builder.WithOrigins(new string[] { "http://localhost:8080", "http://localhost:4000", "http://localhost:5002" }).AllowAnyMethod().AllowAnyHeader().AllowCredentials());
 
             app.UseSwaggerForOcelotUI();
 
@@ -68,6 +70,9 @@ namespace ApiGateway
             {
                 endpoints.MapControllers();
             });
+
+            app.UseWebSockets();
+
             app.UseOcelot().Wait();           
         }
     }

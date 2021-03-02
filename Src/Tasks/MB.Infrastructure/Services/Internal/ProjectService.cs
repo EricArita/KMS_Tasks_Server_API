@@ -122,11 +122,7 @@ namespace MB.Infrastructure.Services.Internal
                 var participation = (from userProject in _unitOfWork.Repository<UserProjects>().GetDbset()
                                      where userProject.UserId == model.UserID
                                      select userProject);
-                // If cannot find any participation from the infos provided, return a service exception
-                if (participation == null || participation.Count() < 1)
-                {
-                    throw new ProjectServiceException(ProjectParticipationRelatedErrorsConstants.PROJECT_PARTICIPATION_NOT_FOUND);
-                }
+
                 // Get all the projects participated, then for each of them 
                 var projects = _unitOfWork.Repository<Project>().GetDbset()
                     .Where(project => participation.Any(p => p.ProjectId == project.Id && project.Deleted == false));
@@ -137,7 +133,7 @@ namespace MB.Infrastructure.Services.Internal
                     projects = projects.Where(project => project.Name.ToLower().Contains(model.ProjectName.ToLower()));
                 }
 
-                var resultTotalPages = 1;
+                int resultTotalPages = 1;
                 // run through paging queries if provided
                 if(model.ItemPerPage.HasValue && model.PageNumber.HasValue)
                 {
@@ -173,8 +169,7 @@ namespace MB.Infrastructure.Services.Internal
                     }
 
                     // get the roles for this project
-                    var roles = projectRoles.Where(role => participation.Where(p => p.ProjectId == project.Id)
-                                .Any(p => p.RoleId == role.Id));
+                    var roles = projectRoles.Where(role => participation.Any(p => p.ProjectId == project.Id && p.RoleId == role.Id)).ToList();
                     result.Add(new ProjectResponseModel(project, roles, childrenProjects, childrenTasks));
                 }
 
@@ -254,8 +249,8 @@ namespace MB.Infrastructure.Services.Internal
                     }
                     
                     // get the roles for this project
-                    var roles = projectRoles.Where(role => participation.Where(p => p.ProjectId == project.Id)
-                                .Any(p => p.RoleId == role.Id));
+                    var roles = projectRoles.Where(role => participation.Any(p => p.ProjectId == project.Id &&
+                                p.RoleId == role.Id)).ToList();
                     result.Add(new ProjectResponseModel(project, roles, childrenProjects, childrenTasks));
                 }
 
