@@ -85,6 +85,35 @@ namespace MB.Infrastructure.Services.Internal
                     RoleId = newParticipation.RoleId.Value
                 };
 
+                // Define recursive call to set delete state of children of a task
+                var projectsDbSet = _unitOfWork.Repository<Project>().GetDbset();
+                async Task<bool> recursiveAddParticipationChildrenProjects(Project project)
+                {
+                    if (project == null) return false;
+                    // Find all tasks that have this task as parent
+                    var query = projectsDbSet.Where(t => t.ParentId == project.Id);
+                    if (query == null || query.Count() < 1) return true;
+                    // Stop query and get results
+                    var childrenProjects = query.ToList();
+                    // For each of them change the project they belong to, to this new parent project
+                    foreach (Project p in childrenProjects)
+                    {
+                        UserProjects participation = new UserProjects()
+                        {
+                            ProjectId = p.Id,
+                            UserId = validUser.UserId,
+                            RoleId = newParticipation.RoleId.Value
+                        };
+
+                        await _unitOfWork.Repository<UserProjects>().InsertAsync(participation);
+                        await recursiveAddParticipationChildrenProjects(p);
+                    }
+                    return true;
+                }
+
+                // Run the recursive call
+                await recursiveAddParticipationChildrenProjects(validProject);
+
                 await _unitOfWork.Repository<UserProjects>().InsertAsync(participation);
 
                 await _unitOfWork.SaveChangesAsync();
@@ -231,9 +260,38 @@ namespace MB.Infrastructure.Services.Internal
                     throw new ParticipationServiceException(ProjectParticipationRelatedErrorsConstants.CANNOT_LOCATE_AN_EXISTING_PARTICIPATION_FOR_REMOVAL);
                 }
 
+                // Define recursive call to set delete state of children of a task
+                var projectsDbSet = _unitOfWork.Repository<Project>().GetDbset();
+                var userProjectsDbSet = _unitOfWork.Repository<UserProjects>().GetDbset();
                 // If we can locate one or many participations to remove, remove
-                foreach(var participation in existingParticipations)
-                {
+                foreach (var participation in existingParticipations.ToList())
+                {   
+                    async Task<bool> recursiveRemoveParticipationChildrenProjects(Project project)
+                    {
+                        if (project == null) return false;
+                        // Find all tasks that have this task as parent
+                        var query = projectsDbSet.Where(t => t.ParentId == project.Id);
+                        if (query == null || query.Count() < 1) return true;
+                        // Stop query and get results
+                        var childrenProjects = query.ToList();
+                        // For each of them change the project they belong to, to this new parent project
+                        foreach (Project p in childrenProjects)
+                        {
+                            // We continue to get the participation(s) that the user want to remove
+                            var participationMatched = userProjectsDbSet.Where(item => item.ProjectId == p.Id && item.UserId == validUser.UserId && (model.RemoveProjectRoleId == null || item.RoleId == model.RemoveProjectRoleId)); 
+                            foreach(var par in participationMatched.ToList())
+                            {
+                                _unitOfWork.Repository<UserProjects>().DeleteByObject(par);
+                            }
+                            
+                            await recursiveRemoveParticipationChildrenProjects(p);
+                        }
+                        return true;
+                    }
+
+                    // Run the recursive call
+                    await recursiveRemoveParticipationChildrenProjects(validProject);
+
                     _unitOfWork.Repository<UserProjects>().DeleteByObject(participation);
                 }
 

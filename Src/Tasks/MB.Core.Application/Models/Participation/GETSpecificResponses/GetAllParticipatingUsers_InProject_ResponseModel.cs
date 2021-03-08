@@ -6,7 +6,7 @@ namespace MB.Core.Application.Models.Participation.GETSpecificResponses
 {
     public class GetAllParticipatingUsers_InProject_ResponseModel : IGetAllParticipations_ResponseModel
     {
-        public GetAllParticipatingUsers_InProject_ResponseModel(Domain.DbEntities.Project project, IEnumerable<UserMappedToProjectRoles> mappedRecords)
+        public GetAllParticipatingUsers_InProject_ResponseModel(Domain.DbEntities.Project project, List<UserMappedToProjectRoles> mappedRecords)
         {
             if (project == null || mappedRecords == null) return;
             Project = new ProjectResponseModel(project, null, null, null);
@@ -14,6 +14,6 @@ namespace MB.Core.Application.Models.Participation.GETSpecificResponses
         }
 
         public ProjectResponseModel Project { get; set; }
-        public IEnumerable<UserMappedToProjectRoles> Users { get; set; }
+        public List<UserMappedToProjectRoles> Users { get; set; }
     }
 }

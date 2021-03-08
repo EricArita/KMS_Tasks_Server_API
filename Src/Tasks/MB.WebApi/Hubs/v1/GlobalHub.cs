@@ -75,8 +75,19 @@ namespace MB.WebApi.Hubs.v1
 
         public void Logout(long uid)
         {
-            Groups.RemoveFromGroupAsync(Context.ConnectionId, $"User{uid}Group");
-            _connectionManager.RemoveConnectionFromRoom(Context.ConnectionId, $"User{uid}Group");
+            _connectionManager.ClearRoomsOfConnection(Context.ConnectionId);
+        }
+
+        public void RegisterViewProject(long projectId)
+        {
+            Groups.AddToGroupAsync(Context.ConnectionId, $"Project{projectId}Group");
+            _connectionManager.AddConnectionToRoom(Context.ConnectionId, $"Project{projectId}Group");
+        }
+
+        public void RemoveFromViewingProject(long projectId)
+        {
+            Groups.RemoveFromGroupAsync(Context.ConnectionId, $"Project{projectId}Group");
+            _connectionManager.RemoveConnectionFromRoom(Context.ConnectionId, $"Project{projectId}Group");
         }
     }
 }

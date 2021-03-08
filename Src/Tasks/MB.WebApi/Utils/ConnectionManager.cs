@@ -7,8 +7,7 @@ namespace MB.WebApi.Utils
     public class ConnectionManager : IConnectionManager
     {
         private HashSet<string> allClients;
-
-        private Dictionary<string, HashSet<string>> connection_to_rooms;
+        public virtual Dictionary<string, HashSet<string>> connection_to_rooms { get; protected set; }
         private ILogger<ConnectionManager> _logger;
 
         public ConnectionManager(ILogger<ConnectionManager> logger)
@@ -58,6 +57,25 @@ namespace MB.WebApi.Utils
             {
                 connection_to_rooms[connectionId].Remove(roomName);
             }
+        }
+
+        public HashSet<string> GetRoomsOfConnection(string connectionId)
+        {
+            if (connection_to_rooms.ContainsKey(connectionId))
+            {
+                return connection_to_rooms[connectionId];
+            }
+            return null;
+        }
+
+        public bool ClearRoomsOfConnection(string connectionId)
+        {
+            if (connection_to_rooms.ContainsKey(connectionId))
+            {
+                connection_to_rooms[connectionId].Clear();
+                return true;
+            }
+            return false;
         }
     }
 }
