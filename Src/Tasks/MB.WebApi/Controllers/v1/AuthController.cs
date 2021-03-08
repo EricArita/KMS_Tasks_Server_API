@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 
 namespace MB.WebApi.Controllers.v1
 {
@@ -19,16 +20,24 @@ namespace MB.WebApi.Controllers.v1
     public class AuthController : BaseController
     {
         private readonly IAuthentication _authService;
-        public AuthController(IAuthentication authService, UserManager<ApplicationUser> userManager) : base(userManager)
+        private readonly ILogger<AuthController> _logger;
+        public AuthController(IAuthentication authService, UserManager<ApplicationUser> userManager , ILogger<AuthController> logger) : base(userManager)
         {
             _authService = authService;
+            _logger = logger;
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserRegisterModel model)
         {
             var result = await _authService.RegisterAsync(model);
-            return Ok(result);
+            if (result.OK)
+            {
+                return Ok(result);
+            } else
+            {
+                return BadRequest(result);
+            }
         }
 
         [HttpPost("login")]

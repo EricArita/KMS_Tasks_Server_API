@@ -241,9 +241,9 @@ namespace MB.WebApi.Controllers.v1
                         UserID = participant.UserDetail.Id,
                     };
                     var resulting = await _projectService.GetAllProjects(fetchAllProjects);
+                    
                     await _hubContext.Clients.Group($"User{participant.UserDetail.Id}Group").SendAsync("projects-list-changed", new { projects = resulting.Projects });
                 }
-
                 //Notify people in details page
                 await _hubContext.Clients.Group($"Project{participatedProject.Id}Group").SendAsync("project-detail-changed", new { projectDetail = participatedProject });          
                 return Ok(new HttpResponse<ProjectResponseModel>(true, participatedProject, message: "Successfully patched specified project of user"));
