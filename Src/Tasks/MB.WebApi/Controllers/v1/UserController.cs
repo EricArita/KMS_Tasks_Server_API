@@ -15,6 +15,7 @@ using MB.Core.Domain.DbEntities;
 using Microsoft.AspNetCore.SignalR;
 using MB.WebApi.Hubs.v1;
 using MB.Core.Application.Interfaces.Misc;
+using System.Collections.Generic;
 
 namespace MB.WebApi.Controllers.v1
 {
@@ -55,6 +56,50 @@ namespace MB.WebApi.Controllers.v1
                 // Carry on with the business logic
                 UserResponseModel profile = await _userService.GetUserInfoById(uid.Value);
                 return Ok(new HttpResponse<UserResponseModel>(true, profile, message: "Successfully fetched infos of user"));
+            }
+            catch (Exception ex)
+            {
+                if (ex is UserServiceException exception)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.AppendLine("A problem occurred when processing the content of your request, please recheck your request params: ");
+                    sb.AppendLine(exception.Message);
+                    uint? statusCode = ServiceExceptionsProcessor.GetStatusCode(exception.Message);
+                    if (statusCode != null && statusCode.HasValue)
+                    {
+                        return StatusCode((int)statusCode.Value, new HttpResponse<object>(false, null, sb.ToString()));
+                    }
+                }
+                return StatusCode(500, new HttpResponse<Exception>(false, ex, "Server encountered an exception"));
+            }
+        }
+
+        [HttpGet("users")]
+        public async Task<IActionResult> GetUsersByFields([FromQuery] FindUserByFieldsModel model)
+        {
+            try
+            {
+                //Check validity of the token
+                var claimsManager = HttpContext.User;
+                long? uid = null;
+                try
+                {
+                    uid = GetUserId(claimsManager);
+                }
+                catch (Exception e)
+                {
+                    return Unauthorized(e.Message);
+                }
+
+                if (!uid.HasValue)
+                {
+                    return Unauthorized("Unauthorized individuals cannot access this route");
+                }
+
+                // If passes all tests, then we submit it to the service layer
+                // Carry on with the business logic
+                var result = await _userService.GetUserInfoByFields(model);
+                return Ok(new HttpResponse<IEnumerable<UserResponseModel>>(true, result, message: "Successfully found users from input"));
             }
             catch (Exception ex)
             {

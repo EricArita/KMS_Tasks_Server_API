@@ -9,7 +9,9 @@ namespace MB.Core.Application.Interfaces
     public interface IUserService
     {
         public Task<UserResponseModel> GetUserInfoById(long UserId);
+        public Task<IEnumerable<UserResponseModel>> GetUserInfoByFields(FindUserByFieldsModel model);
 
         public Task<UserResponseModel> UpdateUserInfo(long updatedByUserId, UpdateUserInfoModel model);
+
     }
 }

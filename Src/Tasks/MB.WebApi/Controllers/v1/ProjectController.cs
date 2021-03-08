@@ -15,7 +15,6 @@ using Microsoft.AspNetCore.Identity;
 using MB.Core.Domain.DbEntities;
 using MB.WebApi.Hubs.v1;
 using Microsoft.AspNetCore.SignalR;
-using MB.Core.Application.Interfaces.Misc;
 using Microsoft.Extensions.Logging;
 using MB.Core.Application.Models.Participation;
 using MB.Core.Application.Models.Participation.GETSpecificResponses;

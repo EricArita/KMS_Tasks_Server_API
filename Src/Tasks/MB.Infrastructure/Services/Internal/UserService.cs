@@ -8,6 +8,8 @@ using System.Linq;
 using System;
 using MB.Core.Domain.Constants;
 using MB.Core.Application.Helper.Exceptions.User;
+using System.Text.RegularExpressions;
+using System.Collections.Generic;
 
 namespace MB.Infrastructure.Services.Internal
 {
@@ -39,6 +41,32 @@ namespace MB.Infrastructure.Services.Internal
                 await transaction.CommitAsync();
 
                 return new UserResponseModel(validUser);
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync(); 
+                _logger.LogError(ex, ErrorLoggingMessagesConstants.USER_SERVICE_ERROR_LOG_MESSAGE);
+                throw ex;
+            }
+        }
+
+        public async Task<IEnumerable<UserResponseModel>> GetUserInfoByFields(FindUserByFieldsModel model)
+        {
+            await using var transaction = await _unitOfWork.CreateTransaction();
+
+            try
+            {
+                var validUser = _userManager.Users.Where(user => user.UserName.Contains(model.UserNameOrEmail) || user.Email.Contains(model.UserNameOrEmail));
+                if (validUser == null)
+                {
+                    throw new UserServiceException(UserRelatedErrorsConstants.USER_NOT_FOUND);
+                }
+
+                var result = validUser.Select(e => new UserResponseModel(e)).ToList();
+
+                await transaction.CommitAsync();
+
+                return result;
             }
             catch (Exception ex)
             {
