@@ -228,6 +228,7 @@ namespace MB.Infrastructure.Services.Internal
                     var entry = _unitOfWork.Entry(project);
                     await entry.Collection(e => e.Children).LoadAsync();
                     await entry.Collection(e => e.ChildrenTasks).LoadAsync();
+                    await entry.Reference(e => e.Parent).LoadAsync();
                     List<ProjectResponseModel> childrenProjects = new List<ProjectResponseModel>();
                     foreach (var child in project.Children.OrderBy(e => e.Id).ToList())
                     {
@@ -376,6 +377,7 @@ namespace MB.Infrastructure.Services.Internal
                 var entry = _unitOfWork.Entry(operatedProject);
                 await entry.Collection(e => e.Children).LoadAsync();
                 await entry.Collection(e => e.ChildrenTasks).LoadAsync();
+                await entry.Reference(e => e.Parent).LoadAsync();
                 List<ProjectResponseModel> childrenProjects = new List<ProjectResponseModel>();
                 foreach (var child in operatedProject.Children.OrderBy(e => e.Id).ToList())
                 {
@@ -497,6 +499,7 @@ namespace MB.Infrastructure.Services.Internal
                 var entry = _unitOfWork.Entry(operatedProject);
                 await entry.Collection(e => e.Children).LoadAsync();
                 await entry.Collection(e => e.ChildrenTasks).LoadAsync();
+                await entry.Reference(e => e.Parent).LoadAsync();
                 List<ProjectResponseModel> childrenProjects = new List<ProjectResponseModel>();
                 foreach (var child in operatedProject.Children.OrderBy(e => e.Id).ToList())
                 {

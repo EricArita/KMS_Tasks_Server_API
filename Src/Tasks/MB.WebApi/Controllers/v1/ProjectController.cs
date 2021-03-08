@@ -17,6 +17,8 @@ using MB.WebApi.Hubs.v1;
 using Microsoft.AspNetCore.SignalR;
 using MB.Core.Application.Interfaces.Misc;
 using Microsoft.Extensions.Logging;
+using MB.Core.Application.Models.Participation;
+using MB.Core.Application.Models.Participation.GETSpecificResponses;
 
 namespace MB.WebApi.Controllers.v1
 {
@@ -25,12 +27,14 @@ namespace MB.WebApi.Controllers.v1
     public class ProjectController : BaseController
     {
         private readonly IProjectService _projectService;
+        private readonly IParticipationService _participationService;
         private readonly IHubContext<GlobalHub> _hubContext;
         private readonly ILogger<ProjectController> _logger;
 
-        public ProjectController(IProjectService projectService, UserManager<ApplicationUser> userManager, IHubContext<GlobalHub> hubContext, ILogger<ProjectController> logger) : base(userManager)
+        public ProjectController(IProjectService projectService, IParticipationService participationService, UserManager<ApplicationUser> userManager, IHubContext<GlobalHub> hubContext, ILogger<ProjectController> logger) : base(userManager)
         {
             _projectService = projectService;
+            _participationService = participationService;
             _hubContext = hubContext;
             _logger = logger;
         }
@@ -67,6 +71,7 @@ namespace MB.WebApi.Controllers.v1
                 var resulting = await _projectService.GetAllProjects(fetchAllProjects);
                 await _hubContext.Clients.Group($"User{uid.Value}Group").SendAsync("projects-list-changed", new { projects =  resulting.Projects});
 
+                // Notify parent projects to update
                 if(addedProject.Parent != null)
                 {
                     GetOneProjectModel model = new GetOneProjectModel()
@@ -223,13 +228,23 @@ namespace MB.WebApi.Controllers.v1
                 // Carry on with the business logic
                 ProjectResponseModel participatedProject = await _projectService.UpdateProjectInfo(projectId, uid.Value, model);
 
-                GetAllProjectsModel fetchAllProjects = new GetAllProjectsModel()
+                //Notify list change for all users participating in the project
+                GetAllParticipationsModel GetParticipationsModel = new GetAllParticipationsModel()
                 {
-                    UserID = uid.Value
+                    ProjectId = participatedProject.Id,
                 };
-                var resulting = await _projectService.GetAllProjects(fetchAllProjects);
-                await _hubContext.Clients.Group($"User{uid.Value}Group").SendAsync("projects-list-changed", new { projects = resulting.Projects });
-                
+                GetAllParticipatingUsers_InProject_ResponseModel participatingUsers = (GetAllParticipatingUsers_InProject_ResponseModel)(await _participationService.GetAllParticipations(uid.Value, GetParticipationsModel));
+                foreach(var participant in participatingUsers.Users)
+                {
+                    GetAllProjectsModel fetchAllProjects = new GetAllProjectsModel()
+                    {
+                        UserID = participant.UserDetail.Id,
+                    };
+                    var resulting = await _projectService.GetAllProjects(fetchAllProjects);
+                    await _hubContext.Clients.Group($"User{participant.UserDetail.Id}Group").SendAsync("projects-list-changed", new { projects = resulting.Projects });
+                }
+
+                //Notify people in details page
                 await _hubContext.Clients.Group($"Project{participatedProject.Id}Group").SendAsync("project-detail-changed", new { projectDetail = participatedProject });          
                 return Ok(new HttpResponse<ProjectResponseModel>(true, participatedProject, message: "Successfully patched specified project of user"));
             }

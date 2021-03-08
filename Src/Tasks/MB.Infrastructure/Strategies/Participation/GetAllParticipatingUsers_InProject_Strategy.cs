@@ -43,7 +43,7 @@ namespace MB.Infrastructure.Strategies.Participation
             // Second, We filter the distinct users from the first query (one user might have many roles)
             var distinctUsers = _userManager.Users
                 .Where(user => queryForNeededParticipations.Any(item => item.UserId == user.UserId));
-            IEnumerable<ApplicationUser> resultingUsers = distinctUsers.ToList();
+            List<ApplicationUser> resultingUsers = distinctUsers.ToList();
 
             // Atlast, we get the full user info along with his/her roles in the project for each user found
             // from filtering the needed participations from above
