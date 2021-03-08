@@ -16,6 +16,7 @@ using MB.Core.Domain.DbEntities;
 using MB.WebApi.Hubs.v1;
 using Microsoft.AspNetCore.SignalR;
 using MB.Core.Application.Interfaces.Misc;
+using Microsoft.Extensions.Logging;
 
 namespace MB.WebApi.Controllers.v1
 {
@@ -25,11 +26,13 @@ namespace MB.WebApi.Controllers.v1
     {
         private readonly IProjectService _projectService;
         private readonly IHubContext<GlobalHub> _hubContext;
+        private readonly ILogger<ProjectController> _logger;
 
-        public ProjectController(IProjectService projectService, UserManager<ApplicationUser> userManager, IHubContext<GlobalHub> hubContext) : base(userManager)
+        public ProjectController(IProjectService projectService, UserManager<ApplicationUser> userManager, IHubContext<GlobalHub> hubContext, ILogger<ProjectController> logger) : base(userManager)
         {
             _projectService = projectService;
             _hubContext = hubContext;
+            _logger = logger;
         }
 
         [HttpPost("project")]
@@ -63,6 +66,17 @@ namespace MB.WebApi.Controllers.v1
                 };
                 var resulting = await _projectService.GetAllProjects(fetchAllProjects);
                 await _hubContext.Clients.Group($"User{uid.Value}Group").SendAsync("projects-list-changed", new { projects =  resulting.Projects});
+
+                if(addedProject.Parent != null)
+                {
+                    GetOneProjectModel model = new GetOneProjectModel()
+                    {
+                        ProjectId = addedProject.Parent.Id,
+                        UserId = addedProject.Parent.CreatedBy.Id,
+                    };
+                    ProjectResponseModel participatedProject = await _projectService.GetOneProject(model);
+                    await _hubContext.Clients.Group($"Project{participatedProject.Id}Group").SendAsync("project-detail-changed", new { projectDetail = participatedProject });
+                }
 
                 return Ok(new HttpResponse<ProjectResponseModel>(true, addedProject, message: "Successfully added project"));
             }
@@ -215,7 +229,8 @@ namespace MB.WebApi.Controllers.v1
                 };
                 var resulting = await _projectService.GetAllProjects(fetchAllProjects);
                 await _hubContext.Clients.Group($"User{uid.Value}Group").SendAsync("projects-list-changed", new { projects = resulting.Projects });
-
+                
+                await _hubContext.Clients.Group($"Project{participatedProject.Id}Group").SendAsync("project-detail-changed", new { projectDetail = participatedProject });          
                 return Ok(new HttpResponse<ProjectResponseModel>(true, participatedProject, message: "Successfully patched specified project of user"));
             }
             catch (Exception ex)

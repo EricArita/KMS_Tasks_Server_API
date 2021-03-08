@@ -197,7 +197,7 @@ namespace MB.Infrastructure.Services.Internal
                     var entry = _unitOfWork.Entry(task);
                     await entry.Collection(e => e.Children).LoadAsync();
                     List<TaskResponseModel> children = new List<TaskResponseModel>();
-                    foreach (var child in task.Children)
+                    foreach (var child in task.Children.ToList())
                     {
                         children.Add(new TaskResponseModel(child, null));
                     }
@@ -263,7 +263,7 @@ namespace MB.Infrastructure.Services.Internal
                     var entry = _unitOfWork.Entry(task);
                     await entry.Collection(e => e.Children).LoadAsync();
                     List<TaskResponseModel> children = new List<TaskResponseModel>();
-                    foreach (var child in task.Children)
+                    foreach (var child in task.Children.ToList())
                     {
                         children.Add(new TaskResponseModel(child, null));
                     }
@@ -495,7 +495,7 @@ namespace MB.Infrastructure.Services.Internal
                 }
 
                 List<TaskResponseModel> children = new List<TaskResponseModel>();
-                foreach (var child in operatedTask.Children)
+                foreach (var child in operatedTask.Children.ToList())
                 {
                     children.Add(new TaskResponseModel(child, null));
                 }
@@ -609,7 +609,7 @@ namespace MB.Infrastructure.Services.Internal
                 }
 
                 List<TaskResponseModel> children = new List<TaskResponseModel>();
-                foreach (var child in operatedTask.Children)
+                foreach (var child in operatedTask.Children.ToList())
                 {
                     children.Add(new TaskResponseModel(child, null));
                 }

@@ -66,7 +66,7 @@ namespace MB.Infrastructure.Strategies.Participation
             // Final and formatted result
             List<ProjectResponseModel> actualFormattedResult = new List<ProjectResponseModel>();
             var projectRoles = _unitOfWork.Repository<ProjectRole>().GetDbset();
-            foreach (var project in resultingProjects)
+            foreach (var project in resultingProjects.ToList())
             {
                 // get the roles for this project
                 var roles = projectRoles.Where(role => resultingParticipations.Any(p => p.ProjectId == project.Id && p.RoleId == role.Id)).ToList();
